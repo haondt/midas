@@ -1,0 +1,25 @@
+﻿@model SpendLess.Components.SpendLessComponents.AccountsModel
+
+<div class="is-flex is-flex-direction-column" style="gap:1rem;">
+
+    <table class="table is-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Balance</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var account in Model.Accounts)
+            {
+            <tr>
+                <td><a
+                    href="@account.Key">
+                    @account.Value.Name></a>
+                </td>
+                <td>$@account.Value.Balance</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>

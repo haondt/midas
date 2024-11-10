@@ -1,0 +1,21 @@
+﻿@model SpendLess.Components.SpendLessComponents.ToastModel
+<div hx-swap-oob="beforeend:#toast-container">
+    <div style="width:50vw;"
+        class="notification toast @Model.SeverityString is-light"
+        _="
+            on load
+                add .created to me
+                then wait 2s
+                then remove .created from me
+                then wait for transitionend
+                then send deleted to me
+            end
+            on deleted
+                remove me
+            end
+            ">
+        <button class="delete" _="on click send deleted to the closest <div.toast />"></button>
+        @Model.Message
+    </div>
+</div>
+

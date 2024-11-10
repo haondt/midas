@@ -1,0 +1,64 @@
+﻿@using Haondt.Web.Core.Extensions
+@model SpendLess.Components.SpendLessComponents.SpendLessLayoutModel
+<style>
+    @@scope {
+        .mother-container {
+            position: relative;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+
+        #toast-container, .page-container {
+            position: absolute;
+            width: 100%;
+        }
+
+        #toast-container {
+            height: 100%;
+            overflow-y: auto;
+        }
+    }
+</style>
+<div class="mother-container">
+    <div id="toast-container" class="is-flex is-flex-direction-column is-justify-content-flex-end is-align-items-center">
+        <style>
+            @@scope {
+                .toast {
+                    opacity: 0;
+                    transition: opacity 0.5s ease;
+                    z-index: 1000;
+                }
+
+                .toast.notification {
+                    margin-bottom: 10px;
+                }
+
+                .toast.created {
+                    opacity: 1;
+                }
+            }
+        </style>
+    </div>
+    <div class="page-container">
+        <div class="hero is-small">
+            <div class="hero-body">
+                <p class="title">Spend Less</p>
+            </div>
+        </div>
+
+        <div class="is-flex is-flex-direction-row is-align-items-flex-start ml-5 mr-5" style="gap:1.5rem;">
+            <div class="container" style="width:256px;">
+                <div class="box" id="navigation">
+                    @await Html.PartialAsync(Model.NavigationBar)
+                </div>
+            </div>
+            <div class="container">
+                <div class="box" id="content">
+                    @await Html.PartialAsync(Model.Content)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

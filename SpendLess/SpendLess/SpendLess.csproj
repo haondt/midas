@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>445aed25-e362-4e6a-9e7d-6654c29fe7d2</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SpendLess.Components\SpendLess.Components.csproj" />
+    <ProjectReference Include="..\SpendLess.Core\SpendLess.Core.csproj" />
+    <ProjectReference Include="..\SpendLess.Domain\SpendLess.Domain.csproj" />
+    <ProjectReference Include="..\SpendLess.Persistence\SpendLess.Persistence.csproj" />
+  </ItemGroup>
+
+</Project>

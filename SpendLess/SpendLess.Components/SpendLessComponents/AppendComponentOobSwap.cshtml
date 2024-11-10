@@ -1,0 +1,9 @@
+﻿@using Haondt.Web.Core.Extensions
+@model SpendLess.Components.SpendLessComponents.AppendComponentOobSwapModel
+
+@foreach(var item in Model.Items)
+{
+    <div hx-swap-oob="innerHTML:@item.TargetSelector">
+        @await Html.PartialAsync(item.Component);
+    </div>
+}

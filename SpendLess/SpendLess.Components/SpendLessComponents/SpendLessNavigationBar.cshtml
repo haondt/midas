@@ -1,0 +1,12 @@
+﻿@model SpendLess.Components.SpendLessComponents.SpendLessNavigationBarModel
+
+<div class="is-flex is-flex-direction-column" style="gap:10px;">
+    @foreach(var item in Model.Items)
+    {
+        <a 
+            class="button" 
+            hx-boost="true"
+            href="/_event/navigate?target=@item.TypeIdentity">@item.Title</a>
+        
+    }
+</div>
