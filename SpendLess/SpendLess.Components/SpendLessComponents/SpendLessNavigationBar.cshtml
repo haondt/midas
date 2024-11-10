@@ -5,8 +5,11 @@
     {
         <a 
             class="button" 
+            href="/@item.Slug"
+            hx-ext="multi-swap"
             hx-boost="true"
-            href="/_event/navigate?target=@item.TypeIdentity">@item.Title</a>
+            hx-swap="multi:#content,#navigation"
+        >@item.Title</a>
         
     }
 </div>

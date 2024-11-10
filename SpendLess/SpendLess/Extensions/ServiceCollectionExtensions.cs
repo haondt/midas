@@ -1,6 +1,7 @@
 ﻿using Haondt.Web.Core.Services;
 using Haondt.Web.Services;
 using SpendLess.EventHandlers;
+using SpendLess.EventHandlers.NodeRed;
 using SpendLess.Middlewares;
 
 namespace SpendLess.Extensions
@@ -12,7 +13,9 @@ namespace SpendLess.Extensions
             // event handlers
             services.AddScoped<IEventHandler, SingleEventHandlerRegistry>();
 
-            services.AddScoped<ISingleEventHandler, NavigateEventHandler>();
+            services.AddScoped<ISingleEventHandler, PrettifyRequestEventHandler>();
+            services.AddScoped<ISingleEventHandler, SendToNodeRedEventHandler>();
+            services.AddScoped<ISingleEventHandler, LoadDefaultNodeRedPalyoadEventHandler>();
 
             // middleware
             services.AddSingleton<IExceptionActionResultFactory, ToastExceptionActionResultFactory>();
@@ -34,8 +37,13 @@ namespace SpendLess.Extensions
                     ""responseHandling"": [
                         { ""code"": ""204"", ""swap"": false },
                         { ""code"": "".*"", ""swap"": true }
-                    ]
+                    ],
+                    ""scrollIntoViewOnBoost"": false
                 }",
+            });
+            services.AddScoped<IHeadEntryDescriptor>(_ => new ScriptDescriptor
+            {
+                Uri = "https://unpkg.com/htmx-ext-multi-swap@2.0.0/multi-swap.js"
             });
             return services;
         }

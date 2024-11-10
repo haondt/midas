@@ -36,7 +36,11 @@ namespace SpendLess.Components.Extensions
             services.AddComponent<SpendLessLayoutComponentDescriptorFactory>();
             services.AddComponent<SpendLessNavigationBarComponentDescriptorFactory>();
             services.AddComponent<ToastComponentDescriptorFactory>();
+
             services.AddComponent<AccountsComponentDescriptorFactory>();
+            services.AddComponent<NodeRedComponentDescriptorFactory>();
+            services.AddComponent<NodeRedUpdateComponentDescriptorFactory>();
+
             return services;
         }
     }

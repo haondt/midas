@@ -1,0 +1,15 @@
+﻿@model SpendLess.Components.SpendLessComponents.NodeRedUpdateModel
+
+@if (Model.RequestText.HasValue)
+{
+    <textarea
+        @(Model.IsSwap ? Html.Raw("hx-swap-oob=\"outerHTML\"") : "")
+        id="request-text" name="requestText" class="message-body request-text">@Model.RequestText.Value</textarea>
+}
+
+@if (Model.ResponseText.HasValue)
+{
+    <div id="response-text" 
+        @(Model.IsSwap ? Html.Raw("hx-swap-oob=\"outerHTML\"") : "")
+        name="responseText" class="message-body response-text">@Model.ResponseText.Value</div>
+}

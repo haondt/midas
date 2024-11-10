@@ -4,6 +4,7 @@ using Haondt.Web.Extensions;
 using SpendLess.Components.Extensions;
 using SpendLess.Domain.Extensions;
 using SpendLess.Extensions;
+using SpendLess.NodeRed.Extensions;
 using SpendLess.Persistence.Extensions;
 
 const string CORS_POLICY = "_fireflyIIIPPPolicy";
@@ -34,7 +35,8 @@ builder.Services
     .AddSpendLessServices(builder.Configuration)
     .AddSpendLessHeadEntries()
     .AddSpendLessPersistenceServices(builder.Configuration)
-    .AddSpendLessDomainServices();
+    .AddSpendLessDomainServices()
+    .AddNodeRedServices(builder.Configuration);
 //.AddNodeRedServices(builder.Configuration)
 //.AddLookupServices(builder.Configuration);
 //.AddFireflyIIIPPWebServices(builder.Configuration)
