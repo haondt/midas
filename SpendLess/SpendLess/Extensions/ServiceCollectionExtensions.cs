@@ -1,6 +1,7 @@
 ﻿using Haondt.Web.Core.Services;
 using Haondt.Web.Services;
 using SpendLess.EventHandlers;
+using SpendLess.EventHandlers.Accounts;
 using SpendLess.EventHandlers.NodeRed;
 using SpendLess.Middlewares;
 
@@ -17,8 +18,12 @@ namespace SpendLess.Extensions
             services.AddScoped<ISingleEventHandler, SendToNodeRedEventHandler>();
             services.AddScoped<ISingleEventHandler, LoadDefaultNodeRedPalyoadEventHandler>();
 
+            services.AddScoped<ISingleEventHandler, AccountUpsertEventHandler>();
+
             // middleware
-            services.AddSingleton<IExceptionActionResultFactory, ToastExceptionActionResultFactory>();
+            services.AddSingleton<ISpecificExceptionActionResultFactory, PageExceptionActionResultFactory>();
+            services.AddSingleton<ISpecificExceptionActionResultFactory, ToastExceptionActionResultFactory>();
+            services.AddSingleton<IExceptionActionResultFactory, ExceptionActionResultFactoryDelegator>();
 
             return services;
         }

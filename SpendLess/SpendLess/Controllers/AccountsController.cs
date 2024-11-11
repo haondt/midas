@@ -15,5 +15,12 @@ namespace SpendLess.Controllers
             var component = await pageFactory.GetComponent<AccountsModel>();
             return component.CreateView(this);
         }
+
+        [HttpGet("create")]
+        public async Task<IActionResult> Create()
+        {
+            var component = await pageFactory.GetComponent<UpsertAccountModel>();
+            return component.CreateView(this);
+        }
     }
 }

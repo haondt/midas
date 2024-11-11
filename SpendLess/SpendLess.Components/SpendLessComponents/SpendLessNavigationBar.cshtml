@@ -6,9 +6,9 @@
         <a 
             class="button is-ghost is-justify-content-flex-start" 
             href="/@item.Slug"
-            hx-ext="multi-swap"
-            hx-boost="true"
-            hx-swap="multi:#content,#navigation"
+            hx-push-url="/@item.Slug"
+            hx-get="/_component/@item.TypeIdentity"
+            hx-target="#content"
         >@item.Title</a>
         
     }

@@ -10,12 +10,20 @@ namespace SpendLess.Components.SpendLessComponents
             new()
             {
                 Title = "Accounts",
-                Slug = "accounts"
+                Slug = "accounts",
+                TypeIdentity = ComponentDescriptor<AccountsModel>.TypeIdentity
             },
             new()
             {
                 Title = "Node-Red",
-                Slug = "node-red"
+                Slug = "node-red",
+                TypeIdentity = ComponentDescriptor<NodeRedModel>.TypeIdentity
+            },
+            new()
+            {
+                Title = "Import Transactions",
+                Slug = "transaction-import",
+                TypeIdentity = ComponentDescriptor<TransactionImportModel>.TypeIdentity
             }
         };
 
@@ -26,6 +34,7 @@ namespace SpendLess.Components.SpendLessComponents
     {
         public required string Title { get; set; }
         public required string Slug { get; set; }
+        public required string TypeIdentity { get; set; }
     }
     public class SpendLessNavigationBarComponentDescriptorFactory : IComponentDescriptorFactory
     {

@@ -8,7 +8,7 @@ namespace SpendLess.Components.SpendLessComponents
 {
     public class AccountsModel : IComponentModel
     {
-        public Dictionary<string, AccountDto> Accounts { get; set; } = [];
+        public Dictionary<StorageKey<AccountDto>, AccountDto> Accounts { get; set; } = [];
     }
 
     public class AccountsComponentDescriptorFactory(IAccountService accountService) : IComponentDescriptorFactory
@@ -20,8 +20,7 @@ namespace SpendLess.Components.SpendLessComponents
                 var accounts = await accountService.GetAccounts();
                 return new AccountsModel
                 {
-                    Accounts = accounts.ToDictionary(kvp => StorageKeyConvert.Serialize(kvp.Key),
-                        kvp => kvp.Value)
+                    Accounts = await accountService.GetAccounts()
                 };
             })
             {

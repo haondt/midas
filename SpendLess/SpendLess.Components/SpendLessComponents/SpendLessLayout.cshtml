@@ -2,14 +2,14 @@
 @model SpendLess.Components.SpendLessComponents.SpendLessLayoutModel
 <style>
     @@scope {
-        .mother-container {
+        #mother-container {
             position: relative;
             flex-grow: 1;
             overflow-y: auto;
         }
 
 
-        #toast-container, .page-container {
+        #toast-container, #page-container {
             position: absolute;
             width: 100%;
         }
@@ -20,7 +20,7 @@
         }
     }
 </style>
-<div class="mother-container">
+<div id="mother-container">
     <div id="toast-container" class="is-flex is-flex-direction-column is-justify-content-flex-end is-align-items-center">
         <style>
             @@scope {
@@ -40,21 +40,21 @@
             }
         </style>
     </div>
-    <div class="page-container">
+    <div id="page-container">
         <div class="hero is-small">
             <div class="hero-body">
                 <p class="title">Spend Less</p>
             </div>
         </div>
 
-        <div class="is-flex is-flex-direction-row is-align-items-flex-start ml-5 mr-5" style="gap:1.5rem;">
-            <div class="container" style="width:256px;">
+        <div class="is-flex is-flex-direction-row ml-5 mr-5" style="gap:1.5rem;">
+            <div style="width:256px;">
                 <div class="box" id="navigation">
                     @await Html.PartialAsync(Model.NavigationBar)
                 </div>
             </div>
-            <div class="container">
-                <div class="box" id="content">
+            <div class="is-flex-grow-1">
+                <div id="content">
                     @await Html.PartialAsync(Model.Content)
                 </div>
             </div>

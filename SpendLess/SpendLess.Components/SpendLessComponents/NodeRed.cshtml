@@ -2,54 +2,56 @@
 @using SpendLess.Components.SpendLessComponents
 @model SpendLess.Components.SpendLessComponents.NodeRedModel
 
-<div class="column">
-    <div class="buttons">
-        <button class="button" hx-post="/_event/NodeRedSend" hx-include="#request-text">Send to Node-Red</button>
-        <button class="button" hx-post="/_event/NodeRedPrettify" hx-include="#request-text">Prettify Request</button>
-        <button class="button" hx-post="/_event/NodeRedLoadDefault" hx-include="#request-text">Load Default Request</button>
-    </div>
-    <div class="level">
-        <style>
-            @@scope {
-                .request-text, .response-text {
-                    overflow: auto;
-                    font-family: monospace;
-                    font-size: 1rem;
-                    height: 350px;
-                    line-height: 1.25rem;
-                }
-
-                .request-text {
-                    resize: none;
-                    width: 100%;
-                    outline: none;
-                    vertical-align: top;
-                }
-
-                .response-text {
-                    white-space: pre-wrap;
-                }
-
-                .level-item {
-                    flex: 1 1 0;
-                }
-
-                .message {
-                    width: 100%;
-                }
-            }
-        </style>
-        <div class="level-item">
-            <article class="message">
-                <div class="message-header">Request</div>
-                @await Html.PartialAsync(new NodeRedUpdateModel{ IsSwap = false, RequestText = new("")})
-            </article>
+<div class="box">
+    <div class="column">
+        <div class="buttons">
+            <button class="button" hx-post="/_event/NodeRedSend" hx-include="#request-text">Send to Node-Red</button>
+            <button class="button" hx-post="/_event/NodeRedPrettify" hx-include="#request-text">Prettify Request</button>
+            <button class="button" hx-post="/_event/NodeRedLoadDefault" hx-include="#request-text">Load Default Request</button>
         </div>
-        <div class="level-item">
-            <article class="message">
-                <div class="message-header">Response</div>
-                @await Html.PartialAsync(new NodeRedUpdateModel{ IsSwap = false, ResponseText = new("")})
-            </article>
+        <div class="level">
+            <style>
+                @@scope {
+                    .request-text, .response-text {
+                        overflow: auto;
+                        font-family: monospace;
+                        font-size: 1rem;
+                        height: 350px;
+                        line-height: 1.25rem;
+                    }
+
+                    .request-text {
+                        resize: none;
+                        width: 100%;
+                        outline: none;
+                        vertical-align: top;
+                    }
+
+                    .response-text {
+                        white-space: pre-wrap;
+                    }
+
+                    .level-item {
+                        flex: 1 1 0;
+                    }
+
+                    .message {
+                        width: 100%;
+                    }
+                }
+            </style>
+            <div class="level-item">
+                <article class="message">
+                    <div class="message-header">Request</div>
+                    @await Html.PartialAsync(new NodeRedUpdateModel{ IsSwap = false, RequestText = new("")})
+                </article>
+            </div>
+            <div class="level-item">
+                <article class="message">
+                    <div class="message-header">Response</div>
+                    @await Html.PartialAsync(new NodeRedUpdateModel{ IsSwap = false, ResponseText = new("")})
+                </article>
+            </div>
         </div>
     </div>
 </div>

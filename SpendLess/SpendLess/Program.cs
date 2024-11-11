@@ -1,3 +1,4 @@
+using Haondt.Identity.StorageKey;
 using Haondt.Web.Core.Extensions;
 using Haondt.Web.Core.Middleware;
 using Haondt.Web.Extensions;
@@ -9,11 +10,11 @@ using SpendLess.Persistence.Extensions;
 
 const string CORS_POLICY = "_fireflyIIIPPPolicy";
 
-//StorageKeyConvert.DefaultSerializerSettings = new StorageKeySerializerSettings
-//{
-//    TypeNameStrategy = TypeNameStrategy.SimpleTypeConverter,
-//    KeyEncodingStrategy = KeyEncodingStrategy.String
-//};
+StorageKeyConvert.DefaultSerializerSettings = new StorageKeySerializerSettings
+{
+    TypeNameStrategy = TypeNameStrategy.SimpleTypeConverter,
+    KeyEncodingStrategy = KeyEncodingStrategy.String
+};
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers()

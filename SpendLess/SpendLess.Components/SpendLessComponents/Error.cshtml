@@ -1,0 +1,24 @@
+﻿@model SpendLess.Components.SpendLessComponents.ErrorModel
+
+<div id="page-container" hx-swap-oob="true">
+    <section class="hero is-danger is-medium">
+        <div class="hero-body">
+            <div class="title">@Model.ErrorCode</div>
+            <div class="subtitle">@Model.Message</div>
+        </div>
+    </section>
+    @if(Model.Details.HasValue)
+    {
+        <section class="section">
+            <article class="message">
+                <div class="message-body">@Model.Details.Value</div>
+            </article>
+        </section>
+    }
+
+    @if(Model.Title.HasValue)
+    {
+        <title hx-swap-oob="outerHTML;title">@Model.Title.Value</title>
+    }
+
+</div>
