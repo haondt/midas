@@ -6,7 +6,7 @@
     <form style="max-width:50rem;" hx-post="/_event/AccountUpsert">
         @if (Model.AccountId.HasValue)
         {
-            <input name="id" value="@StorageKeyConvert.Serialize(Model.AccountId.Value)" style="display:none;"/>
+            <input name="id" value="@Model.AccountId.Value" style="display:none;"/>
         }
         <div class="field">
             <label class="label">Name</label>

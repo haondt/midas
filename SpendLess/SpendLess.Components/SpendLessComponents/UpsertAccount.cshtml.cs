@@ -1,21 +1,21 @@
 using Haondt.Core.Models;
-using Haondt.Identity.StorageKey;
 using Haondt.Web.Core.Components;
 using Haondt.Web.Core.Extensions;
 using SpendLess.Components.Abstractions;
 using SpendLess.Components.Exceptions;
 using SpendLess.Domain.Models;
+using SpendLess.Persistence.Extensions;
 using SpendLess.Persistence.Services;
 
 namespace SpendLess.Components.SpendLessComponents
 {
     public class UpsertAccountModel : IComponentModel
     {
-        public required Optional<StorageKey<AccountDto>> AccountId { get; set; }
+        public required Optional<string> AccountId { get; set; }
         public string AccountName { get; set; } = "";
     }
 
-    public class UpsertAccountComponentDescriptorFactory(ISpendLessStorage storage) : IComponentDescriptorFactory
+    public class UpsertAccountComponentDescriptorFactory(ISingleTypeSpendLessStorage<AccountDto> storage) : IComponentDescriptorFactory
     {
         public IComponentDescriptor Create()
         {
@@ -28,17 +28,13 @@ namespace SpendLess.Components.SpendLessComponents
                         AccountId = new()
                     };
 
-                if (!Guid.TryParse(id.Value, out var guid))
-                    throw new NotFoundPageException();
-
-                var accountKey = AccountDto.GetStorageKey(guid);
-                var account = await storage.Get(accountKey);
-                if (!account.IsSuccessful)
+                var account = await storage.TryGet(id.Value.SeedStorageKey<AccountDto>());
+                if (!account.HasValue)
                     throw new NotFoundPageException();
 
                 return new UpsertAccountModel
                 {
-                    AccountId = accountKey,
+                    AccountId = id.Value,
                     AccountName = account.Value.Name
                 };
             })

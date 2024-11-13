@@ -15,14 +15,16 @@ namespace SpendLess.Persistence.Extensions
             switch (persistenceSettings.Driver)
             {
                 case SpendLessPersistenceDrivers.File:
-                    services.AddSingleton<ISpendLessStorage, SpendLessFileStorage>();
+                    services.AddSingleton<SpendLessFileStorage>();
+                    services.AddSingleton<IStorage>(sp
+                        => new TransientTransactionalBatchStorage(sp.GetRequiredService<SpendLessFileStorage>()));
                     break;
                 case SpendLessPersistenceDrivers.Postgres:
                     //services.AddSingleton<ISpendLessStorage, SpendLessPostgresqlStorage>();
                     throw new NotImplementedException();
                     break;
             }
-            services.AddSingleton<IStorage>(sp => sp.GetRequiredService<ISpendLessStorage>());
+            services.AddSingleton(typeof(ISingleTypeSpendLessStorage<>), typeof(SingleTypeSpendLessStorage<>));
             return services;
         }
     }

@@ -1,22 +1,18 @@
 ﻿using Haondt.Web.Core.Components;
 using Haondt.Web.Core.Http;
 using SpendLess.Components.SpendLessComponents;
+using SpendLess.NodeRed.Models;
 using System.Text.Json;
 
 namespace SpendLess.EventHandlers.NodeRed
 {
-    public class LoadDefaultNodeRedPalyoadEventHandler(IComponentFactory componentFactory) : ISingleEventHandler
+    public class LoadDefaultNodeRedPayloadEventHandler(IComponentFactory componentFactory) : ISingleEventHandler
     {
         public string EventName => "NodeRedLoadDefault";
 
         public Task<IComponent> HandleAsync(IRequestData requestData)
         {
-            var defaultValue = new
-            {
-                account = "",
-                csv = Array.Empty<object>()
-            };
-            var prettifiedJson = JsonSerializer.Serialize(defaultValue, new JsonSerializerOptions
+            var prettifiedJson = JsonSerializer.Serialize(new SendToNodeRedRequestDto(), new JsonSerializerOptions
             {
                 WriteIndented = true,
             });

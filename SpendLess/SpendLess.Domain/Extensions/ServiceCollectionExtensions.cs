@@ -7,7 +7,7 @@ namespace SpendLess.Domain.Extensions
     {
         public static IServiceCollection AddSpendLessDomainServices(this IServiceCollection services)
         {
-            services.AddSingleton<IAccountService, AccountService>();
+            services.AddSingleton<IAsyncJobRegistry, AsyncJobRegistry>();
             return services;
         }
     }

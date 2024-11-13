@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35208.52
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpendLess", "SpendLess\SpendLess.csproj", "{65D2EBA4-A0A7-4BC3-A734-64F27C7ABD51}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendLess", "SpendLess\SpendLess.csproj", "{65D2EBA4-A0A7-4BC3-A734-64F27C7ABD51}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpendLess.Components", "SpendLess.Components\SpendLess.Components.csproj", "{C7F1E806-7FF2-420E-A4A3-85CFE6074C6B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendLess.Components", "SpendLess.Components\SpendLess.Components.csproj", "{C7F1E806-7FF2-420E-A4A3-85CFE6074C6B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpendLess.Core", "SpendLess.Core\SpendLess.Core.csproj", "{C527E2B4-8F53-4204-A9F5-96EE7E34CE49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendLess.Core", "SpendLess.Core\SpendLess.Core.csproj", "{C527E2B4-8F53-4204-A9F5-96EE7E34CE49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpendLess.NodeRed", "SpendLess.NodeRed\SpendLess.NodeRed.csproj", "{FF10F8B6-314D-4BAD-B39C-0B8760D5B33F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendLess.NodeRed", "SpendLess.NodeRed\SpendLess.NodeRed.csproj", "{FF10F8B6-314D-4BAD-B39C-0B8760D5B33F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpendLess.Persistence", "SpendLess.Persistence\SpendLess.Persistence.csproj", "{5DCD3979-6DBB-49B9-9876-396D085ACF87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendLess.Persistence", "SpendLess.Persistence\SpendLess.Persistence.csproj", "{5DCD3979-6DBB-49B9-9876-396D085ACF87}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpendLess.Domain", "SpendLess.Domain\SpendLess.Domain.csproj", "{94EFD66D-0BA5-474E-8762-5C32860C0CF2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendLess.Domain", "SpendLess.Domain\SpendLess.Domain.csproj", "{94EFD66D-0BA5-474E-8762-5C32860C0CF2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

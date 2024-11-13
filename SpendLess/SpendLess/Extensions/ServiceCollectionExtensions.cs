@@ -3,6 +3,7 @@ using Haondt.Web.Services;
 using SpendLess.EventHandlers;
 using SpendLess.EventHandlers.Accounts;
 using SpendLess.EventHandlers.NodeRed;
+using SpendLess.EventHandlers.TransactionImport;
 using SpendLess.Middlewares;
 
 namespace SpendLess.Extensions
@@ -16,9 +17,12 @@ namespace SpendLess.Extensions
 
             services.AddScoped<ISingleEventHandler, PrettifyRequestEventHandler>();
             services.AddScoped<ISingleEventHandler, SendToNodeRedEventHandler>();
-            services.AddScoped<ISingleEventHandler, LoadDefaultNodeRedPalyoadEventHandler>();
+            services.AddScoped<ISingleEventHandler, LoadDefaultNodeRedPayloadEventHandler>();
 
             services.AddScoped<ISingleEventHandler, AccountUpsertEventHandler>();
+
+            services.AddScoped<ISingleEventHandler, TransactionImportDryRunEventHandler>();
+            services.AddScoped<ISingleEventHandler, TransactionImportUpsertConfigurationEventHandler>();
 
             // middleware
             services.AddSingleton<ISpecificExceptionActionResultFactory, PageExceptionActionResultFactory>();

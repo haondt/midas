@@ -1,4 +1,5 @@
 ﻿@using Haondt.Web.Core.Components
+@using Haondt.Identity.StorageKey
 @using SpendLess.Components.SpendLessComponents
 @using SpendLess.Domain.Models
 @model SpendLess.Components.SpendLessComponents.AccountsModel
@@ -29,9 +30,9 @@
                 {
                 <tr>
                     <td><a
-                        href="/account/@AccountDto.GetIdSlug(account.Key)"
-                        hx-push-url="/account/@AccountDto.GetIdSlug(account.Key)"
-                        hx-get="/_component/@(ComponentDescriptor<UpsertAccountModel>.TypeIdentity)?id=@AccountDto.GetIdSlug(account.Key)"
+                        href="/account/@account.Key"
+                        hx-push-url="/account/@account.Key"
+                        hx-get="/_component/@(ComponentDescriptor<UpsertAccountModel>.TypeIdentity)?id=@account.Key"
                         hx-target="#content">
                         @account.Value.Name</a>
                     </td>

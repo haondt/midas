@@ -37,6 +37,7 @@ namespace SpendLess.Components.Extensions
             services.AddComponent<SpendLessNavigationBarComponentDescriptorFactory>();
             services.AddComponent<ToastComponentDescriptorFactory>();
             services.AddComponent<ErrorComponentDescriptorFactory>();
+            services.AddComponent<CloseModalModelComponentDescriptorFactory>();
 
             services.AddComponent<AccountsComponentDescriptorFactory>();
             services.AddComponent<UpsertAccountComponentDescriptorFactory>();
@@ -45,6 +46,7 @@ namespace SpendLess.Components.Extensions
             services.AddComponent<NodeRedUpdateComponentDescriptorFactory>();
 
             services.AddComponent<TransactionImportComponentDescriptorFactory>();
+            services.AddComponent<UpsertTransactionImportConfigurationModalComponentDescriptorFactory>();
 
             return services;
         }

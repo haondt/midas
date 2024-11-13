@@ -8,12 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Haondt.Web.BulmaCSS" Version="0.0.11" />
-    <PackageReference Include="Haondt.Web.Core" Version="0.0.11" />
+    <PackageReference Include="Haondt.Web.BulmaCSS" Version="0.0.13" />
+    <PackageReference Include="Haondt.Web.Core" Version="0.0.13" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SpendLess.Domain\SpendLess.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
   </ItemGroup>
 
 
