@@ -1,5 +1,4 @@
-﻿using Haondt.Core.Models;
-using Haondt.Persistence.Services;
+﻿using Haondt.Persistence.Services;
 using Haondt.Web.Components;
 using Haondt.Web.Core.Components;
 using Haondt.Web.Core.Extensions;
@@ -22,7 +21,7 @@ namespace SpendLess.EventHandlers.TransactionImport
 
         public async Task<IComponent> HandleAsync(IRequestData requestData)
         {
-            var id = requestData.Form.TryGetValue<Guid>("id");
+            var id = requestData.Form.TryGetValue<string>("id");
             var name = requestData.Form.TryGetValue<string>("name");
             if (!name.HasValue || string.IsNullOrEmpty(name.Value))
                 throw new UserException($"Name is required.");
@@ -30,7 +29,7 @@ namespace SpendLess.EventHandlers.TransactionImport
             var addCurrentDateTag = requestData.Form.TryGetValue<string>("add-ts-tag").HasValue;
             var isDefault = requestData.Form.TryGetValue<string>("is-default").HasValue;
 
-            var configurationId = id.HasValue ? id.Value : Guid.NewGuid();
+            var configurationId = id.HasValue ? id.Value : Guid.NewGuid().ToString();
             var configurationStorageKey = configurationId.SeedStorageKey<TransactionImportConfigurationDto>();
             await configStorage.Set(configurationId.SeedStorageKey<TransactionImportConfigurationDto>(), new TransactionImportConfigurationDto
             {
@@ -40,18 +39,11 @@ namespace SpendLess.EventHandlers.TransactionImport
 
             var importConfigs = await configStorage.GetAll();
             isDefault |= (importConfigs.Count == 1);
-            var defaultImportConfigurationInfo = new Optional<(string Id, string Name)>();
-            var state = await storage.GetDefault(SpendLessStateDto.StorageKey);
             if (isDefault)
             {
-                defaultImportConfigurationInfo = (configurationId.ToString(), name.Value);
+                var state = await storage.GetDefault(SpendLessStateDto.StorageKey);
                 state.DefaultImportConfigurationKey = configurationStorageKey;
                 await storage.Set(SpendLessStateDto.StorageKey, state);
-            }
-            else if (state.DefaultImportConfigurationKey.HasValue)
-            {
-                if (importConfigs.TryGetValue(state.DefaultImportConfigurationKey.Value, out var defaultConfiguration))
-                    defaultImportConfigurationInfo = (state.DefaultImportConfigurationKey.Value.SingleValue(), defaultConfiguration.Name);
             }
 
             return await componentFactory.GetPlainComponent(new AppendComponentLayoutModel
@@ -62,7 +54,7 @@ namespace SpendLess.EventHandlers.TransactionImport
                     await componentFactory.GetPlainComponent(
                         new TransactionImportModel
                         {
-                            DefaultImportConfiguration = defaultImportConfigurationInfo,
+                            SelectedImportConfiguration = (configurationId, name.Value),
                             ImportConfigurations = importConfigs.ToDictionary(
                                 kvp => kvp.Key.SingleValue(),
                                 kvp => kvp.Value.Name)

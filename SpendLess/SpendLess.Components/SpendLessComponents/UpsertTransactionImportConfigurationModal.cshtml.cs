@@ -1,7 +1,11 @@
 using Haondt.Core.Models;
+using Haondt.Persistence.Services;
 using Haondt.Web.Core.Components;
 using Haondt.Web.Core.Extensions;
 using SpendLess.Components.Abstractions;
+using SpendLess.Domain.Models;
+using SpendLess.Persistence.Extensions;
+using SpendLess.Persistence.Services;
 
 namespace SpendLess.Components.SpendLessComponents
 {
@@ -13,23 +17,39 @@ namespace SpendLess.Components.SpendLessComponents
         public bool IsDefault { get; set; } = false;
     }
 
-    public class UpsertTransactionImportConfigurationModalComponentDescriptorFactory : IComponentDescriptorFactory
+    public class UpsertTransactionImportConfigurationModalComponentDescriptorFactory(
+        ISingleTypeSpendLessStorage<TransactionImportConfigurationDto> configStorage,
+        IStorage storage) : IComponentDescriptorFactory
     {
         public IComponentDescriptor Create()
         {
-            return new ComponentDescriptor<UpsertTransactionImportConfigurationModalModel>((cf, rd) =>
+            return new ComponentDescriptor<UpsertTransactionImportConfigurationModalModel>(async (cf, rd) =>
             {
-                var id = rd.Query.TryGetValue<string>("id");
+                var id = rd.Query.TryGetValue<string>("config-id");
                 if (id.HasValue)
                 {
-                    throw new NotImplementedException();
-                }
+                    var state = await storage.GetDefault(SpendLessStateDto.StorageKey);
+                    var configKey = id.Value.SeedStorageKey<TransactionImportConfigurationDto>();
+                    var config = await configStorage.Get(configKey);
+                    var isDefault = state.DefaultImportConfigurationKey.HasValue
+                        && state.DefaultImportConfigurationKey.Value == configKey;
 
-                var isDefault = rd.Query.TryGetValue<string>("is-default");
-                return new UpsertTransactionImportConfigurationModalModel
+                    return new UpsertTransactionImportConfigurationModalModel
+                    {
+                        Id = id,
+                        Name = config.Name,
+                        IsDefault = isDefault,
+                        AddTimestampTag = config.AddTagWithCurrentDateTimeToAllTransactions
+                    };
+                }
+                else
                 {
-                    IsDefault = isDefault.HasValue
-                };
+                    var isDefault = rd.Query.TryGetValue<string>("is-default");
+                    return new UpsertTransactionImportConfigurationModalModel
+                    {
+                        IsDefault = isDefault.HasValue
+                    };
+                }
             })
             {
                 ViewPath = $"~/SpendLessComponents/UpsertTransactionImportConfigurationModal.cshtml"

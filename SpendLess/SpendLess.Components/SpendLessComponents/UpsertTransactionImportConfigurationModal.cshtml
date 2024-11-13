@@ -11,8 +11,8 @@
                 remove .is-active from #modal-container
                 set #modal-container's innerHTML to ''
             end
-            on keydown from elsewhere
-                if the event's key is 'Escape'
+            on keydown(key) from elsewhere
+                if the key is 'Escape'
                     send click to me
                 end
             end

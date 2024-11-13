@@ -49,13 +49,14 @@
         <div class="field" id="import-configuration-selection-field">
             <label class="label">Import Configuration</label>
             <div class="control buttons" >
-                @if(Model.DefaultImportConfiguration.HasValue)
+                @{var upsertModalTypeIdentity = ComponentDescriptor<UpsertTransactionImportConfigurationModalModel>.TypeIdentity; }
+                @if(Model.SelectedImportConfiguration.HasValue)
                 {
                     <div class="select">
-                        <select name="account">
+                        <select name="config-id">
                             @foreach(var (id, name) in Model.ImportConfigurations)
                             {
-                                @if(id == Model.DefaultImportConfiguration.Value.Id)
+                                @if(id == Model.SelectedImportConfiguration.Value.Id)
                                 {
                                     <option selected value="@id">@name</option>
                                 }
@@ -67,16 +68,18 @@
                         </select>
                     </div>
                     <button class="button is-link is-outlined"
-                        hx-post="/_event/TransactionImportEditConfiguration">
+                        hx-get="/_component/@upsertModalTypeIdentity"
+                        hx-include="previous select"
+                        hx-swap="none">
                         <span class="icon is-small">
                             <i class="fas fa-edit"></i>
                         </span>
                         <span>Edit</span>
                     </button>
                 }
-                @{var upsertModalTypeIdentity = ComponentDescriptor<UpsertTransactionImportConfigurationModalModel>.TypeIdentity; }
                 <button class="button is-link is-outlined"
-                    hx-get="/_component/@upsertModalTypeIdentity@(Model.DefaultImportConfiguration.HasValue ? "" : "?is-default=true")"
+                    hx-get="/_component/@upsertModalTypeIdentity"
+                    @(Model.SelectedImportConfiguration.HasValue ? "" : "hx-vals={\"is-default\":\"true\"}")
                     hx-swap="none">
                     <span class="icon is-small">
                         <i class="fas fa-plus"></i>
@@ -89,7 +92,7 @@
         <div id="preprocess-file-controls">
             <div class="field">
                 <div class="control">
-                    <button class="button is-primary">Preprocess File</button>
+                    <button class="button is-primary" >Preprocess File</button>
                 </div>
             </div>
         </div>

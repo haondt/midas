@@ -14,7 +14,7 @@ namespace SpendLess.Components.SpendLessComponents
     {
         public Dictionary<string, string> Accounts { get; set; } = [];
         public Dictionary<string, string> ImportConfigurations { get; set; } = [];
-        public Optional<(string Id, string Name)> DefaultImportConfiguration { get; set; } = new();
+        public Optional<(string Id, string Name)> SelectedImportConfiguration { get; set; } = new();
     }
 
     public class TransactionImportComponentDescriptorFactory(
@@ -38,7 +38,7 @@ namespace SpendLess.Components.SpendLessComponents
                 if (!importConfigs.TryGetValue(state.DefaultImportConfigurationKey.Value, out var defaultImportConfiguration))
                     return model;
 
-                model.DefaultImportConfiguration = (state.DefaultImportConfigurationKey.Value.SingleValue(), defaultImportConfiguration.Name);
+                model.SelectedImportConfiguration = (state.DefaultImportConfigurationKey.Value.SingleValue(), defaultImportConfiguration.Name);
                 model.ImportConfigurations = importConfigs.ToDictionary(
                     kvp => kvp.Key.SingleValue(),
                     kvp => kvp.Value.Name);
