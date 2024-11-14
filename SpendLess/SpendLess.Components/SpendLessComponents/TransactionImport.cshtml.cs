@@ -1,5 +1,4 @@
 using Haondt.Core.Models;
-using Haondt.Identity.StorageKey;
 using Haondt.Persistence.Services;
 using Haondt.Web.Core.Components;
 using SpendLess.Components.Abstractions;
@@ -28,7 +27,7 @@ namespace SpendLess.Components.SpendLessComponents
             {
                 var state = await storage.GetDefault(SpendLessStateDto.StorageKey);
                 var accounts = (await accountStorage.GetAll()).ToDictionary(
-                        kvp => StorageKeyConvert.Serialize(kvp.Key),
+                        kvp => kvp.Key.SingleValue(),
                         kvp => kvp.Value.Name);
                 var model = new TransactionImportModel { Accounts = accounts };
                 if (!state.DefaultImportConfigurationKey.HasValue)

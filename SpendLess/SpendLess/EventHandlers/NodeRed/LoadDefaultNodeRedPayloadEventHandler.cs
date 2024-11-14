@@ -2,7 +2,6 @@
 using Haondt.Web.Core.Http;
 using SpendLess.Components.SpendLessComponents;
 using SpendLess.NodeRed.Models;
-using System.Text.Json;
 
 namespace SpendLess.EventHandlers.NodeRed
 {
@@ -12,14 +11,9 @@ namespace SpendLess.EventHandlers.NodeRed
 
         public Task<IComponent> HandleAsync(IRequestData requestData)
         {
-            var prettifiedJson = JsonSerializer.Serialize(new SendToNodeRedRequestDto(), new JsonSerializerOptions
-            {
-                WriteIndented = true,
-            });
-
             return componentFactory.GetPlainComponent(new NodeRedUpdateModel
             {
-                RequestText = new(prettifiedJson)
+                RequestText = new(new SendToNodeRedRequestDto().ToString())
             });
         }
     }

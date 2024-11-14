@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using SpendLess.NodeRed.Exceptions;
 using SpendLess.NodeRed.Models;
 using System.Text;
@@ -18,6 +19,7 @@ namespace SpendLess.NodeRed.Services
             SerializerSettings.MissingMemberHandling = MissingMemberHandling.Error;
             SerializerSettings.Formatting = Formatting.Indented;
             SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+            SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
         }
 
         private async Task<HttpResponseMessage> InternalSendToNodeRed(string path, string input, CancellationToken? cancellationToken = null)
@@ -39,9 +41,8 @@ namespace SpendLess.NodeRed.Services
 
         public async Task<SendToNodeRedResponseDto> SendToNodeRed(SendToNodeRedRequestDto input, CancellationToken? cancellationToken = null)
         {
-            var str = JsonConvert.SerializeObject(input);
-            var result = await SendToNodeRed(str, cancellationToken);
-            return JsonConvert.DeserializeObject<SendToNodeRedResponseDto>(result)
+            var result = await SendToNodeRed(input.ToString(), cancellationToken);
+            return JsonConvert.DeserializeObject<SendToNodeRedResponseDto>(result, SerializerSettings)
                 ?? throw new NodeRedException($"failed to deserialize response to {typeof(SendToNodeRedResponseDto)}: {result}");
         }
 

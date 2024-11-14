@@ -6,7 +6,7 @@ namespace SpendLess.NodeRed.Models
 {
     public class SendToNodeRedRequestDto
     {
-        public string AccountId { get; set; } = "";
+        public string Account { get; set; } = "";
         public TransactionImportConfigurationDto Configuration { get; set; } = new();
         public CsvData? Csv { get; set; }
 

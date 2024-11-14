@@ -58,6 +58,7 @@ namespace SpendLess.Domain.Services
                 return;
 
             job.Status = AsyncJobStatus.Complete;
+            job.Result = result;
         }
 
         public void CancelJob(string jobId)

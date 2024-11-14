@@ -53,7 +53,7 @@ namespace SpendLess.EventHandlers.TransactionImport
                     {
                         var payloads = batch.Select(b => new SendToNodeRedRequestDto
                         {
-                            AccountId = accountId,
+                            Account = accountId,
                             Configuration = configuration,
                             Csv = new CsvData
                             {
