@@ -1,18 +1,22 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Haondt.Core.Models;
+using Microsoft.Extensions.Logging;
 
 namespace SpendLess.Domain.Services
 {
     public class AsyncJobRegistry(ILogger<AsyncJobRegistry> logger) : IAsyncJobRegistry
     {
-        private Dictionary<Guid, AsyncJob> _jobs = [];
+        private Dictionary<string, AsyncJob> _jobs = [];
         private readonly TimeSpan _expiration = TimeSpan.FromHours(1);
 
-        public (Guid, CancellationToken) RegisterJob()
+        public (string, CancellationToken) RegisterJob()
         {
-            var jobId = Guid.NewGuid();
+            var jobId = Guid.NewGuid().ToString();
             var job = new AsyncJob
             {
-                Timer = new System.Timers.Timer(_expiration.TotalSeconds)
+                Timer = new System.Timers.Timer(_expiration.TotalMilliseconds)
+                {
+                    AutoReset = false,
+                }
             };
             job.Timer.Elapsed += (_, _) =>
             {
@@ -39,7 +43,15 @@ namespace SpendLess.Domain.Services
             return (jobId, job.CancellationTokenSource.Token);
         }
 
-        public void CompleteJob(Guid jobId, object result)
+        public Optional<object> GetJobResult(string jobId)
+        {
+            var job = GetJob(jobId);
+            if (job.Status < AsyncJobStatus.Complete)
+                throw new InvalidOperationException($"Job {jobId} is still executing.");
+            return job.Result;
+        }
+
+        public void CompleteJob(string jobId, object result)
         {
             var job = GetJob(jobId);
             if (job.Status >= AsyncJobStatus.Complete)
@@ -48,7 +60,7 @@ namespace SpendLess.Domain.Services
             job.Status = AsyncJobStatus.Complete;
         }
 
-        public void CancelJob(Guid jobId)
+        public void CancelJob(string jobId)
         {
             var job = GetJob(jobId);
             if (job.Status >= AsyncJobStatus.Complete)
@@ -57,29 +69,41 @@ namespace SpendLess.Domain.Services
             job.Status = AsyncJobStatus.Aborted;
         }
 
-        public void FailJob(Guid jobId, string? message = null, bool? requestCancellation = null)
+        public void FailJob(string jobId, object? result = null, bool? requestCancellation = null)
         {
             var job = GetJob(jobId);
             if (job.Status >= AsyncJobStatus.Complete)
                 return;
             job.Status = AsyncJobStatus.Failed;
-            if (!string.IsNullOrEmpty(message))
-                job.Result = new(message);
+            if (result != null)
+                job.Result = new(result);
             if (requestCancellation.HasValue && requestCancellation.Value == true)
                 job.CancellationTokenSource.Cancel();
         }
 
-        public AsyncJobStatus GetJobStatus(Guid jobId)
+        public AsyncJobStatus GetJobStatus(string jobId)
         {
             var job = GetJob(jobId);
             return job.Status;
         }
 
-        private AsyncJob GetJob(Guid jobId)
+        private AsyncJob GetJob(string jobId)
         {
             if (!_jobs.TryGetValue(jobId, out var job) || job is null)
                 throw new KeyNotFoundException($"No job with id {jobId}");
             return job;
+        }
+
+        public (AsyncJobStatus, double) GetJobProgress(string jobId)
+        {
+            var job = GetJob(jobId);
+            return (job.Status, job.Progress);
+        }
+
+        public void UpdateJobProgress(string jobId, double progress)
+        {
+            var job = GetJob(jobId);
+            job.Progress = progress;
         }
     }
 }

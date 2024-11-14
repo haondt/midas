@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿using Newtonsoft.Json;
+using SpendLess.NodeRed.Exceptions;
+using SpendLess.NodeRed.Models;
+using System.Text;
 
 namespace SpendLess.NodeRed.Services
 {
@@ -6,6 +9,16 @@ namespace SpendLess.NodeRed.Services
     {
         private const string ApplyPath = "/apply";
         //private const string ExtractKeyPath = "/extract-key";
+
+        public static JsonSerializerSettings SerializerSettings { get; set; }
+        static NodeRedService()
+        {
+            SerializerSettings = new JsonSerializerSettings();
+            SerializerSettings.TypeNameHandling = TypeNameHandling.None;
+            SerializerSettings.MissingMemberHandling = MissingMemberHandling.Error;
+            SerializerSettings.Formatting = Formatting.Indented;
+            SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+        }
 
         private async Task<HttpResponseMessage> InternalSendToNodeRed(string path, string input, CancellationToken? cancellationToken = null)
         {
@@ -22,6 +35,14 @@ namespace SpendLess.NodeRed.Services
             var response = await InternalSendToNodeRed(ApplyPath, input);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync();
+        }
+
+        public async Task<SendToNodeRedResponseDto> SendToNodeRed(SendToNodeRedRequestDto input, CancellationToken? cancellationToken = null)
+        {
+            var str = JsonConvert.SerializeObject(input);
+            var result = await SendToNodeRed(str, cancellationToken);
+            return JsonConvert.DeserializeObject<SendToNodeRedResponseDto>(result)
+                ?? throw new NodeRedException($"failed to deserialize response to {typeof(SendToNodeRedResponseDto)}: {result}");
         }
 
         //public async Task<Result<string, string>> ExtractKey(string field, string input, CancellationToken? cancellationToken)

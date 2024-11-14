@@ -23,6 +23,7 @@ namespace SpendLess.Extensions
 
             services.AddScoped<ISingleEventHandler, TransactionImportDryRunEventHandler>();
             services.AddScoped<ISingleEventHandler, TransactionImportUpsertConfigurationEventHandler>();
+            services.AddScoped<ISingleEventHandler, TransactionImportCheckProgressEventHandler>();
 
             // middleware
             services.AddSingleton<ISpecificExceptionActionResultFactory, PageExceptionActionResultFactory>();

@@ -1,142 +1,38 @@
-﻿@model SpendLess.Components.SpendLessComponents.TransactionImportUpdateModel
+﻿@using SpendLess.Components.SpendLessComponents
+@model SpendLess.Components.SpendLessComponents.TransactionImportUpdateModel
 
 @if (Model.DryRunProgress.HasValue)
 {
     <div id="preprocess-file-controls" hx-swap-oob="outerHTML">
-        <div class="field">
-            <div class="control">
-                <button class="button is-primary @(Model.DryRunProgress.Value < 100 ? "is-loading" : "")">
-                    Preprocess File
-                </button>
+        @if (Model.DryRunProgress.Value >= 100)
+        {
+            <div class="field">
+                <div class="control">
+                    <button class="button is-primary">
+                        Preprocess File
+                    </button>
+                </div>
             </div>
-        </div>
-        <progress class="progress mt-5" value="@Model.DryRunProgress.Value" max="100">15%</progress>
+        }
+        else if(Model.DryRunJobId.HasValue)
+        {
+            <progress 
+                hx-post="/_event/TransactionImportCheckProgress"
+                hx-params="job"
+                hx-vals='{"job":"@Model.DryRunJobId.Value"}'
+                hx-trigger="load delay:500ms"
+                class="progress mt-5" value="@Model.DryRunProgress.Value" max="100"></progress>
+        }
     </div>
 }
 
 
-@if (false)
+@if (Model.DryRunResult.HasValue)
 {
-    
-<div class="box" id="dry-run">
-    <p class="subtitle">Dry Run Summary</p>
-    <p class="subtitle">Incoming changes</p>
+    @await Html.PartialAsync(TransactionImportSendToNodeRedResultComponentDescriptorFactory.ViewPath,
+        new TransactionImportSendToNodeRedResultModel
+        {
+            Inner = Model.DryRunResult.Value
+        });
 
-    <div class="message">
-        <div class="message-body">
-            <table class="table is-hoverable  is-fullwidth" >
-                <thead>
-                    <tr>
-                        <th>Updated Account Balances</th>
-                        <th>Balance</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            foo
-                        </td>
-                        <td>$1</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="message">
-        <div class="message-body">
-            <table class="table is-hoverable  is-fullwidth" >
-                <thead>
-                    <tr>
-                        <th>New Categories</th>
-                        <th>Transactions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            foo
-                        </td>
-                        <td>$1</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="message">
-        <div class="message-body">
-            <table class="table is-hoverable  is-fullwidth" >
-                <thead>
-                    <tr>
-                        <th>New Tags</th>
-                        <th>Transactions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr >
-                        <td>
-                            foo
-                        </td>
-                        <td>$1</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <p class="subtitle">Warnings</p>
-    <div class="message is-warning">
-        <div class="message-body">
-            <table class="table is-hoverable  is-fullwidth" >
-                <thead>
-                    <tr>
-                        <th>Warning</th>
-                        <th>Affected Transactions</th>
-                        <th>Reprocess transactions in this group</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="is-warning">
-                        <td>
-                            No category was set. The default category "Uncategorized" will be used.
-                        </td>
-                        <td>100</td>
-                        <td><button class="button is-loading">
-                            <span class="icon is-small">
-                                <i class="fas fa-rotate"></i>
-                            </span>
-                        </button></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <p class="subtitle">Errors</p>
-    <div class="message is-danger">
-        <div class="message-body">
-            <table class="table is-hoverable  is-fullwidth" >
-                <thead>
-                    <tr>
-                        <th>Error</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="is-danger">
-                        <td>
-                            One or more transactions were missing mandatory fields
-                        </td>
-                        <td><button class="button">
-                            <span class="icon is-small">
-                                <i class="fas fa-copy"></i>
-                            </span>
-                            <span>Copy Request</span>
-                        </button></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
 }

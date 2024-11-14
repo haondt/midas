@@ -1,0 +1,137 @@
+﻿@model SpendLess.Components.SpendLessComponents.TransactionImportSendToNodeRedResultModel
+<div class="box" id="dry-run-result" hx-swap-oob="outerHTML">
+    <p class="subtitle">Dry Run Summary</p>
+    <p class="subtitle">Incoming changes</p>
+
+    <div class="message">
+        <div class="message-body">
+            <table class="table is-hoverable  is-fullwidth" >
+                <thead>
+                    <tr>
+                        <th>Updated Account Balances</th>
+                        <th>Balance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            oooooo
+                        </td>
+                        <td>$1</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="message">
+        <div class="message-body">
+            <table class="table is-hoverable  is-fullwidth" >
+                <thead>
+                    <tr>
+                        <th>New Categories</th>
+                        <th>Transactions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            foo
+                        </td>
+                        <td>$1</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="message">
+        <div class="message-body">
+            <table class="table is-hoverable  is-fullwidth" >
+                <thead>
+                    <tr>
+                        <th>New Tags</th>
+                        <th>Transactions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr >
+                        <td>
+                            foo
+                        </td>
+                        <td>$1</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <p class="subtitle">Warnings</p>
+    <div class="message is-warning">
+        <div class="message-body">
+            <table class="table is-hoverable  is-fullwidth" >
+                <thead>
+                    <tr>
+                        <th>Warning</th>
+                        <th>Affected Transactions</th>
+                        <th>Reprocess transactions in this group</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="is-warning">
+                        <td>
+                            No category was set. The default category "Uncategorized" will be used.
+                        </td>
+                        <td>100</td>
+                        <td><button class="button is-loading">
+                            <span class="icon is-small">
+                                <i class="fas fa-rotate"></i>
+                            </span>
+                        </button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @if(Model.Inner.Errors.Count > 0)
+    {
+        <p class="subtitle">Errors</p>
+        <div class="message is-danger">
+            <div class="message-body">
+                <table class="table is-hoverable  is-fullwidth" >
+                    <thead>
+                        <tr>
+                            <th>Error</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var (message, sourcePayload) in Model.Inner.Errors)
+                        {
+                            <tr class="is-danger">
+                                <td>
+                                    @message
+                                </td>
+                                <td><button 
+                                    class="button"
+                                    _="
+                                        on click
+                                            writeText('@sourcePayload') into the navigator's clipboard
+                                            set target to the first .copy-button-text in me
+                                            set the target's innerHTML to 'Copied!'
+                                                then wait 1.3s
+                                                then set the target's innerHTML to 'Copy Request'
+                                    ">
+                                    <span class="icon is-small">
+                                        <i class="fas fa-copy"></i>
+                                    </span>
+                                    <span class="copy-button-text">Copy Request</span>
+                                </button></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

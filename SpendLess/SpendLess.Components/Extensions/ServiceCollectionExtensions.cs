@@ -47,6 +47,9 @@ namespace SpendLess.Components.Extensions
 
             services.AddComponent<TransactionImportComponentDescriptorFactory>();
             services.AddComponent<UpsertTransactionImportConfigurationModalComponentDescriptorFactory>();
+            services.AddComponent<TransactionImportUpdateComponentDescriptorFactory>();
+            services.AddComponent<TransactionImportSendToNodeRedResultComponentDescriptorFactory>();
+
 
             return services;
         }

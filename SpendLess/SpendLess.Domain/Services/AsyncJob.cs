@@ -7,6 +7,7 @@ namespace SpendLess.Domain.Services
     {
         public static StorageKey<AsyncJob> GetStorageKey(Guid id) => StorageKey<AsyncJob>.Create(id.ToString());
         public AsyncJobStatus Status { get; set; } = AsyncJobStatus.Started;
+        public double Progress { get; set; } = 0;
         public Optional<object> Result { get; set; } = new();
         public CancellationTokenSource CancellationTokenSource { get; set; } = new();
         public required System.Timers.Timer Timer { get; set; }
