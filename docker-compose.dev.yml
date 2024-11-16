@@ -3,12 +3,11 @@ services:
     build:
       context: node-red
     volumes:
-      - ./node-red/settings.js:/data/settings.js
-      - spend-less-node-red-data:/data
       - ./node-red/nodes:/spend-less
       - ./node-red/subflows:/spend-less-subflows
+      - ./node-red/data:/data
     environment:
-      SPEND_LESS_API_URL: http://localhost:5190/
+      SPEND_LESS_API_URL: http://172.31.0.1:5190/
     ports:
       - 1880:1880
 
