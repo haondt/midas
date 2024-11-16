@@ -1,13 +1,13 @@
-﻿using Haondt.Core.Models;
-using Haondt.Identity.StorageKey;
+﻿using Haondt.Identity.StorageKey;
 using Haondt.Persistence.Services;
-using SpendLess.Domain.Models;
 using SpendLess.Kvs.Models;
 using SpendLess.Persistence.Extensions;
+using SpendLess.Persistence.Models;
+using SpendLess.Persistence.Storages;
 
 namespace SpendLess.Kvs.Services
 {
-    public class KvsService(IStorage storage) : IKvsService
+    public class KvsService(IStorage storage, IKvsStorage kvsStorage) : IKvsService
     {
         public async Task<ExpandedKvsMappingDto> GetExpandedMapping(string term)
         {
@@ -24,27 +24,22 @@ namespace SpendLess.Kvs.Services
             };
         }
 
-        public async Task<Optional<string>> Search(string term)
+        public async Task<List<string>> Search(string term)
         {
-            var key = term.SeedStorageKey<KvsMappingDto>();
-            if (await storage.ContainsKey(key))
-                return term;
-
-            var keys = await storage.GetManyByForeignKey(key);
-            if (keys.Count > 0)
-                return keys.First().Key.SingleValue();
-
-            return new();
+            var matches = await kvsStorage.SearchKey(term);
+            return matches;
         }
 
-        public Task UpsertValue(string key, string value)
+        public async Task UpsertValue(string key, string value)
         {
+            await kvsStorage.AddKey(key);
             var storageKey = key.SeedStorageKey<KvsMappingDto>();
-            return storage.Set(storageKey, new KvsMappingDto { Value = value });
+            await storage.Set(storageKey, new KvsMappingDto { Value = value });
         }
 
         public async Task<List<string>> AddAlias(string key, string alias)
         {
+            await kvsStorage.AddKey(key);
             var storageKey = key.SeedStorageKey<KvsMappingDto>();
             var operations = new List<StorageOperation<KvsMappingDto>>();
             if (!await storage.ContainsKey(storageKey))

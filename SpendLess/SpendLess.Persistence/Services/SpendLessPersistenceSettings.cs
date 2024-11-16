@@ -2,13 +2,10 @@
 {
     public class SpendLessPersistenceSettings
     {
-        public SpendLessPersistenceDrivers Driver { get; set; } = SpendLessPersistenceDrivers.File;
-        public FileStorageSettings? FileStorageSettings { get; set; }
-
-    }
-
-    public class FileStorageSettings
-    {
-        public string DataFile { get; set; } = "./data.json";
+        public required string DatabasePath { get; set; }
+        public string PrimaryTableName { get; set; } = "spendless";
+        public string ForeignKeyTableName { get; set; } = "foreignKeys";
+        public string KvsTableName { get; set; } = "kvs";
+        public int MaxKvsSearchHits { get; set; } = 5;
     }
 }

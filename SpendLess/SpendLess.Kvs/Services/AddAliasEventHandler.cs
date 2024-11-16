@@ -15,7 +15,7 @@ namespace SpendLess.Kvs.Services
 
         public async Task<IComponent> HandleAsync(IRequestData requestData)
         {
-            if (!requestData.Form.TryGetValue<string>("alias", out var alias) || string.IsNullOrEmpty(alias))
+            if (!requestData.Form.TryGetValue<string>("alias", out var alias) || string.IsNullOrWhiteSpace(alias))
                 throw new UserException("Alias cannot be empty.");
 
             var key = requestData.Form.GetValue<string>("key");

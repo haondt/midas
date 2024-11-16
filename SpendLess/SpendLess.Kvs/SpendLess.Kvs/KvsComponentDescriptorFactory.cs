@@ -33,24 +33,17 @@ namespace SpendLess.Kvs.SpendLess.Kvs
 
             if (requestData.Query.TryGetValue<string>("search", out var searchText))
             {
-                if (searchText == "")
+                searchText = searchText.Trim();
+                if (string.IsNullOrWhiteSpace(searchText))
                     throw new UserException("Key cannot be empty.");
 
                 Func<string, Action<IHttpResponseMutator>> responseMutatorFactory = k => new HxHeaderBuilder()
                     .PushUrl($"/kvs/{k}")
                     .BuildResponseMutator();
 
-                var key = (await kvs.Search(searchText)).Or(searchText);
-                if ((await kvs.Search(searchText)).Test(out var value))
-                {
-                    var expandedMapping = await kvs.GetExpandedMapping(value);
-                    var model = KvsInsertContentModel.FromExpandedMappingDto(expandedMapping);
-                    return (model, responseMutatorFactory(expandedMapping.Key));
-                }
-                else
-                {
-                    return (new KvsInsertContentModel { Key = key }, responseMutatorFactory(key));
-                }
+                var expandedMapping = await kvs.GetExpandedMapping(searchText);
+                var model = KvsInsertContentModel.FromExpandedMappingDto(expandedMapping);
+                return (model, responseMutatorFactory(expandedMapping.Key));
             }
 
             return (new KvsLayoutModel(), new());

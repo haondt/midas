@@ -1,4 +1,4 @@
-﻿namespace SpendLess.Domain.Models
+﻿namespace SpendLess.Persistence.Models
 {
     public class KvsMappingDto
     {

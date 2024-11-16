@@ -8,6 +8,11 @@
 
   <ItemGroup>
     <PackageReference Include="Haondt.Persistence" Version="0.0.15-alpha-20241115175110" />
+    <PackageReference Include="Haondt.Persistence.Sqlite" Version="0.0.15-alpha-20241115175110" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>

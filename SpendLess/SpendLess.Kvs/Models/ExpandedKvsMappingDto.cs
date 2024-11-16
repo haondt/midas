@@ -1,4 +1,4 @@
-﻿using SpendLess.Domain.Models;
+﻿using SpendLess.Persistence.Models;
 
 namespace SpendLess.Kvs.Models
 {

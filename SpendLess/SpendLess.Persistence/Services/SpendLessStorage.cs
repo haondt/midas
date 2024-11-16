@@ -1,20 +1,21 @@
-﻿using Haondt.Persistence.Services;
+﻿using Haondt.Persistence.Sqlite.Services;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using SpendLess.Persistence.Converters;
 
 namespace SpendLess.Persistence.Services
 {
-    public class SpendLessFileStorage : FileStorage
+    public class SpendLessStorage : SqliteStorage, ISpendLessStorage
     {
-        public SpendLessFileStorage(IOptions<SpendLessPersistenceSettings> options)
-            : base(Options.Create(new HaondtFileStorageSettings
+        public SpendLessStorage(IOptions<SpendLessPersistenceSettings> options)
+            : base(Options.Create(new SqliteStorageSettings
             {
-                DataFile = options.Value.FileStorageSettings!.DataFile
+                DatabasePath = options.Value.DatabasePath,
+                ForeignKeyTableName = options.Value.ForeignKeyTableName,
+                PrimaryTableName = options.Value.PrimaryTableName,
+                StoreKeyStrings = true
             }))
         {
-            if (options.Value.FileStorageSettings == null)
-                throw new ArgumentNullException(nameof(SpendLessPersistenceSettings.FileStorageSettings));
         }
 
         protected override JsonSerializerSettings ConfigureSerializerSettings(JsonSerializerSettings settings)
@@ -23,6 +24,7 @@ namespace SpendLess.Persistence.Services
             settings.Converters.Add(new GenericOptionalJsonConverter());
             return settings;
         }
+
     }
 }
 
