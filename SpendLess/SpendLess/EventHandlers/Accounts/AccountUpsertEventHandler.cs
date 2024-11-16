@@ -8,6 +8,8 @@ using SpendLess.Core.Exceptions;
 using SpendLess.Domain.Models;
 using SpendLess.Persistence.Extensions;
 using SpendLess.Persistence.Services;
+using SpendLess.Web.Domain.Services;
+using SpendLess.Web.Domain.SpendLess.Domain;
 
 namespace SpendLess.EventHandlers.Accounts
 {

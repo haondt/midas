@@ -1,6 +1,6 @@
 using Haondt.Web.Core.Components;
-using SpendLess.Components.Abstractions;
 using SpendLess.Domain.Models;
+using SpendLess.Web.Core.Abstractions;
 
 namespace SpendLess.Components.SpendLessComponents
 {

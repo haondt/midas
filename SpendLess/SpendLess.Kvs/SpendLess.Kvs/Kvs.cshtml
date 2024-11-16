@@ -1,0 +1,204 @@
+﻿@using Haondt.Web.Core.Components
+@using SpendLess.Kvs.SpendLess.Kvs
+@using SpendLess.Web.Core.Extensions
+@using SpendLess.Web.Domain.SpendLess.Domain
+@model KvsModel
+
+@{
+    var typeIdentity = ComponentDescriptor<KvsModel>.TypeIdentity;
+
+    Func<List<string>, object> createAliasListView =
+    @<table class="table is-striped is-fullwidth">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var alias in new List<string>(){"x"})
+            {
+            <tr>
+                <td>@alias</td>
+                <td class="is-flex is-flex-direction-column is-align-items-flex-end"
+                    _="on click from elsewhere remove .is-active from the first .dropdown">
+                    <div>
+                        <button class="button is-small"
+                            _="on click toggle .is-active on the next .dropdown end">
+                            <span>actions</span>
+                            <span class="icon">
+                                <i class="fa-solid fa-caret-down"></i>
+                            </span>
+                        </button>
+                    </div>
+                    <div class="dropdown is-right">
+                        <div class="dropdown-menu">
+                            <div class="dropdown-content">
+                                <button class="dropdown-item">
+                                    <span class="icon">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </span>
+                                    <span>delete</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>;
+
+
+    Func<(bool IsSwap, EditMappingModel Model), object> createEditMappingView =
+    @<div id="edit-mapping-container" class="panel-block"
+        @if(item.IsSwap)
+        {
+            <text>hx-swap-oob="true"</text>
+        }>
+        <div class="block control">
+            <div class="field">
+                <button class="button is-medium is-static">@Model.EditMapping.Value.Key</button>
+            </div>
+            <hr/>
+            <br/>
+
+            <p class="title is-4">Aliases</p>
+            <form class="block"  hx-post="/_event/KvsAddAlias">
+                <input class="input" style="display:none;" value="@item.Model.Key"/>
+                <div class="field has-addons">
+                    <div class="control is-expanded">
+                        <input class="input" name="alias" placeholder="Alias" />
+                    </div>
+                    <div class="control">
+                        <button class="button is-primary">Add alias</button>
+                    </div>
+                </div>
+            </form>
+            @createAliasListView(item.Model.Aliases)
+            <hr/>
+            <br/>
+
+            <p class="title is-4">Value</p>
+            <div class="field">
+                <div class="buttons">
+                    <button class="button is-primary" 
+                        hx-post="/_event/KvsUpsert" 
+                        hx-vals='{"key":"@item.Model.Key"}'
+                        hx-include="#kvs-value">Update</button>
+                    <button class="button is-danger" hx-post="/_event/DeleteLookupValue" hx-include="#store-select, #primary-key">Delete</button>
+                    <button class="button" hx-post="/_event/PrettifyLookupValue" hx-include="#lookup-value">Prettify</button>
+                </div>
+            </div>
+
+            <style>
+                @@scope {
+                    .request-text {
+                        overflow: auto;
+                        font-family: monospace;
+                        font-size: 1rem;
+                        height: 350px;
+                        line-height: 1.25rem;
+                        resize: none;
+                        width: 100%;
+                        outline: none;
+                    }
+                    .message {
+                        width: 100%;
+                    }
+
+                }
+            </style>
+
+            <article class="message">
+                <div class="message-header"></div>
+                <textarea id="kvs-value" name="value" class="message-body request-text"></textarea>
+            </article>
+
+
+        </div>
+    </div>;
+}
+
+@if (Model.WithLayout)
+{
+    <div class="panel is-link" style="max-width:var(--spendless-form-page-width);margin:auto;">
+        <p class="panel-heading">Key-Value Store</p>
+        <div class="panel-block">
+            <div class="buttons">
+                <button class="button"
+                    hx-get="/_component/@typeIdentity"
+                    hx-vals='{"launch-select-modal":true}'
+                    hx-swap="none">
+                    Open Mapping
+                </button>
+            </div>
+        </div>
+        @if (Model.EditMapping.HasValue)
+        {
+            @createEditMappingView((false, Model.EditMapping.Value))
+        }
+        else
+        {
+            <div id="edit-mapping-container"></div>
+        }
+    </div>
+}
+else if (Model.EditMapping.HasValue)
+{
+    @createEditMappingView((true, Model.EditMapping.Value))
+}
+
+
+@if(Model.CloseModal)
+{
+    @await Html.PartialAsync(new CloseModalModel())
+}
+
+@if (Model.LaunchSelectModal)
+{
+    <div
+        id="modal-container"
+        class="modal is-active is-justify-content-flex-start pt-6"
+        hx-swap-oob="true"
+        hx-on::load="htmx.find('#kvs-autocomplete').focus()">
+        <div 
+            class="modal-background"
+            _="
+                on click
+                    remove .is-active from #modal-container
+                    set #modal-container's innerHTML to ''
+                end
+                on keydown(key) from elsewhere
+                    if the key is 'Escape'
+                        send click to me
+                    end
+                end
+            "></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Select Mapping</p>
+                <button class="delete" _="on click send click to the previous .modal-background"></button>
+            </header>
+            <section class="modal-card-body">
+                <form hx-get="/_component/@typeIdentity">
+                    <div class="field">
+                        <label class="label">Search</label>
+                        @await Html.PartialAsync(new AutocompleteBodyModel
+                        {
+                            SuggestionEvent = "KvsAutocomplete",
+                            Name = new("search"),
+                            Id = "kvs-autocomplete",
+                            IsRight = true
+                        })
+                    </div>
+                </form>
+            </section>
+            <footer class="modal-card-foot">
+                <button id="test" class="button is-success" _="on click send submit to the previous <form/>">Open mapping</button>
+            </footer>
+        </div>
+    </div>
+
+
+}

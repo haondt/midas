@@ -11,6 +11,7 @@ using SpendLess.NodeRed.Models;
 using SpendLess.NodeRed.Services;
 using SpendLess.Persistence.Extensions;
 using SpendLess.Persistence.Services;
+using SpendLess.Web.Domain.Services;
 
 namespace SpendLess.EventHandlers.TransactionImport
 {

@@ -1,11 +1,11 @@
 using Haondt.Core.Models;
 using Haondt.Web.Core.Components;
 using Haondt.Web.Core.Extensions;
-using SpendLess.Components.Abstractions;
-using SpendLess.Components.Exceptions;
 using SpendLess.Domain.Models;
 using SpendLess.Persistence.Extensions;
 using SpendLess.Persistence.Services;
+using SpendLess.Web.Core.Abstractions;
+using SpendLess.Web.Core.Exceptions;
 
 namespace SpendLess.Components.SpendLessComponents
 {

@@ -1,27 +1,41 @@
 ﻿@using Haondt.Web.Core.Extensions
-@model SpendLess.Components.SpendLessComponents.SpendLessLayoutModel
+@model SpendLess.Web.Domain.SpendLess.Domain.LayoutModel
 <style>
     @@scope {
         #mother-container {
-            position: relative;
             flex-grow: 1;
             overflow-y: auto;
         }
 
 
-        #toast-container, #page-container {
+        #page-container {
             position: absolute;
             width: 100%;
         }
 
         #toast-container {
-            height: 100%;
             overflow-y: auto;
+            position: fixed;
+            z-index: 1000;
+            right: 0;
+        }
+
+        .modal {
+            overflow: visible;
+            .modal-card-body {
+                overflow: visible;
+            }
         }
     }
+
+    body {
+        --spendless-form-page-width: 1300px;
+    }
+    
 </style>
 <div id="mother-container">
-    <div id="toast-container" class="is-flex is-flex-direction-column is-justify-content-flex-end is-align-items-center">
+    <div id="toast-container" 
+        class="is-flex is-flex-direction-column is-justify-content-flex-start is-align-items-flex-end mr-5 mt-5">
         <style>
             @@scope {
                 .toast {
@@ -44,19 +58,15 @@
 
     </div>
     <div id="page-container">
-        <div class="hero is-small">
-            <div class="hero-body">
-                <p class="title">Spend Less</p>
-            </div>
-        </div>
 
-        <div class="is-flex is-flex-direction-row ml-5 mr-5 mb-6" style="gap:1.5rem;">
-            <div style="width:256px;">
-                <div class="box" id="navigation">
+        <!--<div class="is-flex is-flex-direction-row ml-5 mr-5 mb-6" style="gap:1.5rem;">-->
+        <div class="columns ml-3 mt-3 mb-3 mr-3">
+            <div class="column is-narrow" style="min-width:256px;">
+                <div class="panel" id="navigation">
                     @await Html.PartialAsync(Model.NavigationBar)
                 </div>
             </div>
-            <div class="is-flex-grow-1">
+            <div class="column">
                 <div id="content">
                     @await Html.PartialAsync(Model.Content)
                 </div>

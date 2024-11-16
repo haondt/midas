@@ -1,4 +1,4 @@
-﻿namespace SpendLess.Components.Exceptions
+﻿namespace SpendLess.Web.Core.Exceptions
 {
     public class NotFoundPageException : PageException
     {

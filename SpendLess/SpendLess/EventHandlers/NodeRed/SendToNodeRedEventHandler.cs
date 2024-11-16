@@ -4,6 +4,8 @@ using Haondt.Web.Core.Extensions;
 using Haondt.Web.Core.Http;
 using SpendLess.Components.SpendLessComponents;
 using SpendLess.NodeRed.Services;
+using SpendLess.Web.Domain.Services;
+using SpendLess.Web.Domain.SpendLess.Domain;
 using System.Text.Json;
 
 namespace SpendLess.EventHandlers.NodeRed

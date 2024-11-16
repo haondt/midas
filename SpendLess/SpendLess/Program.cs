@@ -5,8 +5,10 @@ using Haondt.Web.Extensions;
 using SpendLess.Components.Extensions;
 using SpendLess.Domain.Extensions;
 using SpendLess.Extensions;
+using SpendLess.Kvs.Extensions;
 using SpendLess.NodeRed.Extensions;
 using SpendLess.Persistence.Extensions;
+using SpendLess.Web.Domain.Extensions;
 
 const string CORS_POLICY = "_fireflyIIIPPPolicy";
 
@@ -20,7 +22,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers()
     .AddApplicationPart(typeof(Haondt.Web.Extensions.ServiceCollectionExtensions).Assembly)
     .AddApplicationPart(typeof(Haondt.Web.BulmaCSS.Extensions.ServiceCollectionExtensions).Assembly)
-    .AddApplicationPart(typeof(SpendLess.Components.Extensions.ServiceCollectionExtensions).Assembly);
+    .AddApplicationPart(typeof(SpendLess.Web.Domain.Extensions.ServiceCollectionExtensions).Assembly);
 //.AddNewtonsoftJson(options =>
 //{
 //    options.SerializerSettings.ConfigureFireflyppRunnerSettings();
@@ -31,12 +33,12 @@ builder.Configuration.AddEnvironmentVariables();
 builder.Services
     .AddHaondtWebCoreServices()
     .AddHaondtWebServices(builder.Configuration)
-    .AddSpendLessComponentServices(builder.Configuration)
     .AddSpendLessComponents()
     .AddSpendLessServices(builder.Configuration)
-    .AddSpendLessHeadEntries()
     .AddSpendLessPersistenceServices(builder.Configuration)
     .AddSpendLessDomainServices()
+    .AddKvs(builder.Configuration)
+    .AddSpendLessWebDomainServices(builder.Configuration)
     .AddNodeRedServices(builder.Configuration);
 //.AddNodeRedServices(builder.Configuration)
 //.AddLookupServices(builder.Configuration);

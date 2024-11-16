@@ -4,7 +4,7 @@ using Haondt.Web.Core.Components;
 using Haondt.Web.Core.Http;
 using Haondt.Web.Services;
 
-namespace SpendLess.EventHandlers
+namespace SpendLess.Web.Domain.Services
 {
     public class SingleEventHandlerRegistry(
         IEnumerable<ISingleEventHandler> singleEventHandlers,

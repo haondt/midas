@@ -1,0 +1,24 @@
+﻿@model SpendLess.Web.Domain.SpendLess.Domain.NavigationBarModel
+
+<div class="panel is-primary">
+    <p class="panel-heading">Spend Less</p>
+    <div class="panel-block">
+        <div class="menu is-flex-grow-1">
+            <ul class="menu-list">
+
+
+    @foreach(var item in Model.Items)
+    {
+        <li><a 
+            class="" 
+            href="/@item.Slug"
+            hx-push-url="/@item.Slug"
+            hx-get="/_component/@item.TypeIdentity"
+            hx-target="#content"
+        >@item.Title</a></li>
+        
+    }
+            </ul>
+        </div>
+    </div>
+</div>

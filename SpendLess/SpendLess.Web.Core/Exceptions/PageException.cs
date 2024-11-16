@@ -1,6 +1,6 @@
 ﻿using Haondt.Core.Models;
 
-namespace SpendLess.Components.Exceptions
+namespace SpendLess.Web.Core.Exceptions
 {
     public abstract class PageException : Exception
     {

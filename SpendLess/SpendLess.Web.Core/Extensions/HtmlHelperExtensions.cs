@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using SpendLess.Components.Abstractions;
-using SpendLess.Components.Extensions;
+using SpendLess.Web.Core.Abstractions;
+using SpendLess.Web.Core.Extensions;
 
-namespace SpendLess.Components.Extensions
+namespace SpendLess.Web.Core.Extensions
 {
     public static class HtmlHelperExtensions
     {

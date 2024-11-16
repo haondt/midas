@@ -1,7 +1,7 @@
 using Haondt.Web.Core.Components;
-using SpendLess.Components.Abstractions;
+using SpendLess.Web.Core.Abstractions;
 
-namespace SpendLess.Components.SpendLessComponents
+namespace SpendLess.Web.Domain.SpendLess.Domain
 {
     public class ToastModel : IComponentModel
     {
@@ -32,7 +32,7 @@ namespace SpendLess.Components.SpendLessComponents
         {
             return new ComponentDescriptor<ToastModel>
             {
-                ViewPath = $"~/SpendLessComponents/Toast.cshtml"
+                ViewPath = $"~/SpendLess.Domain/Toast.cshtml"
             };
         }
     }

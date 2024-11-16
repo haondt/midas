@@ -1,8 +1,9 @@
 ﻿using Haondt.Web.Core.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using SpendLess.Components.Exceptions;
 using SpendLess.Components.Services;
 using SpendLess.Components.SpendLessComponents;
+using SpendLess.Web.Core.Exceptions;
+using SpendLess.Web.Core.Extensions;
 
 namespace SpendLess.Middlewares
 {
@@ -29,7 +30,7 @@ namespace SpendLess.Middlewares
             var componentFactory = componentFactoryFactory.CreateComponentFactory();
             var errorComponent = await componentFactory.GetPlainComponent(result, configureResponse: m => m.SetStatusCode = result.ErrorCode);
 
-            return Components.Extensions.ComponentExtensions.CreateView(errorComponent, context.Response.AsResponseData());
+            return errorComponent.CreateView(context.Response.AsResponseData());
         }
     }
 }

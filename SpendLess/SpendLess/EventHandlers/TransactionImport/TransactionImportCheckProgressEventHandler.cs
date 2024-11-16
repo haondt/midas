@@ -5,6 +5,8 @@ using Haondt.Web.Core.Http;
 using SpendLess.Components.SpendLessComponents;
 using SpendLess.Domain.Models;
 using SpendLess.Domain.Services;
+using SpendLess.Web.Domain.Services;
+using SpendLess.Web.Domain.SpendLess.Domain;
 
 namespace SpendLess.EventHandlers.TransactionImport
 {

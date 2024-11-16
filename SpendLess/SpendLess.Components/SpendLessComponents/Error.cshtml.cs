@@ -1,7 +1,7 @@
 using Haondt.Core.Models;
 using Haondt.Web.Core.Components;
 using Haondt.Web.Core.Extensions;
-using SpendLess.Components.Abstractions;
+using SpendLess.Web.Core.Abstractions;
 
 
 namespace SpendLess.Components.SpendLessComponents

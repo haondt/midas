@@ -8,11 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Haondt.Web.BulmaCSS" Version="0.0.13" />
-    <PackageReference Include="Haondt.Web.Core" Version="0.0.13" />
+    <PackageReference Include="Haondt.Web.Core" Version="0.0.15-alpha-20241115175110" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SpendLess.Web.Core\SpendLess.Web.Core.csproj" />
+    <ProjectReference Include="..\SpendLess.Web.Domain\SpendLess.Web.Domain.csproj" />
     <ProjectReference Include="..\SpendLess.Domain\SpendLess.Domain.csproj" />
   </ItemGroup>
 

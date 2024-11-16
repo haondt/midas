@@ -2,6 +2,7 @@
 using Haondt.Web.Core.Http;
 using SpendLess.Components.SpendLessComponents;
 using SpendLess.NodeRed.Models;
+using SpendLess.Web.Domain.Services;
 
 namespace SpendLess.EventHandlers.NodeRed
 {

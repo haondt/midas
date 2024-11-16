@@ -1,6 +1,6 @@
 ﻿using Haondt.Web.Core.Components;
 
-namespace SpendLess.Components.Abstractions
+namespace SpendLess.Web.Core.Abstractions
 {
     public interface IPartialComponentModel : IComponentModel
     {

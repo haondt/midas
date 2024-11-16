@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
-namespace SpendLess.Components.Extensions
+namespace SpendLess.Web.Core.Extensions
 {
     public static class ComponentExtensions
     {

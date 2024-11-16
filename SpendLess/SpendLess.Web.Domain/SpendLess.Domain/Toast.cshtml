@@ -1,6 +1,6 @@
-﻿@model SpendLess.Components.SpendLessComponents.ToastModel
-<div hx-swap-oob="beforeend:#toast-container">
-    <div style="width:50vw;"
+﻿@model SpendLess.Web.Domain.SpendLess.Domain.ToastModel
+<div hx-swap-oob="afterbegin:#toast-container">
+    <div style="width:400px;z-index:1000;"
         class="notification toast @Model.SeverityString is-light"
         _="
             on load

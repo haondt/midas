@@ -3,19 +3,23 @@
 
 <div class="box">
     <p class="subtitle">Create or Update Account</p>
-    <form style="max-width:50rem;" hx-post="/_event/AccountUpsert">
-        @if (Model.AccountId.HasValue)
-        {
-            <input name="id" value="@Model.AccountId.Value" style="display:none;"/>
-        }
-        <div class="field">
-            <label class="label">Name</label>
-            <input name="name" class="input" type="text" value="@Model.AccountName" />
-        </div>
-        <div class="field">
-            <div class="control">
-                <button class="button is-link">Save</button>
+    <div class="columns is-centered">
+        <form class="column" hx-post="/_event/AccountUpsert" style="max-width:var(--spendless-max-width);">
+            @if (Model.AccountId.HasValue)
+            {
+                <input name="id" value="@Model.AccountId.Value" style="display:none;"/>
+            }
+            <div class="field">
+                <div class="control">
+                    <label class="label">Name</label>
+                    <input name="name" class="input" type="text" value="@Model.AccountName" />
+                </div>
             </div>
-        </div>
-    </form>
+            <div class="field">
+                <div class="control">
+                    <button class="button is-link">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>

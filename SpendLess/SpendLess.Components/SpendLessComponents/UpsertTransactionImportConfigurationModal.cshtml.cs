@@ -2,10 +2,10 @@ using Haondt.Core.Models;
 using Haondt.Persistence.Services;
 using Haondt.Web.Core.Components;
 using Haondt.Web.Core.Extensions;
-using SpendLess.Components.Abstractions;
 using SpendLess.Domain.Models;
 using SpendLess.Persistence.Extensions;
 using SpendLess.Persistence.Services;
+using SpendLess.Web.Core.Abstractions;
 
 namespace SpendLess.Components.SpendLessComponents
 {
