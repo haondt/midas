@@ -10,9 +10,9 @@
     var typeIdentity = ComponentDescriptor<KvsModel>.TypeIdentity;
 
     Func<(bool IsSwap, List<string> Model), object> createAliasListView =
-    @<div id="alias-list-view">
+    @<div id="alias-list-view" @(item.IsSwap ? "hx-swap-oob=\"true\"" : "")>
         <p class="title is-4">Aliases</p>
-        <form class="block"  hx-post="/_event/KvsAddAlias">
+        <form class="block"  hx-post="/_event/KvsAddAlias" hx-include="#kvs-key">
             <div class="field has-addons">
                 <div class="control is-expanded">
                     <input class="input" name="alias" placeholder="Alias" />
@@ -22,38 +22,40 @@
                 </div>
             </div>
         </form>
-        <table class="table is-striped is-fullwidth">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th></th>
-                </tr>
-            </thead>
+        <table class="table is-hoverable is-fullwidth">
             <tbody>
-                @foreach(var alias in new List<string>(){"x"})
+                @foreach(var alias in item.Model)
                 {
                 <tr>
                     <td>@alias</td>
-                    <td class="is-flex is-flex-direction-column is-align-items-flex-end"
-                        _="on click from elsewhere remove .is-active from the first .dropdown">
-                        <div>
-                            <button class="button is-small"
-                                _="on click toggle .is-active on the next .dropdown end">
-                                <span>actions</span>
-                                <span class="icon">
-                                    <i class="fa-solid fa-caret-down"></i>
-                                </span>
-                            </button>
-                        </div>
-                        <div class="dropdown is-right">
-                            <div class="dropdown-menu">
-                                <div class="dropdown-content">
-                                    <button class="dropdown-item">
-                                        <span class="icon">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </span>
-                                        <span>delete</span>
-                                    </button>
+                    <td>
+                        <div class="is-flex is-flex-direction-column is-align-items-flex-end">
+                            <div>
+                                <button class="button is-small"
+                                    _="
+                                        set :dd to the next .dropdown
+                                        on click toggle .is-active on :dd
+                                        on click from elsewhere
+                                            if the event's target is not in :dd
+                                                remove .is-active from :dd">
+                                    <span>actions</span>
+                                    <span class="icon">
+                                        <i class="fa-solid fa-caret-down"></i>
+                                    </span>
+                                </button>
+                            </div>
+                            <div class="dropdown is-right">
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-content">
+                                        <button class="dropdown-item" hx-post="/_event/KvsRemoveAlias"
+                                            hx-include="#kvs-key"
+                                            hx-vals='{"alias":"@alias"}'>
+                                            <span class="icon has-text-danger">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </span>
+                                            <span>remove</span>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -62,7 +64,6 @@
                 }
             </tbody>
         </table>
-        <hr/>
     </div>
     ;
 

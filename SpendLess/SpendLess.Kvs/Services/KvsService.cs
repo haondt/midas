@@ -46,14 +46,20 @@ namespace SpendLess.Kvs.Services
         public async Task<List<string>> AddAlias(string key, string alias)
         {
             var storageKey = key.SeedStorageKey<KvsMappingDto>();
-            await storage.PerformTransactionalBatch(new List<StorageOperation<KvsMappingDto>>
-            {
-                new AddForeignKeyOperation<KvsMappingDto>
+            var operations = new List<StorageOperation<KvsMappingDto>>();
+            if (!await storage.ContainsKey(storageKey))
+                operations.Add(new SetOperation<KvsMappingDto>
                 {
-                    ForeignKey = alias.SeedStorageKey<KvsMappingDto>(),
-                    Target = storageKey
-                }
+                    Target = storageKey,
+                    Value = new()
+                });
+
+            operations.Add(new AddForeignKeyOperation<KvsMappingDto>
+            {
+                ForeignKey = alias.SeedStorageKey<KvsMappingDto>(),
+                Target = storageKey
             });
+            await storage.PerformTransactionalBatch(operations);
 
             var aliases = await storage.GetForeignKeys(storageKey);
             return aliases.Select(a => a.SingleValue()).ToList();

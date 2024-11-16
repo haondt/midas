@@ -2,24 +2,21 @@
 using Haondt.Web.Core.Components;
 using Haondt.Web.Core.Extensions;
 using Haondt.Web.Core.Http;
-using SpendLess.Core.Exceptions;
 using SpendLess.Kvs.SpendLess.Kvs;
 using SpendLess.Web.Domain.Services;
 using SpendLess.Web.Domain.SpendLess.Domain;
 
 namespace SpendLess.Kvs.Services
 {
-    public class AddAliasEventHandler(IComponentFactory componentFactory, IKvsService kvs) : ISingleEventHandler
+    public class RemoveAliasEventHandler(IComponentFactory componentFactory, IKvsService kvs) : ISingleEventHandler
     {
-        public string EventName => "KvsAddAlias";
+        public string EventName => "KvsRemoveAlias";
 
         public async Task<IComponent> HandleAsync(IRequestData requestData)
         {
-            if (!requestData.Form.TryGetValue<string>("alias", out var alias) || string.IsNullOrEmpty(alias))
-                throw new UserException("Alias cannot be empty.");
-
             var key = requestData.Form.GetValue<string>("key");
-            var aliases = await kvs.AddAlias(key, alias);
+            var alias = requestData.Form.GetValue<string>("alias");
+            var aliases = await kvs.RemoveAlias(key, alias);
 
             return await componentFactory.GetPlainComponent(new AppendComponentLayoutModel
             {
@@ -27,7 +24,7 @@ namespace SpendLess.Kvs.Services
                 {
                     await componentFactory.GetPlainComponent(new ToastModel
                     {
-                        Message = "Alias added!",
+                        Message = "Alias removed",
                         Severity = ToastSeverity.Success
                     }),
                     await componentFactory.GetPlainComponent<KvsModel>(new KvsUpdateContentModel
