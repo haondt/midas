@@ -1,8 +1,9 @@
-﻿using Haondt.Identity.StorageKey;
+﻿using Haondt.Core.Models;
+using Haondt.Identity.StorageKey;
 using Haondt.Persistence.Services;
+using SpendLess.Domain.Models;
 using SpendLess.Kvs.Models;
 using SpendLess.Persistence.Extensions;
-using SpendLess.Persistence.Models;
 using SpendLess.Persistence.Storages;
 
 namespace SpendLess.Kvs.Services
@@ -11,11 +12,13 @@ namespace SpendLess.Kvs.Services
     {
         public async Task<ExpandedKvsMappingDto> GetExpandedMapping(string term)
         {
-            var key = term.SeedStorageKey<KvsMappingDto>();
-            var foreignKeys = await storage.GetForeignKeys(key);
-            var aliases = foreignKeys.Select(fk => fk.SingleValue()).ToList();
+            var storageKey = term.SeedStorageKey<KvsMappingDto>();
+            var aliasForeignKey = storageKey.Extend<KvsAliasDto>();
+            var aliasDtos = await storage.GetManyByForeignKey(aliasForeignKey);
+            var aliases = aliasDtos.Select(dto => dto.Key.SingleValue()).ToList();
 
-            var result = await storage.GetDefault(key);
+            var result = await storage.GetDefault(storageKey);
+
             return new ExpandedKvsMappingDto
             {
                 Key = term,
@@ -30,6 +33,43 @@ namespace SpendLess.Kvs.Services
             return matches;
         }
 
+        public async Task<Optional<string>> GetKeyFromKeyOrAlias(string term)
+        {
+            var storageKey = term.SeedStorageKey<KvsMappingDto>();
+            var keyResult = await storage.Get(storageKey);
+            if (keyResult.IsSuccessful)
+                return term;
+
+            var aliasKey = term.SeedStorageKey<KvsAliasDto>();
+            var aliasResult = await storage.Get(aliasKey);
+            if (aliasResult.IsSuccessful)
+                return aliasResult.Value.Key.SingleValue();
+
+            return new();
+        }
+
+        public async Task<Optional<KvsMappingDto>> GetValueFromKeyOrAlias(string term)
+        {
+            var storageKey = term.SeedStorageKey<KvsMappingDto>();
+            var keyResult = await storage.Get(storageKey);
+            if (keyResult.IsSuccessful)
+                return keyResult.Value;
+
+            var aliasKey = term.SeedStorageKey<KvsAliasDto>();
+            var aliasResult = await storage.Get(aliasKey);
+            if (aliasResult.IsSuccessful)
+            {
+                keyResult = await storage.Get(aliasResult.Value.Key);
+                if (keyResult.IsSuccessful)
+                    return keyResult.Value;
+                else
+                    // alias is pointing to a key that doesn't exist (yet)
+                    return new(new());
+            }
+
+            return new();
+        }
+
         public async Task UpsertValue(string key, string value)
         {
             await kvsStorage.AddKey(key);
@@ -41,38 +81,36 @@ namespace SpendLess.Kvs.Services
         {
             await kvsStorage.AddKey(key);
             var storageKey = key.SeedStorageKey<KvsMappingDto>();
-            var operations = new List<StorageOperation<KvsMappingDto>>();
-            if (!await storage.ContainsKey(storageKey))
-                operations.Add(new SetOperation<KvsMappingDto>
-                {
-                    Target = storageKey,
-                    Value = new()
-                });
+            var aliasKey = alias.SeedStorageKey<KvsAliasDto>();
+            var aliasForeignKey = storageKey.Extend<KvsAliasDto>();
 
-            operations.Add(new AddForeignKeyOperation<KvsMappingDto>
+            var operations = new List<StorageOperation<KvsAliasDto>>()
             {
-                ForeignKey = alias.SeedStorageKey<KvsMappingDto>(),
-                Target = storageKey
-            });
+                new SetOperation<KvsAliasDto>
+                {
+                    Target = aliasKey,
+                    Value = new() { Key = storageKey }
+                },
+                new AddForeignKeyOperation<KvsAliasDto>
+                {
+                    Target = aliasKey,
+                    ForeignKey = aliasForeignKey
+                }
+            };
             await storage.PerformTransactionalBatch(operations);
 
-            var aliases = await storage.GetForeignKeys(storageKey);
-            return aliases.Select(a => a.SingleValue()).ToList();
+            var aliases = await storage.GetManyByForeignKey(aliasForeignKey);
+            return aliases.Select(a => a.Key.SingleValue()).ToList();
         }
 
         public async Task<List<string>> RemoveAlias(string key, string alias)
         {
             var storageKey = key.SeedStorageKey<KvsMappingDto>();
-            await storage.PerformTransactionalBatch(new List<StorageOperation<KvsMappingDto>>
-            {
-                new DeleteForeignKeyOperation<KvsMappingDto>
-                {
-                    Target = alias.SeedStorageKey<KvsMappingDto>(),
-                }
-            });
-
-            var aliases = await storage.GetForeignKeys(storageKey);
-            return aliases.Select(a => a.SingleValue()).ToList();
+            var aliasKey = alias.SeedStorageKey<KvsAliasDto>();
+            var aliasForeignKey = storageKey.Extend<KvsAliasDto>();
+            await storage.Delete(aliasKey);
+            var aliases = await storage.GetManyByForeignKey(aliasForeignKey);
+            return aliases.Select(a => a.Key.SingleValue()).ToList();
         }
     }
 }
