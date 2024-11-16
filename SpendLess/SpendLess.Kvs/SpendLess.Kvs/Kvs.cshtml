@@ -1,5 +1,7 @@
-﻿@using Haondt.Web.Core.Components
+﻿@using Haondt.Core.Models
+@using Haondt.Web.Core.Components
 @using SpendLess.Kvs.SpendLess.Kvs
+@using SpendLess.Core.Extensions;
 @using SpendLess.Web.Core.Extensions
 @using SpendLess.Web.Domain.SpendLess.Domain
 @model KvsModel
@@ -7,140 +9,168 @@
 @{
     var typeIdentity = ComponentDescriptor<KvsModel>.TypeIdentity;
 
-    Func<List<string>, object> createAliasListView =
-    @<table class="table is-striped is-fullwidth">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach(var alias in new List<string>(){"x"})
-            {
-            <tr>
-                <td>@alias</td>
-                <td class="is-flex is-flex-direction-column is-align-items-flex-end"
-                    _="on click from elsewhere remove .is-active from the first .dropdown">
-                    <div>
-                        <button class="button is-small"
-                            _="on click toggle .is-active on the next .dropdown end">
-                            <span>actions</span>
-                            <span class="icon">
-                                <i class="fa-solid fa-caret-down"></i>
-                            </span>
-                        </button>
-                    </div>
-                    <div class="dropdown is-right">
-                        <div class="dropdown-menu">
-                            <div class="dropdown-content">
-                                <button class="dropdown-item">
-                                    <span class="icon">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </span>
-                                    <span>delete</span>
-                                </button>
+    Func<(bool IsSwap, List<string> Model), object> createAliasListView =
+    @<div id="alias-list-view">
+        <p class="title is-4">Aliases</p>
+        <form class="block"  hx-post="/_event/KvsAddAlias">
+            <div class="field has-addons">
+                <div class="control is-expanded">
+                    <input class="input" name="alias" placeholder="Alias" />
+                </div>
+                <div class="control">
+                    <button class="button is-primary">Add alias</button>
+                </div>
+            </div>
+        </form>
+        <table class="table is-striped is-fullwidth">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var alias in new List<string>(){"x"})
+                {
+                <tr>
+                    <td>@alias</td>
+                    <td class="is-flex is-flex-direction-column is-align-items-flex-end"
+                        _="on click from elsewhere remove .is-active from the first .dropdown">
+                        <div>
+                            <button class="button is-small"
+                                _="on click toggle .is-active on the next .dropdown end">
+                                <span>actions</span>
+                                <span class="icon">
+                                    <i class="fa-solid fa-caret-down"></i>
+                                </span>
+                            </button>
+                        </div>
+                        <div class="dropdown is-right">
+                            <div class="dropdown-menu">
+                                <div class="dropdown-content">
+                                    <button class="dropdown-item">
+                                        <span class="icon">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </span>
+                                        <span>delete</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </td>
-            </tr>
-            }
-        </tbody>
-    </table>;
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+        <hr/>
+    </div>
+    ;
 
-
-    Func<(bool IsSwap, EditMappingModel Model), object> createEditMappingView =
-    @<div id="edit-mapping-container"
-        @if(item.IsSwap)
+    Func<(bool IsSwap, Optional<string> Model), object> createKeyView =
+    @<div id="key-view" @(item.IsSwap ? "hx-swap-oob=\"true\"" : "")>
+        @if(item.Model.HasValue)
         {
-            <text>hx-swap-oob="true"</text>
-        }>
-        <div class="panel-block has-background-link-dark">
-            <div class="control">
-                <div class="is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between">
-                    <p class="is-size-5 is-family-monospace">@Model.EditMapping.Value.Key</p>
-                    <button class="button"
-                        hx-get="/_component/@typeIdentity"
-                        hx-vals='{"launch-select-modal":true}'
-                        hx-swap="none">
-                        Select Mapping
-                    </button>
-                </div>
+            <input type="hidden" id="kvs-key" name="key" value="@item.Model.Value" />
+            <div class="is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between">
+                <p class="is-size-5 is-family-monospace">@item.Model.Value</p>
+                <button class="button"
+                    hx-get="/_component/@typeIdentity"
+                    hx-vals='{"launch-select-modal":true}'
+                    hx-swap="none">
+                    Select Mapping
+                </button>
+            </div>
+        }
+        else
+        {
+            <button class="button"
+                hx-get="/_component/@typeIdentity"
+                hx-vals='{"launch-select-modal":true}'
+                hx-swap="none">
+                Select Mapping
+            </button>
+        }
+    </div>;
+
+
+    Func<(bool IsSwap, string Model), object> createValueView =
+    @<div id="value-view">
+        <p class="title is-4">Value</p>
+        <div class="field">
+            <div class="buttons">
+                <button class="button is-primary" 
+                    hx-post="/_event/KvsUpsert" 
+                    hx-include="#kvs-value,#kvs-key">Update</button>
+                <button class="button" hx-post="/_event/JsonPrettifyCode" 
+                    hx-target="#kvs-value"
+                    hx-vals='{"name":"value"}'
+                    hx-swap="innerHTML"
+                    hx-include="#kvs-value">Prettify</button>
             </div>
         </div>
 
+        <div id="kvs-value">
+            @await Html.PartialAsync(new CodeWindowModel
+            {
+                Name = "value",
+                Text = item.Model,
+            })
+        </div>
+    </div>
+    ;
+
+    Func<(bool IsSwap, KvsContentModel Model), object> createContentView =
+    @<div id="kvs-content" @(item.IsSwap ? "hx-swap-oob=\"true\"" : "")>
+        <div class="panel-block has-background-link-dark">
+            <div class="control">
+                @createKeyView((false, item.Model.Key))
+            </div>
+        </div>
         <div class="panel-block">
             <div class="control">
-                <p class="title is-4">Aliases</p>
-                <form class="block"  hx-post="/_event/KvsAddAlias">
-                    <input class="input" style="display:none;" value="@item.Model.Key"/>
-                    <div class="field has-addons">
-                        <div class="control is-expanded">
-                            <input class="input" name="alias" placeholder="Alias" />
-                        </div>
-                        <div class="control">
-                            <button class="button is-primary">Add alias</button>
-                        </div>
-                    </div>
-                </form>
-                @createAliasListView(item.Model.Aliases)
-                <hr/>
-                <br/>
-
-                <p class="title is-4">Value</p>
-                <div class="field">
-                    <div class="buttons">
-                        <button class="button is-primary" 
-                            hx-post="/_event/KvsUpsert" 
-                            hx-vals='{"key":"@item.Model.Key"}'
-                            hx-include="#kvs-value">Update</button>
-                        <button class="button" hx-post="/_event/JsonPrettifyCode" 
-                            hx-target="#kvs-value"
-                            hx-vals='{"name":"value"}'
-                            hx-swap="innerHTML"
-                            hx-include="#kvs-value">Prettify</button>
-                    </div>
-                </div>
-
-                <div id="kvs-value">
-                    @await Html.PartialAsync(new CodeWindowModel
-                    {
-                        Name = "value",
-                        Text = item.Model.Value
-                    })
-                </div>
+                @createAliasListView((false, item.Model.Aliases))
+            </div>
+        </div>
+        <div class="panel-block">
+            <div class="control">
+                @createValueView((false, item.Model.Value))
             </div>
         </div>
     </div>;
 }
 
-@if (Model.WithLayout)
+@if (Model is KvsLayoutModel layoutModel)
 {
     <div class="panel is-link" style="max-width:var(--spendless-form-page-width);margin:auto;">
         <p class="panel-heading">Key-Value Store</p>
-        @if (Model.EditMapping.HasValue)
+        @if(layoutModel.Content.HasValue)
         {
-            @createEditMappingView((false, Model.EditMapping.Value))
+            @createContentView((false, layoutModel.Content.Value))
         }
         else
         {
-            <div id="edit-mapping-container"></div>
+            <div id="kvs-content">
+                <div class="panel-block has-background-link-dark">
+                    <div class="control">
+                        @createKeyView((false, new()))
+                    </div>
+                </div>
+            </div>
         }
     </div>
 }
-else if (Model.EditMapping.HasValue)
+else if (Model is KvsInsertContentModel insertModel)
 {
-    @createEditMappingView((true, Model.EditMapping.Value))
-}
-
-
-@if(Model.CloseModal)
-{
+    @createContentView((true, insertModel))
     @await Html.PartialAsync(new CloseModalModel())
 }
-
-@if (Model.LaunchSelectModal)
+else if (Model is KvsUpdateContentModel updateModel)
+{
+    if (updateModel.Key.HasValue) { @createKeyView((true, updateModel.Key.Value ))}
+    if (updateModel.Value.HasValue) { @createValueView((true, updateModel.Value.Value ))}
+    if (updateModel.Aliases.HasValue) { @createAliasListView((true, updateModel.Aliases.Value ))}
+}
+else if (Model is KvsModalModel)
 {
     <div
         id="modal-container"
@@ -184,6 +214,4 @@ else if (Model.EditMapping.HasValue)
             </footer>
         </div>
     </div>
-
-
 }

@@ -42,5 +42,36 @@ namespace SpendLess.Kvs.Services
             var storageKey = key.SeedStorageKey<KvsMappingDto>();
             return storage.Set(storageKey, new KvsMappingDto { Value = value });
         }
+
+        public async Task<List<string>> AddAlias(string key, string alias)
+        {
+            var storageKey = key.SeedStorageKey<KvsMappingDto>();
+            await storage.PerformTransactionalBatch(new List<StorageOperation<KvsMappingDto>>
+            {
+                new AddForeignKeyOperation<KvsMappingDto>
+                {
+                    ForeignKey = alias.SeedStorageKey<KvsMappingDto>(),
+                    Target = storageKey
+                }
+            });
+
+            var aliases = await storage.GetForeignKeys(storageKey);
+            return aliases.Select(a => a.SingleValue()).ToList();
+        }
+
+        public async Task<List<string>> RemoveAlias(string key, string alias)
+        {
+            var storageKey = key.SeedStorageKey<KvsMappingDto>();
+            await storage.PerformTransactionalBatch(new List<StorageOperation<KvsMappingDto>>
+            {
+                new DeleteForeignKeyOperation<KvsMappingDto>
+                {
+                    Target = alias.SeedStorageKey<KvsMappingDto>(),
+                }
+            });
+
+            var aliases = await storage.GetForeignKeys(storageKey);
+            return aliases.Select(a => a.SingleValue()).ToList();
+        }
     }
 }
