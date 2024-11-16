@@ -3,6 +3,7 @@ using Haondt.Web.Core.Components;
 using Haondt.Web.Core.Extensions;
 using Haondt.Web.Core.Http;
 using SpendLess.Components.SpendLessComponents;
+using SpendLess.Core.Extensions;
 using SpendLess.NodeRed.Services;
 using SpendLess.Web.Domain.Services;
 using SpendLess.Web.Domain.SpendLess.Domain;
@@ -20,18 +21,22 @@ namespace SpendLess.EventHandlers.NodeRed
             if (!body.HasValue)
                 throw new InvalidOperationException("missing `requestText` parameter in form");
 
-            var result = await nodeRed.SendToNodeRed(body.Value);
+            var (status, result) = await nodeRed.SendToNodeRedRaw(body.Value);
 
-            try
+            if (result.HasValue)
             {
-                var jsonDocument = JsonDocument.Parse(result);
-                result = JsonSerializer.Serialize(jsonDocument.RootElement, new JsonSerializerOptions
+
+                try
                 {
-                    WriteIndented = true,
-                });
-            }
-            catch
-            {
+                    var jsonDocument = JsonDocument.Parse(result.Value);
+                    result = JsonSerializer.Serialize(jsonDocument.RootElement, new JsonSerializerOptions
+                    {
+                        WriteIndented = true,
+                    });
+                }
+                catch
+                {
+                }
             }
 
             return await componentFactory.GetPlainComponent(new AppendComponentLayoutModel
@@ -40,11 +45,12 @@ namespace SpendLess.EventHandlers.NodeRed
                 {
                     await componentFactory.GetPlainComponent(new NodeRedUpdateModel
                     {
-                        ResponseText = new(result),
+                        ResponseText = result.Or(""),
+                        ResponseStatus = status
                     }),
                     await componentFactory.GetPlainComponent(new ToastModel
                     {
-                        Message = "Sent to Node Red successfully.",
+                        Message =  "Sent to Node Red successfully.",
                         Severity = ToastSeverity.Success
                     })
                 }

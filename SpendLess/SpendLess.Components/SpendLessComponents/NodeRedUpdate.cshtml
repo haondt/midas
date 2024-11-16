@@ -13,3 +13,24 @@
         @(Model.IsSwap ? Html.Raw("hx-swap-oob=\"outerHTML\"") : "")
         name="responseText" class="message-body response-text">@Model.ResponseText.Value</div>
 }
+
+@if (Model.ResponseStatus.HasValue)
+{
+    <div id="response-header" 
+        hx-swap-oob="outerHTML"
+        class="message-header">
+        <span>Response</span>
+        @if(Model.ResponseStatus.Value < 300)
+        {
+            <span class="has-text-success">@Model.ResponseStatus.Value</span>
+        }
+        else if(Model.ResponseStatus.Value < 400)
+        {
+            <span class="has-text-warning">@Model.ResponseStatus.Value</span>
+        }
+        else
+        {
+            <span class="has-text-danger">@Model.ResponseStatus.Value</span>
+        }
+    </div>
+}

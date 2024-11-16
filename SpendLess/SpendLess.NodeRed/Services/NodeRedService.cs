@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Haondt.Core.Models;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using SpendLess.NodeRed.Exceptions;
 using SpendLess.NodeRed.Models;
@@ -44,6 +45,15 @@ namespace SpendLess.NodeRed.Services
             var result = await SendToNodeRed(input.ToString(), cancellationToken);
             return JsonConvert.DeserializeObject<SendToNodeRedResponseDto>(result, SerializerSettings)
                 ?? throw new NodeRedException($"failed to deserialize response to {typeof(SendToNodeRedResponseDto)}: {result}");
+        }
+
+        public async Task<(int ResponseCode, Optional<string> Body)> SendToNodeRedRaw(string input, CancellationToken? cancellationToken = null)
+        {
+            var response = await InternalSendToNodeRed(ApplyPath, input);
+            var status = (int)response.StatusCode;
+            if (response.Content != null)
+                return (status, await response.Content.ReadAsStringAsync());
+            return (status, new());
         }
 
         //public async Task<Result<string, string>> ExtractKey(string field, string input, CancellationToken? cancellationToken)

@@ -3,7 +3,8 @@
 @using SpendLess.Web.Core.Extensions
 @model SpendLess.Components.SpendLessComponents.NodeRedModel
 
-<div class="box">
+<div class="panel is-danger" style="max-width:var(--spendless-form-page-width);margin:auto;">
+    <div class="panel-heading">Node-Red</div>
     <div class="column">
         <div class="buttons">
             <button class="button" hx-post="/_event/NodeRedSend" hx-include="#request-text">Send to Node-Red</button>
@@ -49,7 +50,7 @@
             </div>
             <div class="level-item">
                 <article class="message">
-                    <div class="message-header">Response</div>
+                    <div id="response-header" class="message-header">Response</div>
                     @await Html.PartialAsync(new NodeRedUpdateModel{ IsSwap = false, ResponseText = new("")})
                 </article>
             </div>

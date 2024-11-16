@@ -10,6 +10,8 @@ namespace SpendLess.Components.SpendLessComponents
 
         public string ViewPath => NodeRedUpdateComponentDescriptorFactory.ViewPath;
 
+        public Optional<int> ResponseStatus { get; set; } = new();
+
         public bool IsSwap = true;
     }
 
