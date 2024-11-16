@@ -1,0 +1,54 @@
+<script type="text/javascript">
+    RED.nodes.registerType('lower-case',{
+        category: 'spendless',
+        color: '#00ebc7',
+        defaults: {
+            name: {value:""},
+            account: { value: "" },
+            lowerCaseServiceUrl: {value: ""}
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "fa-dollar",
+        label: function() {
+            return this.name||"lower-case";
+        },
+        oneditprepare: function() {
+            let baseUrl = RED.settings.lowerCaseServiceUrl;
+            // fetch("http://www.google.com")
+            //     .then(r => r.json())
+            //     .then(data => console.log(data));
+            $("#node-input-account").typedInput({
+                types: [
+                    {
+                        value: "fruit",
+                        options: [
+                            { value: "apple", label: "Apple" },
+                            { value: "banana", label: baseUrl }
+                        ]
+                    }
+                ]
+
+            })
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="lower-case">
+    <div class="form-row">
+        <label for="node-input-apiConfig">Server</label>
+        <input type="text" id="node-input-apiConfig">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-account">Account</label>
+        <input type="text" id="node-input-account">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="lower-case">
+    <p>A simple node that converts the message payloads into all lower-case characters</p>
+</script>

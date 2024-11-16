@@ -1,0 +1,64 @@
+{
+    "id": "99f384cef6a769fb",
+    "type": "subflow",
+    "name": "apply in",
+    "info": "",
+    "category": "spendless",
+    "in": [],
+    "out": [
+        {
+            "x": 400,
+            "y": 40,
+            "wires": [
+                {
+                    "id": "17947cd8848e32d9",
+                    "port": 0
+                }
+            ]
+        }
+    ],
+    "env": [],
+    "meta": {
+        "module": "node-red-contrib-haondt-spend-less-subflows",
+        "type": "haondt-spend-less-apply-in",
+        "version": "1.0.0"
+    },
+    "color": "#DDAA99",
+    "flow": [
+        {
+            "id": "c1a42afb431f2ac2",
+            "type": "http in",
+            "z": "99f384cef6a769fb",
+            "name": "",
+            "url": "/apply",
+            "method": "post",
+            "upload": false,
+            "swaggerDoc": "",
+            "x": 110,
+            "y": 40,
+            "wires": [
+                [
+                    "17947cd8848e32d9"
+                ]
+            ]
+        },
+        {
+            "id": "17947cd8848e32d9",
+            "type": "function",
+            "z": "99f384cef6a769fb",
+            "name": "function 1",
+            "func": "msg.spendless = {\n    'request': {\n        'payload': msg.payload\n    }\n};\nreturn msg;",
+            "outputs": 1,
+            "timeout": 0,
+            "noerr": 0,
+            "initialize": "",
+            "finalize": "",
+            "libs": [],
+            "x": 280,
+            "y": 40,
+            "wires": [
+                []
+            ]
+        }
+    ]
+}
