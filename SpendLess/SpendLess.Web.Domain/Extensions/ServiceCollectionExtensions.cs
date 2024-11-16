@@ -1,6 +1,8 @@
-﻿using Haondt.Web.BulmaCSS.Extensions;
+﻿using Haondt.Web.Assets;
+using Haondt.Web.BulmaCSS.Extensions;
 using Haondt.Web.Services;
 using SpendLess.Components.Services;
+using SpendLess.EventHandlers.SpendLess;
 using SpendLess.Web.Core.Extensions;
 using SpendLess.Web.Domain.Services;
 using SpendLess.Web.Domain.SpendLess.Domain;
@@ -16,6 +18,8 @@ namespace SpendLess.Web.Domain.Extensions
             services.AddSingleton<ISingletonComponentFactory, SingletonComponentFactory>();
             services.AddScoped<IEventHandler, SingleEventHandlerRegistry>();
 
+            services.AddScoped<ISingleEventHandler, JsonPrettifyCodeEventHandler>();
+
             services.AddSpendLessDomainWebComponents();
 
             services.AddSpendLessHeadEntries();
@@ -25,6 +29,11 @@ namespace SpendLess.Web.Domain.Extensions
 
         private static IServiceCollection AddSpendLessHeadEntries(this IServiceCollection services)
         {
+            var assembly = typeof(ServiceCollectionExtensions).Assembly;
+            var assemblyPrefix = assembly.GetName().Name;
+
+            services.AddSingleton<IAssetSource>(sp => new ManifestAssetSource(assembly));
+
             services.AddScoped<IHeadEntryDescriptor>(sp => new ScriptDescriptor
             {
                 Uri = "https://kit.fontawesome.com/afd44816da.js",
@@ -43,6 +52,10 @@ namespace SpendLess.Web.Domain.Extensions
             });
             services.AddScoped<IHeadEntryDescriptor>(_ => new ScriptDescriptor
             {
+                Uri = $"/_asset/{assemblyPrefix}.wwwroot.hx-rename.js"
+            });
+            services.AddScoped<IHeadEntryDescriptor>(_ => new ScriptDescriptor
+            {
                 Uri = "https://unpkg.com/htmx-ext-multi-swap@2.0.0/multi-swap.js"
             });
             return services;
@@ -58,6 +71,8 @@ namespace SpendLess.Web.Domain.Extensions
             services.AddComponent<AutocompleteComponentDescriptorFactory>();
             services.AddComponent<CloseModalModelComponentDescriptorFactory>();
             services.AddComponent<ToastComponentDescriptorFactory>();
+            services.AddComponent<TextComponentDescriptorFactory>();
+            services.AddComponent<CodeWindowComponentDescriptorFactory>();
 
             return services;
         }

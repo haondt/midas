@@ -16,12 +16,14 @@ namespace SpendLess.Kvs.SpendLess.Kvs
     {
         public required string Key { get; set; }
         public List<string> Aliases { get; set; } = [];
+        public string Value { get; set; } = "";
 
         public static EditMappingModel FromExpandedMappingDto(ExpandedKvsMappingDto expandedMapping)
         {
             return new EditMappingModel
             {
                 Key = expandedMapping.Key,
+                Value = expandedMapping.Value,
             };
         }
     }

@@ -1,0 +1,31 @@
+﻿@using SpendLess.Core.Extensions
+@model SpendLess.Web.Domain.SpendLess.Domain.CodeWindowModel
+<style>
+    @@scope {
+        .message-body {
+            overflow: auto;
+            font-family: monospace;
+            font-size: 1rem;
+            height: 350px;
+            line-height: 1.25rem;
+        }
+
+        textarea.message-body {
+            resize: none;
+            width: 100%;
+            outline: none;
+            vertical-align: top;
+        }
+
+        .message {
+            width: 100%;
+        }
+    }
+</style>
+<article class="message">
+    <div class="message-header">@Model.Title.Or("")</div>
+    <textarea 
+        @(Model.Id.HasValue ? $"id={Model.Id.Value}" : "")
+        @(Model.Name.HasValue ? $"name={Model.Name.Value}" : "")
+        class="message-body">@Model.Text</textarea>
+</article>

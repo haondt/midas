@@ -15,11 +15,12 @@ namespace SpendLess.Kvs.Services
             var foreignKeys = await storage.GetForeignKeys(key);
             var aliases = foreignKeys.Select(fk => fk.SingleValue()).ToList();
 
-            //var result = await storage.Get(key);
+            var result = await storage.GetDefault(key);
             return new ExpandedKvsMappingDto
             {
                 Key = term,
-                Aliases = aliases
+                Aliases = aliases,
+                Value = result.Value
             };
         }
 

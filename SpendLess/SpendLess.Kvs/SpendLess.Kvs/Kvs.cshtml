@@ -51,71 +51,66 @@
 
 
     Func<(bool IsSwap, EditMappingModel Model), object> createEditMappingView =
-    @<div id="edit-mapping-container" class="panel-block"
+    @<div id="edit-mapping-container"
         @if(item.IsSwap)
         {
             <text>hx-swap-oob="true"</text>
         }>
-        <div class="block control">
-            <div class="field">
-                <button class="button is-medium is-static">@Model.EditMapping.Value.Key</button>
-            </div>
-            <hr/>
-            <br/>
-
-            <p class="title is-4">Aliases</p>
-            <form class="block"  hx-post="/_event/KvsAddAlias">
-                <input class="input" style="display:none;" value="@item.Model.Key"/>
-                <div class="field has-addons">
-                    <div class="control is-expanded">
-                        <input class="input" name="alias" placeholder="Alias" />
-                    </div>
-                    <div class="control">
-                        <button class="button is-primary">Add alias</button>
-                    </div>
-                </div>
-            </form>
-            @createAliasListView(item.Model.Aliases)
-            <hr/>
-            <br/>
-
-            <p class="title is-4">Value</p>
-            <div class="field">
-                <div class="buttons">
-                    <button class="button is-primary" 
-                        hx-post="/_event/KvsUpsert" 
-                        hx-vals='{"key":"@item.Model.Key"}'
-                        hx-include="#kvs-value">Update</button>
-                    <button class="button is-danger" hx-post="/_event/DeleteLookupValue" hx-include="#store-select, #primary-key">Delete</button>
-                    <button class="button" hx-post="/_event/PrettifyLookupValue" hx-include="#lookup-value">Prettify</button>
+        <div class="panel-block has-background-link-dark">
+            <div class="control">
+                <div class="is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between">
+                    <p class="is-size-5 is-family-monospace">@Model.EditMapping.Value.Key</p>
+                    <button class="button"
+                        hx-get="/_component/@typeIdentity"
+                        hx-vals='{"launch-select-modal":true}'
+                        hx-swap="none">
+                        Select Mapping
+                    </button>
                 </div>
             </div>
+        </div>
 
-            <style>
-                @@scope {
-                    .request-text {
-                        overflow: auto;
-                        font-family: monospace;
-                        font-size: 1rem;
-                        height: 350px;
-                        line-height: 1.25rem;
-                        resize: none;
-                        width: 100%;
-                        outline: none;
-                    }
-                    .message {
-                        width: 100%;
-                    }
+        <div class="panel-block">
+            <div class="control">
+                <p class="title is-4">Aliases</p>
+                <form class="block"  hx-post="/_event/KvsAddAlias">
+                    <input class="input" style="display:none;" value="@item.Model.Key"/>
+                    <div class="field has-addons">
+                        <div class="control is-expanded">
+                            <input class="input" name="alias" placeholder="Alias" />
+                        </div>
+                        <div class="control">
+                            <button class="button is-primary">Add alias</button>
+                        </div>
+                    </div>
+                </form>
+                @createAliasListView(item.Model.Aliases)
+                <hr/>
+                <br/>
 
-                }
-            </style>
+                <p class="title is-4">Value</p>
+                <div class="field">
+                    <div class="buttons">
+                        <button class="button is-primary" 
+                            hx-post="/_event/KvsUpsert" 
+                            hx-vals='{"key":"@item.Model.Key"}'
+                            hx-include="#kvs-value">Update</button>
+                        <button class="button" hx-post="/_event/JsonPrettifyCode" 
+                            hx-target="#kvs-value"
+                            hx-vals='{"name":"value"}'
+                            hx-swap="innerHTML"
+                            hx-include="#kvs-value">Prettify</button>
+                    </div>
+                </div>
 
-            <article class="message">
-                <div class="message-header"></div>
-                <textarea id="kvs-value" name="value" class="message-body request-text"></textarea>
-            </article>
-
-
+                <div id="kvs-value">
+                    @await Html.PartialAsync(new CodeWindowModel
+                    {
+                        Name = "value",
+                        Text = item.Model.Value
+                    })
+                </div>
+            </div>
         </div>
     </div>;
 }
@@ -124,16 +119,6 @@
 {
     <div class="panel is-link" style="max-width:var(--spendless-form-page-width);margin:auto;">
         <p class="panel-heading">Key-Value Store</p>
-        <div class="panel-block">
-            <div class="buttons">
-                <button class="button"
-                    hx-get="/_component/@typeIdentity"
-                    hx-vals='{"launch-select-modal":true}'
-                    hx-swap="none">
-                    Open Mapping
-                </button>
-            </div>
-        </div>
         @if (Model.EditMapping.HasValue)
         {
             @createEditMappingView((false, Model.EditMapping.Value))

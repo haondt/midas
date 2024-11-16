@@ -15,11 +15,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendLess.Persistence", "Sp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendLess.Domain", "SpendLess.Domain\SpendLess.Domain.csproj", "{94EFD66D-0BA5-474E-8762-5C32860C0CF2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpendLess.Kvs", "SpendLess.Kvs\SpendLess.Kvs.csproj", "{FBD8D62F-B967-4AEB-841C-4AF66FC3B80C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendLess.Kvs", "SpendLess.Kvs\SpendLess.Kvs.csproj", "{FBD8D62F-B967-4AEB-841C-4AF66FC3B80C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpendLess.Domain.Web", "SpendLess.Web.Domain\SpendLess.Web.Domain.csproj", "{192726E9-6E16-4B6F-8DA4-58E04F67BA77}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendLess.Web.Domain", "SpendLess.Web.Domain\SpendLess.Web.Domain.csproj", "{192726E9-6E16-4B6F-8DA4-58E04F67BA77}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpendLess.Core.Web", "SpendLess.Web.Core\SpendLess.Web.Core.csproj", "{888BBF63-029D-4C28-B586-679E7B434CC7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendLess.Web.Core", "SpendLess.Web.Core\SpendLess.Web.Core.csproj", "{888BBF63-029D-4C28-B586-679E7B434CC7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
