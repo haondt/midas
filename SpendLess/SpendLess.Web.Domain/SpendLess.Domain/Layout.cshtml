@@ -33,6 +33,10 @@
           border-top-right-radius: 0;
           border-bottom-right-radius: 0;
         }
+
+        [data-loading] {
+            display: none;
+        }
     }
 
     body {
@@ -40,7 +44,7 @@
     }
     
 </style>
-<div id="mother-container" hx-ext="rename">
+<div id="mother-container" hx-ext="rename,loading-states">
     <div id="toast-container" 
         class="is-flex is-flex-direction-column is-justify-content-flex-start is-align-items-flex-end mr-5 mt-5">
         <style>

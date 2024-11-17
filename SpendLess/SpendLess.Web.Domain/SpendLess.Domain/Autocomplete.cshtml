@@ -5,7 +5,7 @@
 {
     @foreach(var item in suggestions.Suggestions)
     {
-        <a class="dropdown-item" _="on mousedown send selectionClicked(text:(my innerHTML)) to the previous .input">@item</a>
+        <a class="dropdown-item" _="on mousedown send selectionClicked(text:(my textContent)) to the previous .input">@item</a>
     }
 }
 else if(Model is AutocompleteBodyModel body)
@@ -35,7 +35,7 @@ else if(Model is AutocompleteBodyModel body)
                     if the event's key is 'Enter'
                         if (the next <.dropdown-item.is-active />) is not null
                             halt the event
-                            set my value to (the next <.dropdown-item.is-active/>)'s innerHTML
+                            set my value to (the next <.dropdown-item.is-active/>)'s textContent
                             send focusout to me
                             @(body.CompletionEvent.HasValue ? $"then send {body.CompletionEvent.Value}" : "")
                         end

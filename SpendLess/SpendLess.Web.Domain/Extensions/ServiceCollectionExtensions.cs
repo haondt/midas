@@ -58,6 +58,10 @@ namespace SpendLess.Web.Domain.Extensions
             {
                 Uri = "https://unpkg.com/htmx-ext-multi-swap@2.0.0/multi-swap.js"
             });
+            services.AddScoped<IHeadEntryDescriptor>(_ => new ScriptDescriptor
+            {
+                Uri = "https://unpkg.com/htmx-ext-loading-states@2.0.0/loading-states.js"
+            });
             return services;
         }
 

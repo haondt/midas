@@ -8,7 +8,8 @@ using SpendLess.Persistence.Storages;
 
 namespace SpendLess.Kvs.Services
 {
-    public class KvsService(IStorage storage, IKvsStorage kvsStorage) : IKvsService
+    public class KvsService(IStorage storage, IKvsStorage kvsStorage,
+        ILogger<KvsService> logger) : IKvsService
     {
         public async Task<ExpandedKvsMappingDto> GetExpandedMapping(string term)
         {
@@ -115,24 +116,32 @@ namespace SpendLess.Kvs.Services
 
         public async Task ImportKvsMappings(ExternalKvsMappingsDto mappings, bool overwriteExisting)
         {
-            foreach (var (key, value) in mappings.Mappings)
+            logger.LogInformation("Starting mapping import");
+            try
             {
-                if (overwriteExisting)
+
+                foreach (var (key, value) in mappings.Mappings)
                 {
-                    await UpsertValue(key, value);
-                    continue;
+                    var storageKey = key.SeedStorageKey<KvsMappingDto>();
+
+                    logger.LogInformation($"importing key {key}...");
+
+                    if (!string.IsNullOrEmpty(value.Value))
+                        if (overwriteExisting || !await storage.ContainsKey(storageKey))
+                            await UpsertValue(key, value.Value);
+
+                    if (value.Aliases != null)
+                        foreach (var alias in value.Aliases)
+                            await AddAlias(key, alias);
+
                 }
-
-                var storageKey = key.SeedStorageKey<KvsMappingDto>();
-                if (await storage.ContainsKey(storageKey))
-                    continue;
-
-                await kvsStorage.AddKey(key);
-                await storage.Set(storageKey, new KvsMappingDto { Value = value });
+                logger.LogInformation("Completed mapping import");
             }
-
-            foreach (var (alias, key) in mappings.Aliases)
-                await AddAlias(key, alias);
+            catch (Exception)
+            {
+                logger.LogInformation("Ran into an error during mapping import");
+                throw;
+            }
         }
 
         public async Task<ExternalKvsMappingsDto> ExportMappings()
@@ -141,12 +150,12 @@ namespace SpendLess.Kvs.Services
 
             foreach (var key in await kvsStorage.GetAllKeys())
             {
+                var externalMapping = new ExternalKvsMappingDto();
+
                 var storageKey = key.SeedStorageKey<KvsMappingDto>();
                 var mapping = await storage.Get(storageKey);
-                if (!mapping.IsSuccessful)
-                    continue;
-
-                result.Mappings[key] = mapping.Value.Value;
+                if (mapping.IsSuccessful)
+                    externalMapping.Value = mapping.Value.Value;
 
                 var aliasForeignKey = storageKey.Extend<KvsAliasDto>();
                 var aliases = await storage.GetManyByForeignKey(aliasForeignKey);
@@ -156,12 +165,15 @@ namespace SpendLess.Kvs.Services
                     if (aliasValue.Key != storageKey)
                         continue;
 
-                    result.Aliases[alias.SingleValue()] = key;
+                    externalMapping.Aliases ??= [];
+                    externalMapping.Aliases.Add(alias.SingleValue());
                 }
+
+                if (externalMapping.Aliases != null || !string.IsNullOrEmpty(externalMapping.Value))
+                    result.Mappings[key] = externalMapping;
             }
 
             return result;
-
         }
     }
 }
