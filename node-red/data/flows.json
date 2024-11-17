@@ -15,11 +15,11 @@
         "in": [],
         "out": [
             {
-                "x": 720,
+                "x": 760,
                 "y": 40,
                 "wires": [
                     {
-                        "id": "33ec8e7a7547a9d9",
+                        "id": "0aee765058a16870",
                         "port": 0
                     }
                 ]
@@ -248,22 +248,22 @@
         ],
         "out": [
             {
-                "x": 1140,
+                "x": 1720,
                 "y": 40,
                 "wires": [
                     {
-                        "id": "a47ef07fdbcb21f1",
+                        "id": "44cb5aef5c3c2a60",
                         "port": 0
                     }
                 ]
             },
             {
-                "x": 1160,
+                "x": 1740,
                 "y": 100,
                 "wires": [
                     {
-                        "id": "0b25c5a0578357c4",
-                        "port": 1
+                        "id": "98a045dfd8f165b5",
+                        "port": 0
                     }
                 ]
             }
@@ -322,11 +322,11 @@
         ],
         "out": [
             {
-                "x": 520,
-                "y": 40,
+                "x": 760,
+                "y": 60,
                 "wires": [
                     {
-                        "id": "a5e71765970756a7",
+                        "id": "9c2a7410b0650875",
                         "port": 0
                     }
                 ]
@@ -335,6 +335,49 @@
         "env": [],
         "meta": {},
         "color": "#DDAA99"
+    },
+    {
+        "id": "3b3449ca0b5f5b24",
+        "type": "subflow",
+        "name": "throw error",
+        "info": "",
+        "category": "spendless",
+        "in": [
+            {
+                "x": 40,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "603ab2ba9f1fa998"
+                    }
+                ]
+            }
+        ],
+        "out": [],
+        "env": [
+            {
+                "name": "ERROR_MESSAGE",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "label": {
+                        "en-US": "message"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            }
+        ],
+        "meta": {
+            "module": "node-red-contrib-haondt-spend-less-subflows",
+            "type": "haondt-spend-less-throw-error"
+        },
+        "color": "#00ebc7",
+        "icon": "font-awesome/fa-dollar"
     },
     {
         "id": "c1a42afb431f2ac2",
@@ -449,6 +492,33 @@
         "x": 520,
         "y": 120,
         "wires": [
+            [
+                "0aee765058a16870"
+            ]
+        ]
+    },
+    {
+        "id": "0aee765058a16870",
+        "type": "change",
+        "z": "99f384cef6a769fb",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.data",
+                "pt": "msg",
+                "to": "spendless.request.data",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 510,
+        "y": 160,
+        "wires": [
             []
         ]
     },
@@ -541,8 +611,7 @@
         "y": 140,
         "wires": [
             [
-                "a0bd9e9fe727f113",
-                "2569c2ac569f40d1"
+                "762a4ffb79ee2a08"
             ]
         ]
     },
@@ -569,8 +638,7 @@
         "y": 100,
         "wires": [
             [
-                "a0bd9e9fe727f113",
-                "2569c2ac569f40d1"
+                "762a4ffb79ee2a08"
             ]
         ]
     },
@@ -626,8 +694,7 @@
         "y": 40,
         "wires": [
             [
-                "a0bd9e9fe727f113",
-                "2569c2ac569f40d1"
+                "762a4ffb79ee2a08"
             ]
         ]
     },
@@ -656,7 +723,7 @@
         "checkall": "true",
         "repair": false,
         "outputs": 3,
-        "x": 930,
+        "x": 1110,
         "y": 40,
         "wires": [
             [
@@ -677,7 +744,7 @@
         "name": "",
         "statusCode": "400",
         "headers": {},
-        "x": 1120,
+        "x": 1300,
         "y": 40,
         "wires": []
     },
@@ -688,7 +755,7 @@
         "name": "",
         "statusCode": "500",
         "headers": {},
-        "x": 1120,
+        "x": 1300,
         "y": 120,
         "wires": []
     },
@@ -699,7 +766,7 @@
         "name": "",
         "statusCode": "200",
         "headers": {},
-        "x": 1120,
+        "x": 1300,
         "y": 80,
         "wires": []
     },
@@ -716,9 +783,37 @@
         "targetType": "jsonata",
         "statusVal": "",
         "statusType": "auto",
-        "x": 930,
+        "x": 1110,
         "y": 180,
         "wires": []
+    },
+    {
+        "id": "762a4ffb79ee2a08",
+        "type": "change",
+        "z": "e650a01280df74d9",
+        "name": "copy context",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload.context",
+                "pt": "msg",
+                "to": "spendless",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 910,
+        "y": 40,
+        "wires": [
+            [
+                "2569c2ac569f40d1",
+                "a0bd9e9fe727f113"
+            ]
+        ]
     },
     {
         "id": "db5b62c498fd92e0",
@@ -730,7 +825,7 @@
                 "t": "set",
                 "p": "spendless.context.description",
                 "pt": "msg",
-                "to": "spendless.csv.row[1]",
+                "to": "spendless.request.data[1]",
                 "tot": "msg"
             }
         ],
@@ -752,7 +847,7 @@
         "type": "function",
         "z": "9e3bf19c5e1acd5e",
         "name": "set date",
-        "func": "msg.spendless.context.date = Date.parse(msg.spendless.csv.row[0]);\nreturn msg;",
+        "func": "msg.spendless.context.date = new Date(msg.spendless.request.data[0]).toISOString();\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -772,7 +867,7 @@
         "type": "function",
         "z": "9e3bf19c5e1acd5e",
         "name": "set amount",
-        "func": "let dollarString = msg.spendless.csv.row[2].trim();\n\nif (dollarString.includes('.')) {\n    const [dollars, cents] = dollarString.split('.');\n    let totalCents = parseInt(dollars) * 100;\n    totalCents += parseInt(cents);\n    msg.spendless.context.amountCents = totalCents;\n} else {\n    msg.spendless.context.amountCents = parseInt(dollarString) * 100;\n}\nreturn msg;",
+        "func": "let dollarString = msg.spendless.request.data[2].trim();\n\nif (dollarString.includes('.')) {\n    const [dollars, cents] = dollarString.split('.');\n    let totalCents = parseInt(dollars) * 100;\n    totalCents += parseInt(cents);\n    msg.spendless.context.amountCents = totalCents;\n} else {\n    msg.spendless.context.amountCents = parseInt(dollarString) * 100;\n}\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -792,7 +887,7 @@
         "type": "switch",
         "z": "9e3bf19c5e1acd5e",
         "name": "check for debit amount",
-        "property": "spendless.csv.row[2]",
+        "property": "spendless.request.data[2]",
         "propertyType": "msg",
         "rules": [
             {
@@ -821,7 +916,7 @@
         "type": "function",
         "z": "9e3bf19c5e1acd5e",
         "name": "set amount",
-        "func": "let dollarString = msg.spendless.csv.row[3].trim();\n\nif (dollarString.includes('.')) {\n    const [dollars, cents] = dollarString.split('.');\n    let totalCents = parseInt(dollars) * 100;\n    totalCents += parseInt(cents);\n    msg.spendless.context.amountCents = totalCents;\n} else {\n    msg.spendless.context.amountCents = parseInt(dollarString) * 100;\n}\n\nreturn msg;",
+        "func": "let dollarString = msg.spendless.request.data[3].trim();\n\nif (dollarString.includes('.')) {\n    const [dollars, cents] = dollarString.split('.');\n    let totalCents = parseInt(dollars) * 100;\n    totalCents += parseInt(cents);\n    msg.spendless.context.amountCents = totalCents;\n} else {\n    msg.spendless.context.amountCents = parseInt(dollarString) * 100;\n}\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -841,7 +936,7 @@
         "type": "switch",
         "z": "9e3bf19c5e1acd5e",
         "name": "check for credit amount",
-        "property": "spendless.csv.row[3]",
+        "property": "spendless.request.data[3]",
         "propertyType": "msg",
         "rules": [
             {
@@ -927,7 +1022,7 @@
         "env": [
             {
                 "name": "ERROR_MESSAGE",
-                "value": "CIBC-Chequing CSV was not in the expected format - missing debit and credit columns",
+                "value": "CIBC-Chequing data was not in the expected format - missing debit and credit columns",
                 "type": "str"
             }
         ],
@@ -972,7 +1067,7 @@
         "env": [
             {
                 "name": "ERROR_MESSAGE",
-                "value": "CIBC-Chequing CSV was not in the expected format - unable to parse amount",
+                "value": "CIBC-Chequing data was not in the expected format - unable to parse amount",
                 "type": "str"
             }
         ],
@@ -2894,8 +2989,8 @@
                 "type": "str"
             }
         ],
-        "x": 920,
-        "y": 200,
+        "x": 760,
+        "y": 280,
         "wires": []
     },
     {
@@ -2904,7 +2999,7 @@
         "z": "463da193503067ee",
         "name": "",
         "method": "GET",
-        "ret": "obj",
+        "ret": "txt",
         "paytoqs": "ignore",
         "url": "",
         "tls": "",
@@ -2914,7 +3009,7 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 510,
+        "x": 330,
         "y": 40,
         "wires": [
             [
@@ -2932,7 +3027,7 @@
                 "t": "set",
                 "p": "url",
                 "pt": "msg",
-                "to": "$env('SPEND_LESS_API_URL')\t    & \"api/kvs/\"\t    & msg.spendless.kvs\t    & \"/value\"",
+                "to": "$env('SPEND_LESS_API_URL')\t    & \"api/kvs/\"\t    & msg.spendless.kvs\t    & \"/mapping\"",
                 "tot": "jsonata"
             }
         ],
@@ -2945,7 +3040,7 @@
         "y": 40,
         "wires": [
             [
-                "cc7f1701898a83a3"
+                "64c4ebdfbfb6b6a5"
             ]
         ]
     },
@@ -2974,13 +3069,15 @@
         "checkall": "true",
         "repair": false,
         "outputs": 3,
-        "x": 710,
+        "x": 530,
         "y": 40,
         "wires": [
             [
                 "a47ef07fdbcb21f1"
             ],
-            [],
+            [
+                "c92c92846b0d4c52"
+            ],
             [
                 "1e1fbf9ff26bc644",
                 "8aeb9fa48819967f"
@@ -3000,8 +3097,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 930,
-        "y": 140,
+        "x": 770,
+        "y": 240,
         "wires": []
     },
     {
@@ -3023,10 +3120,12 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 940,
+        "x": 760,
         "y": 40,
         "wires": [
-            []
+            [
+                "cc7f1701898a83a3"
+            ]
         ]
     },
     {
@@ -3047,40 +3146,156 @@
         "checkall": "true",
         "repair": false,
         "outputs": 2,
-        "x": 330,
+        "x": 970,
         "y": 40,
         "wires": [
             [
-                "64c4ebdfbfb6b6a5"
+                "b16d0f869f5d3405"
             ],
             [
-                "4fe7c1986f11e0f6"
+                "439ac240c46053bd"
             ]
         ]
     },
     {
-        "id": "4fe7c1986f11e0f6",
-        "type": "http request",
+        "id": "f05bded913cd0c79",
+        "type": "change",
         "z": "463da193503067ee",
-        "name": "",
-        "method": "GET",
-        "ret": "txt",
-        "paytoqs": "ignore",
-        "url": "",
-        "tls": "",
-        "persist": false,
-        "proxy": "",
-        "insecureHTTPParser": false,
-        "authType": "",
-        "senderr": false,
-        "headers": [],
-        "x": 510,
+        "name": "set default value",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.kvs.value",
+                "pt": "msg",
+                "to": "{}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1340,
         "y": 80,
         "wires": [
             [
-                "0b25c5a0578357c4"
+                "0188f78dcd7a35f7"
             ]
         ]
+    },
+    {
+        "id": "041529325ed2ba70",
+        "type": "json",
+        "z": "463da193503067ee",
+        "name": "parse json",
+        "property": "spendless.kvs",
+        "action": "obj",
+        "pretty": false,
+        "x": 1330,
+        "y": 40,
+        "wires": [
+            [
+                "0188f78dcd7a35f7"
+            ]
+        ]
+    },
+    {
+        "id": "b16d0f869f5d3405",
+        "type": "switch",
+        "z": "463da193503067ee",
+        "name": "has value?",
+        "property": "spendless.kvs",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "nempty"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1150,
+        "y": 40,
+        "wires": [
+            [
+                "041529325ed2ba70"
+            ],
+            [
+                "f05bded913cd0c79"
+            ]
+        ]
+    },
+    {
+        "id": "44cb5aef5c3c2a60",
+        "type": "link in",
+        "z": "463da193503067ee",
+        "name": "link in 2",
+        "links": [
+            "0188f78dcd7a35f7",
+            "439ac240c46053bd"
+        ],
+        "x": 1615,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "0188f78dcd7a35f7",
+        "type": "link out",
+        "z": "463da193503067ee",
+        "name": "complete",
+        "mode": "link",
+        "links": [
+            "44cb5aef5c3c2a60"
+        ],
+        "x": 1475,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "439ac240c46053bd",
+        "type": "link out",
+        "z": "463da193503067ee",
+        "name": "complete",
+        "mode": "link",
+        "links": [
+            "44cb5aef5c3c2a60"
+        ],
+        "x": 1095,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "98a045dfd8f165b5",
+        "type": "link in",
+        "z": "463da193503067ee",
+        "name": "link in 3",
+        "links": [
+            "c92c92846b0d4c52"
+        ],
+        "x": 1615,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c92c92846b0d4c52",
+        "type": "link out",
+        "z": "463da193503067ee",
+        "name": "key not found",
+        "mode": "link",
+        "links": [
+            "98a045dfd8f165b5"
+        ],
+        "x": 675,
+        "y": 80,
+        "wires": []
     },
     {
         "id": "acad7c39e448dd04",
@@ -3121,7 +3336,225 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 370,
+        "x": 190,
+        "y": 80,
+        "wires": [
+            [
+                "d8d190884fa47179"
+            ]
+        ]
+    },
+    {
+        "id": "d8d190884fa47179",
+        "type": "switch",
+        "z": "b86a301c9c586c6c",
+        "name": "has source account ?",
+        "property": "spendless.context",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "hask",
+                "v": "sourceAccount",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 200,
+        "y": 120,
+        "wires": [
+            [
+                "5794db8da4cdc39c"
+            ],
+            [
+                "f698c7c693058ca1"
+            ]
+        ]
+    },
+    {
+        "id": "f698c7c693058ca1",
+        "type": "switch",
+        "z": "b86a301c9c586c6c",
+        "name": "has destinationAccount ?",
+        "property": "spendless.context",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "hask",
+                "v": "destinationAccount",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 210,
+        "y": 160,
+        "wires": [
+            [
+                "95d3f0ba96ad9a17"
+            ],
+            [
+                "8a3a8485453cd804"
+            ]
+        ]
+    },
+    {
+        "id": "5794db8da4cdc39c",
+        "type": "change",
+        "z": "b86a301c9c586c6c",
+        "name": "set source account",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.response.transaction.sourceAccount",
+                "pt": "msg",
+                "to": "spendless.context.sourceAccount",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 450,
+        "y": 120,
+        "wires": [
+            [
+                "f698c7c693058ca1"
+            ]
+        ]
+    },
+    {
+        "id": "95d3f0ba96ad9a17",
+        "type": "change",
+        "z": "b86a301c9c586c6c",
+        "name": "set destination account",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.response.transaction.destinationAccount",
+                "pt": "msg",
+                "to": "spendless.context.destinationAccount",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 460,
+        "y": 160,
+        "wires": [
+            [
+                "8a3a8485453cd804"
+            ]
+        ]
+    },
+    {
+        "id": "d5a019dabd4fc640",
+        "type": "link out",
+        "z": "b86a301c9c586c6c",
+        "name": "link out 21",
+        "mode": "link",
+        "links": [
+            "9c2a7410b0650875"
+        ],
+        "x": 275,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "9c2a7410b0650875",
+        "type": "link in",
+        "z": "b86a301c9c586c6c",
+        "name": "link in 5",
+        "links": [
+            "d5a019dabd4fc640",
+            "0a52cce1d059d88d"
+        ],
+        "x": 685,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8a3a8485453cd804",
+        "type": "change",
+        "z": "b86a301c9c586c6c",
+        "name": "set description",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.response.transaction.description",
+                "pt": "msg",
+                "to": "spendless.context.description",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 180,
+        "y": 200,
+        "wires": [
+            [
+                "b4e33874c8b6e410"
+            ]
+        ]
+    },
+    {
+        "id": "b4e33874c8b6e410",
+        "type": "change",
+        "z": "b86a301c9c586c6c",
+        "name": "set date",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.response.transaction.date",
+                "pt": "msg",
+                "to": "spendless.context.date",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 160,
+        "y": 240,
+        "wires": [
+            [
+                "d5a019dabd4fc640"
+            ]
+        ]
+    },
+    {
+        "id": "603ab2ba9f1fa998",
+        "type": "function",
+        "z": "3b3449ca0b5f5b24",
+        "name": "throw error",
+        "func": "throw new Error(env.get('ERROR_MESSAGE'));",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 170,
         "y": 40,
         "wires": [
             []
@@ -3145,7 +3578,7 @@
         "type": "subflow:b2028b08979e589d",
         "z": "f6f2187d.f17ca8",
         "name": "",
-        "x": 1380,
+        "x": 2300,
         "y": 100,
         "wires": []
     },
@@ -3206,7 +3639,7 @@
         "type": "subflow:9e3bf19c5e1acd5e",
         "z": "f6f2187d.f17ca8",
         "name": "",
-        "x": 720,
+        "x": 480,
         "y": 100,
         "wires": [
             [
@@ -3259,10 +3692,10 @@
                 "5a5dfbb368ecd971"
             ],
             [
-                "2a644a17b31650ad"
+                "47aae1b0b3c6e728"
             ],
             [
-                "eb5d9467c4b89d21"
+                "47aae1b0b3c6e728"
             ],
             [
                 "5a5dfbb368ecd971"
@@ -3274,15 +3707,14 @@
         "type": "subflow:1ccf8eefe9fc6980",
         "z": "f6f2187d.f17ca8",
         "name": "",
-        "x": 960,
+        "x": 720,
         "y": 100,
         "wires": [
             [
-                "ac5c1b947fa68cbe"
+                "058beea6a267dfab"
             ],
             [
-                "fccb7a922791a067",
-                "54eb49730d1a9c76"
+                "447805d7f58beb5b"
             ]
         ]
     },
@@ -3299,78 +3731,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1380,
-        "y": 40,
-        "wires": []
-    },
-    {
-        "id": "2a644a17b31650ad",
-        "type": "change",
-        "z": "f6f2187d.f17ca8",
-        "name": "",
-        "rules": [
-            {
-                "t": "set",
-                "p": "spendless.csv",
-                "pt": "msg",
-                "to": "spendless.request.csv",
-                "tot": "msg"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 480,
-        "y": 100,
-        "wires": [
-            [
-                "47aae1b0b3c6e728"
-            ]
-        ]
-    },
-    {
-        "id": "eb5d9467c4b89d21",
-        "type": "change",
-        "z": "f6f2187d.f17ca8",
-        "name": "",
-        "rules": [
-            {
-                "t": "set",
-                "p": "spendless.csv",
-                "pt": "msg",
-                "to": "spendless.request.csv",
-                "tot": "msg"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 480,
-        "y": 140,
-        "wires": [
-            [
-                "47aae1b0b3c6e728"
-            ]
-        ]
-    },
-    {
-        "id": "fccb7a922791a067",
-        "type": "subflow:e650a01280df74d9",
-        "z": "f6f2187d.f17ca8",
-        "name": "",
-        "env": [
-            {
-                "name": "ERROR_MESSAGE",
-                "value": "unable to parse description",
-                "type": "str"
-            }
-        ],
-        "x": 1200,
-        "y": 200,
+        "x": 2060,
+        "y": 180,
         "wires": []
     },
     {
@@ -3378,30 +3740,227 @@
         "type": "subflow:b86a301c9c586c6c",
         "z": "f6f2187d.f17ca8",
         "name": "",
-        "x": 1190,
+        "x": 2110,
         "y": 100,
         "wires": [
             [
-                "10e382e0334a13a3",
+                "10e382e0334a13a3"
+            ]
+        ]
+    },
+    {
+        "id": "447805d7f58beb5b",
+        "type": "change",
+        "z": "f6f2187d.f17ca8",
+        "name": "set kvs from description",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.kvs",
+                "pt": "msg",
+                "to": "spendless.context.description",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 970,
+        "y": 140,
+        "wires": [
+            [
+                "1dd0844ec4b005bc"
+            ]
+        ]
+    },
+    {
+        "id": "eafc861a6d66d463",
+        "type": "subflow:3b3449ca0b5f5b24",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "env": [
+            {
+                "name": "ERROR_MESSAGE",
+                "value": "unable to determine opposing account",
+                "type": "str"
+            }
+        ],
+        "x": 1680,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "058beea6a267dfab",
+        "type": "change",
+        "z": "f6f2187d.f17ca8",
+        "name": "set kvs from parsedDescription",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.kvs",
+                "pt": "msg",
+                "to": "spendless.context.parsedDescription",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 990,
+        "y": 100,
+        "wires": [
+            [
+                "1dd0844ec4b005bc"
+            ]
+        ]
+    },
+    {
+        "id": "1dd0844ec4b005bc",
+        "type": "subflow:463da193503067ee",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "x": 1230,
+        "y": 100,
+        "wires": [
+            [
+                "2dec95fb57fd1b6b"
+            ],
+            [
+                "7196f52d6089bf22"
+            ]
+        ]
+    },
+    {
+        "id": "fd88824b2e16b798",
+        "type": "change",
+        "z": "f6f2187d.f17ca8",
+        "name": "set source account",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.sourceAccount",
+                "pt": "msg",
+                "to": "msg.spendless.kvs.key",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1710,
+        "y": 100,
+        "wires": [
+            [
+                "7386451bd5ce1272"
+            ]
+        ]
+    },
+    {
+        "id": "2dec95fb57fd1b6b",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "determine opposing account",
+        "func": "const ctx = msg.spendless.context;\nif (ctx.hasOwnProperty('sourceAccount') && !ctx.hasOwnProperty('destinationAccount'))\n    return [msg, null, null];\nif (!ctx.hasOwnProperty('sourceAccount') && ctx.hasOwnProperty('destinationAccount'))\n    return [null, msg, null];\nreturn [null, null, msg];",
+        "outputs": 3,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1460,
+        "y": 100,
+        "wires": [
+            [
+                "fd88824b2e16b798"
+            ],
+            [
+                "30888a188ff2c064"
+            ],
+            [
+                "eafc861a6d66d463"
+            ]
+        ],
+        "outputLabels": [
+            "source",
+            "destination",
+            "error"
+        ]
+    },
+    {
+        "id": "30888a188ff2c064",
+        "type": "change",
+        "z": "f6f2187d.f17ca8",
+        "name": "set destination account",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.destinationAccount",
+                "pt": "msg",
+                "to": "msg.spendless.kvs.key",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1720,
+        "y": 140,
+        "wires": [
+            [
+                "7386451bd5ce1272"
+            ]
+        ]
+    },
+    {
+        "id": "6ab4de770590f69f",
+        "type": "link in",
+        "z": "f6f2187d.f17ca8",
+        "name": "link in 4",
+        "links": [
+            "7386451bd5ce1272",
+            "7196f52d6089bf22"
+        ],
+        "x": 1965,
+        "y": 100,
+        "wires": [
+            [
+                "ac5c1b947fa68cbe",
                 "6d7fb619ad0f7f05"
             ]
         ]
     },
     {
-        "id": "54eb49730d1a9c76",
-        "type": "debug",
+        "id": "7386451bd5ce1272",
+        "type": "link out",
         "z": "f6f2187d.f17ca8",
-        "name": "debug 3",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1100,
-        "y": 280,
+        "name": "link out 19",
+        "mode": "link",
+        "links": [
+            "6ab4de770590f69f"
+        ],
+        "x": 1875,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "7196f52d6089bf22",
+        "type": "link out",
+        "z": "f6f2187d.f17ca8",
+        "name": "link out 20",
+        "mode": "link",
+        "links": [
+            "6ab4de770590f69f"
+        ],
+        "x": 1355,
+        "y": 160,
         "wires": []
     }
 ]
