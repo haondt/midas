@@ -112,5 +112,56 @@ namespace SpendLess.Kvs.Services
             var aliases = await storage.GetManyByForeignKey(aliasForeignKey);
             return aliases.Select(a => a.Key.SingleValue()).ToList();
         }
+
+        public async Task ImportKvsMappings(ExternalKvsMappingsDto mappings, bool overwriteExisting)
+        {
+            foreach (var (key, value) in mappings.Mappings)
+            {
+                if (overwriteExisting)
+                {
+                    await UpsertValue(key, value);
+                    continue;
+                }
+
+                var storageKey = key.SeedStorageKey<KvsMappingDto>();
+                if (await storage.ContainsKey(storageKey))
+                    continue;
+
+                await kvsStorage.AddKey(key);
+                await storage.Set(storageKey, new KvsMappingDto { Value = value });
+            }
+
+            foreach (var (alias, key) in mappings.Aliases)
+                await AddAlias(key, alias);
+        }
+
+        public async Task<ExternalKvsMappingsDto> ExportMappings()
+        {
+            var result = new ExternalKvsMappingsDto();
+
+            foreach (var key in await kvsStorage.GetAllKeys())
+            {
+                var storageKey = key.SeedStorageKey<KvsMappingDto>();
+                var mapping = await storage.Get(storageKey);
+                if (!mapping.IsSuccessful)
+                    continue;
+
+                result.Mappings[key] = mapping.Value.Value;
+
+                var aliasForeignKey = storageKey.Extend<KvsAliasDto>();
+                var aliases = await storage.GetManyByForeignKey(aliasForeignKey);
+                foreach (var (alias, aliasValue) in aliases)
+                {
+                    // shouldn't happen but just in case
+                    if (aliasValue.Key != storageKey)
+                        continue;
+
+                    result.Aliases[alias.SingleValue()] = key;
+                }
+            }
+
+            return result;
+
+        }
     }
 }

@@ -6,11 +6,11 @@ using SpendLess.Core.Exceptions;
 using SpendLess.Domain.Models;
 using SpendLess.Domain.Services;
 using SpendLess.Exceptions;
-using SpendLess.Extensions;
 using SpendLess.NodeRed.Models;
 using SpendLess.NodeRed.Services;
 using SpendLess.Persistence.Extensions;
 using SpendLess.Persistence.Services;
+using SpendLess.Web.Domain.Extensions;
 using SpendLess.Web.Domain.Services;
 
 namespace SpendLess.EventHandlers.TransactionImport

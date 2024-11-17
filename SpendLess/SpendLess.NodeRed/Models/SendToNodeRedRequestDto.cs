@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
+using SpendLess.Domain.Constants;
 using SpendLess.Domain.Models;
-using SpendLess.NodeRed.Services;
 
 namespace SpendLess.NodeRed.Models
 {
@@ -12,7 +12,7 @@ namespace SpendLess.NodeRed.Models
 
         public override string ToString()
         {
-            return JsonConvert.SerializeObject(this, NodeRedService.SerializerSettings);
+            return JsonConvert.SerializeObject(this, SpendLessConstants.ApiSerializerSettings);
         }
     }
 

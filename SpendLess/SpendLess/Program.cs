@@ -2,6 +2,7 @@ using Haondt.Identity.StorageKey;
 using Haondt.Web.Core.Extensions;
 using Haondt.Web.Core.Middleware;
 using Haondt.Web.Extensions;
+using SpendLess.Admin.Extensions;
 using SpendLess.Components.Extensions;
 using SpendLess.Domain.Extensions;
 using SpendLess.Extensions;
@@ -38,6 +39,7 @@ builder.Services
     .AddSpendLessPersistenceServices(builder.Configuration)
     .AddSpendLessDomainServices()
     .AddKvs(builder.Configuration)
+    .AddAdmin(builder.Configuration)
     .AddSpendLessWebDomainServices(builder.Configuration)
     .AddNodeRedServices(builder.Configuration);
 //.AddNodeRedServices(builder.Configuration)

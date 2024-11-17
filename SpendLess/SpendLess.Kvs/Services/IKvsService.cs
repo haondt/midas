@@ -13,5 +13,7 @@ namespace SpendLess.Kvs.Services
         Task<List<string>> RemoveAlias(string key, string alias);
         Task<List<string>> Search(string term);
         Task UpsertValue(string key, string value);
+        Task ImportKvsMappings(ExternalKvsMappingsDto mappings, bool overwriteExisting);
+        Task<ExternalKvsMappingsDto> ExportMappings();
     }
 }

@@ -6,6 +6,7 @@ namespace SpendLess.Persistence.Storages
     {
         Task AddKey(string key);
         Task RemoveKey(string key);
+        Task<List<string>> GetAllKeys();
         Task<List<string>> SearchKey(string partialKey);
     }
 }

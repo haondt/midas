@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -16,12 +16,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Haondt.Web.BulmaCSS" Version="0.0.15-alpha-20241115175110" />
-    <PackageReference Include="Haondt.Web" Version="0.0.15-alpha-20241115175110" />
+    <PackageReference Include="Haondt.Web.BulmaCSS" Version="0.0.15-alpha-20241116173409" />
+    <PackageReference Include="Haondt.Web" Version="0.0.15-alpha-20241116173409" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SpendLess.Core\SpendLess.Core.csproj" />
+    <ProjectReference Include="..\SpendLess.Domain\SpendLess.Domain.csproj" />
     <ProjectReference Include="..\SpendLess.Web.Core\SpendLess.Web.Core.csproj" />
   </ItemGroup>
 

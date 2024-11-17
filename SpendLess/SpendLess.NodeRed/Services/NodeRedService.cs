@@ -1,6 +1,6 @@
 ﻿using Haondt.Core.Models;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+using SpendLess.Domain.Constants;
 using SpendLess.NodeRed.Exceptions;
 using SpendLess.NodeRed.Models;
 using System.Text;
@@ -11,17 +11,6 @@ namespace SpendLess.NodeRed.Services
     {
         private const string ApplyPath = "/apply";
         //private const string ExtractKeyPath = "/extract-key";
-
-        public static JsonSerializerSettings SerializerSettings { get; set; }
-        static NodeRedService()
-        {
-            SerializerSettings = new JsonSerializerSettings();
-            SerializerSettings.TypeNameHandling = TypeNameHandling.None;
-            SerializerSettings.MissingMemberHandling = MissingMemberHandling.Error;
-            SerializerSettings.Formatting = Formatting.Indented;
-            SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-            SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-        }
 
         private async Task<HttpResponseMessage> InternalSendToNodeRed(string path, string input, CancellationToken? cancellationToken = null)
         {
@@ -43,7 +32,7 @@ namespace SpendLess.NodeRed.Services
         public async Task<SendToNodeRedResponseDto> SendToNodeRed(SendToNodeRedRequestDto input, CancellationToken? cancellationToken = null)
         {
             var result = await SendToNodeRed(input.ToString(), cancellationToken);
-            return JsonConvert.DeserializeObject<SendToNodeRedResponseDto>(result, SerializerSettings)
+            return JsonConvert.DeserializeObject<SendToNodeRedResponseDto>(result, SpendLessConstants.ApiSerializerSettings)
                 ?? throw new NodeRedException($"failed to deserialize response to {typeof(SendToNodeRedResponseDto)}: {result}");
         }
 

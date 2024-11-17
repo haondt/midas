@@ -98,5 +98,20 @@ namespace SpendLess.Persistence.Storages
 
             return Task.FromResult(result);
         }
+
+        public Task<List<string>> GetAllKeys()
+        {
+            var result = WithConnection(connection =>
+            {
+                var keys = new List<string>();
+                using var selectCommand = new SqliteCommand($"SELECT key FROM {_kvsTableName};", connection);
+                using var reader = selectCommand.ExecuteReader();
+                while (reader.Read())
+                    keys.Add(reader.GetString(0));
+
+                return keys;
+            });
+            return Task.FromResult(result);
+        }
     }
 }
