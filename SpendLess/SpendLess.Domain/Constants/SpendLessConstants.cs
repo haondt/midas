@@ -15,7 +15,7 @@ namespace SpendLess.Domain.Constants
         {
             ApiSerializerSettings = new JsonSerializerSettings();
             ApiSerializerSettings.TypeNameHandling = TypeNameHandling.None;
-            ApiSerializerSettings.MissingMemberHandling = MissingMemberHandling.Error;
+            ApiSerializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
             ApiSerializerSettings.Formatting = Formatting.Indented;
             ApiSerializerSettings.NullValueHandling = NullValueHandling.Ignore;
             ApiSerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();

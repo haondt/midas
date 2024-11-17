@@ -34,5 +34,24 @@ namespace SpendLess.Kvs.Controllers
 
             return NotFound();
         }
+
+        /// <summary>
+        /// Retrieve a key and value by it's key or it's alias
+        /// </summary>
+        /// <param name="alias"></param>
+        /// <returns></returns>
+        [HttpGet("{alias}/mapping")]
+        public async Task<IActionResult> GetMapping(string alias)
+        {
+            var result = await kvs.GetKeyAndValueFromKeyOrAlias(alias);
+            if (result.HasValue)
+                return Ok(new
+                {
+                    key = result.Value.Key,
+                    value = result.Value.Value
+                });
+
+            return NotFound();
+        }
     }
 }

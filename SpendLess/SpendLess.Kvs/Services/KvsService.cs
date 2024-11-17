@@ -175,5 +175,29 @@ namespace SpendLess.Kvs.Services
 
             return result;
         }
+
+        public async Task<Optional<(string Key, KvsMappingDto Value)>> GetKeyAndValueFromKeyOrAlias(string term)
+        {
+            var storageKey = term.SeedStorageKey<KvsMappingDto>();
+            var aliasKey = term.SeedStorageKey<KvsAliasDto>();
+            var aliasResult = await storage.Get(aliasKey);
+            if (aliasResult.IsSuccessful)
+            {
+                storageKey = aliasResult.Value.Key;
+                var keyString = storageKey.LastValue();
+                var keyResult = await storage.Get(storageKey);
+                if (keyResult.IsSuccessful)
+                    return (keyString, keyResult.Value);
+                // alias is pointing to a key that doesn't exist (yet)
+                return new((keyString, new()));
+            }
+
+            var result = await storage.Get(storageKey);
+            if (result.IsSuccessful)
+                return (term, result.Value);
+
+
+            return new();
+        }
     }
 }

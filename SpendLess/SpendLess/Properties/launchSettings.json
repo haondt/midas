@@ -3,11 +3,12 @@
     "http": {
       "commandName": "Project",
       "launchBrowser": true,
+      "launchUrl": "http://localhost:5190/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "http://localhost:5190"
+      "applicationUrl": "http://0.0.0.0:5190"
     },
     "Container (Dockerfile)": {
       "commandName": "Docker",

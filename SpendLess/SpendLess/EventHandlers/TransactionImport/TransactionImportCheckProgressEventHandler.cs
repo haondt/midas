@@ -12,6 +12,7 @@ namespace SpendLess.EventHandlers.TransactionImport
 {
     public class TransactionImportCheckProgressEventHandler(
         IComponentFactory componentFactory,
+        ILogger<TransactionImportCheckProgressEventHandler> logger,
         IAsyncJobRegistry jobRegistry) : ISingleEventHandler
     {
         public string EventName => "TransactionImportCheckProgress";

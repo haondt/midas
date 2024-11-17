@@ -37,6 +37,7 @@ namespace SpendLess.EventHandlers.TransactionImport
             _ = Task.Run(async () =>
             {
                 var result = new SendToNodeRedResultDto();
+                var results = new List<SendToNodeRedResponseDto>();
 
                 if (csvData.Count == 0)
                 {
@@ -47,7 +48,7 @@ namespace SpendLess.EventHandlers.TransactionImport
                 try
                 {
                     var batchSize = 50; // todo: appsettings
-                    var header = csvData.First();
+                    //var header = csvData.First();
                     var batches = csvData.Chunk(batchSize);
 
                     foreach (var batch in batches)
@@ -56,14 +57,10 @@ namespace SpendLess.EventHandlers.TransactionImport
                         {
                             Account = accountId,
                             Configuration = configuration,
-                            Csv = new CsvData
-                            {
-                                FirstRow = header,
-                                Row = b
-                            }
+                            Data = b
                         });
 
-                        var results = await Task.WhenAll(payloads.Select(async p =>
+                        var batchResults = await Task.WhenAll(payloads.Select(async p =>
                         {
                             try
                             {
@@ -77,8 +74,8 @@ namespace SpendLess.EventHandlers.TransactionImport
                                 };
                             }
                         }));
-                        //result.AddRange(results);
-                        //jobRegistry.UpdateJobProgress(jobId, result.Count / csvData.Count);
+                        results.AddRange(batchResults);
+                        jobRegistry.UpdateJobProgress(jobId, (double)results.Count / (double)csvData.Count);
                     }
 
                     jobRegistry.CompleteJob(jobId, result);

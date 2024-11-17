@@ -4,7 +4,7 @@ using Haondt.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using SpendLess.Kvs.SpendLess.Kvs;
 
-namespace SpendLess.Controllers
+namespace SpendLess.Kvs.Controllers
 {
     [Route("[controller]")]
     public class KvsController(IPageComponentFactory pageFactory) : BaseController

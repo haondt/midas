@@ -10,6 +10,7 @@ namespace SpendLess.Domain.Models
         public HashSet<string> Tags { get; set; } = [];
         public string Category { get; set; } = SpendLessConstants.DefaultCategory;
         public string SourceAccount { get; set; } = SpendLessConstants.DefaultAccount;
+        //public string Description { get; set; } = "";
         public string DestinationAccount { get; set; } = SpendLessConstants.DefaultAccount;
         [JsonRequired]
         public required string ImportAccount { get; set; }
