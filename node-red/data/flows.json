@@ -292,6 +292,51 @@
         "icon": "font-awesome/fa-dollar"
     },
     {
+        "id": "1ce79c5fce6b8fe5",
+        "type": "subflow",
+        "name": "Try parse account using regex",
+        "info": "",
+        "category": "",
+        "in": [],
+        "out": [],
+        "env": [],
+        "meta": {},
+        "color": "#DDAA99"
+    },
+    {
+        "id": "b86a301c9c586c6c",
+        "type": "subflow",
+        "name": "compose response",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 40,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "acad7c39e448dd04"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 520,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "a5e71765970756a7",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#DDAA99"
+    },
+    {
         "id": "c1a42afb431f2ac2",
         "type": "http in",
         "z": "99f384cef6a769fb",
@@ -3038,6 +3083,51 @@
         ]
     },
     {
+        "id": "acad7c39e448dd04",
+        "type": "function",
+        "z": "b86a301c9c586c6c",
+        "name": "set amount",
+        "func": "let amountStr = msg.spendless.context.amountCents.toString();\nif (amountStr.length < 3) {\n        amountStr = amountStr.padStart(3, '0');\n}\nlet wholePart = amountStr.slice(0, -2);\nlet fractionalPart = amountStr.slice(-2); \nmsg.spendless.response.transaction.amount = wholePart + '.' + fractionalPart;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 170,
+        "y": 40,
+        "wires": [
+            [
+                "a5e71765970756a7"
+            ]
+        ]
+    },
+    {
+        "id": "a5e71765970756a7",
+        "type": "change",
+        "z": "b86a301c9c586c6c",
+        "name": "set import account",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.response.transaction.importAccount",
+                "pt": "msg",
+                "to": "spendless.account",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 370,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
         "id": "68b35bba8b3a7e1e",
         "type": "subflow:99f384cef6a769fb",
         "z": "f6f2187d.f17ca8",
@@ -3055,7 +3145,7 @@
         "type": "subflow:b2028b08979e589d",
         "z": "f6f2187d.f17ca8",
         "name": "",
-        "x": 1160,
+        "x": 1380,
         "y": 100,
         "wires": []
     },
@@ -3188,12 +3278,11 @@
         "y": 100,
         "wires": [
             [
-                "6d7fb619ad0f7f05",
-                "10e382e0334a13a3"
+                "ac5c1b947fa68cbe"
             ],
             [
-                "10e382e0334a13a3",
-                "deaefd6c7fd346f5"
+                "fccb7a922791a067",
+                "54eb49730d1a9c76"
             ]
         ]
     },
@@ -3210,25 +3299,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1160,
+        "x": 1380,
         "y": 40,
-        "wires": []
-    },
-    {
-        "id": "deaefd6c7fd346f5",
-        "type": "debug",
-        "z": "f6f2187d.f17ca8",
-        "name": "debug 3",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1160,
-        "y": 160,
         "wires": []
     },
     {
@@ -3284,5 +3356,52 @@
                 "47aae1b0b3c6e728"
             ]
         ]
+    },
+    {
+        "id": "fccb7a922791a067",
+        "type": "subflow:e650a01280df74d9",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "env": [
+            {
+                "name": "ERROR_MESSAGE",
+                "value": "unable to parse description",
+                "type": "str"
+            }
+        ],
+        "x": 1200,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "ac5c1b947fa68cbe",
+        "type": "subflow:b86a301c9c586c6c",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "x": 1190,
+        "y": 100,
+        "wires": [
+            [
+                "10e382e0334a13a3",
+                "6d7fb619ad0f7f05"
+            ]
+        ]
+    },
+    {
+        "id": "54eb49730d1a9c76",
+        "type": "debug",
+        "z": "f6f2187d.f17ca8",
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1100,
+        "y": 280,
+        "wires": []
     }
 ]
