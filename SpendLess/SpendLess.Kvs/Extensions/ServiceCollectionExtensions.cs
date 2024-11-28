@@ -13,12 +13,6 @@ namespace SpendLess.Kvs.Extensions
                 Slug = "kvs",
             });
 
-
-            //services.AddScoped<ISingleEventHandler, AutocompleteEventHandler>();
-            //services.AddScoped<ISingleEventHandler, UpsertEventHandler>();
-            //services.AddScoped<ISingleEventHandler, AddAliasEventHandler>();
-            //services.AddScoped<ISingleEventHandler, RemoveAliasEventHandler>();
-
             services.AddSingleton<IKvsService, KvsService>();
 
             return services;
