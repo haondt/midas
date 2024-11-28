@@ -1,0 +1,40 @@
+﻿@using Haondt.Core.Models
+@code {
+    [Parameter]
+    public bool IsSwap { get; set; } = true;
+
+    [Parameter]
+    public Optional<string> Key { get; set; } = new();
+
+
+    private Dictionary<string, object> _attributes = new();
+    protected override void OnInitialized()
+    {
+        if (IsSwap)
+            _attributes["hx-swap-oob"] = "outerHTML";
+    }
+
+
+}
+
+ <div id="key-view" @attributes="_attributes">
+    @if(Key.HasValue)
+    {
+        <div class="is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between">
+            <p class="is-size-5 is-family-monospace">@Key.Value</p>
+            <button class="button"
+                hx-get="/kvs/mappings"
+                hx-swap="none">
+                Select Mapping
+            </button>
+        </div>
+    }
+    else
+    {
+        <button class="button"
+            hx-get="/kvs/mappings"
+            hx-swap="none">
+            Select Mapping
+        </button>
+    }
+</div>

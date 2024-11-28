@@ -1,23 +1,21 @@
-using Haondt.Web.Core.Components;
 using SpendLess.Domain.Models;
-using SpendLess.Web.Core.Abstractions;
 
 namespace SpendLess.Components.SpendLessComponents
 {
-    public class TransactionImportSendToNodeRedResultModel : IComponentModel
+    public class TransactionImportSendToNodeRedResultModel
     {
         public required SendToNodeRedResultDto Inner { get; set; }
 
     }
-    public class TransactionImportSendToNodeRedResultComponentDescriptorFactory : IComponentDescriptorFactory
-    {
-        public const string ViewPath = $"~/SpendLessComponents/TransactionImportSendToNodeRedResult.cshtml";
-        public IComponentDescriptor Create()
-        {
-            return new ComponentDescriptor<TransactionImportSendToNodeRedResultModel>()
-            {
-                ViewPath = ViewPath,
-            };
-        }
-    }
+    //public class TransactionImportSendToNodeRedResultComponentDescriptorFactory : IComponentDescriptorFactory
+    //{
+    //    public const string ViewPath = $"~/SpendLessComponents/TransactionImportSendToNodeRedResult.cshtml";
+    //    public IComponentDescriptor Create()
+    //    {
+    //        return new ComponentDescriptor<TransactionImportSendToNodeRedResultModel>()
+    //        {
+    //            ViewPath = ViewPath,
+    //        };
+    //    }
+    //}
 }

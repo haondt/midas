@@ -1,0 +1,75 @@
+﻿@code {
+    [Parameter]
+    public bool IsSwap { get; set; } = true;
+
+    [Parameter]
+    public List<string> Aliases { get; set; } = [];
+
+    [Parameter, EditorRequired]
+    public required string EncodedKey { get; set; }
+
+    private Dictionary<string, object> _attributes = new();
+    protected override void OnInitialized()
+    {
+        if (IsSwap)
+            _attributes["hx-swap-oob"] = "outerHTML";
+    }
+
+
+}
+<div id="alias-list-view" @attributes="_attributes">
+    <p class="title is-4">Aliases</p>
+    <form class="block"  hx-patch="/kvs/mapping/@EncodedKey/aliases" hx-swap="none">
+        <div class="field has-addons">
+            <div class="control is-expanded">
+                <input class="input" name="alias" placeholder="Alias" />
+            </div>
+            <div class="control">
+                <button class="button is-primary">Add alias</button>
+            </div>
+        </div>
+    </form>
+    <table class="table is-hoverable is-fullwidth">
+        <tbody>
+            @foreach(var alias in Aliases)
+            {
+            <tr>
+                <td>@alias</td>
+                <td>
+                    <div class="is-flex is-flex-direction-column is-align-items-flex-end">
+                        <div>
+                            <button class="button is-small"
+                                _="
+                                    set :dd to the next .dropdown
+                                    on click toggle .is-active on :dd
+                                    on click from elsewhere
+                                        if the event's target is not in :dd
+                                            remove .is-active from :dd">
+                                <span>actions</span>
+                                <span class="icon">
+                                    <i class="fa-solid fa-caret-down"></i>
+                                </span>
+                            </button>
+                        </div>
+                        <div class="dropdown is-right">
+                            <div class="dropdown-menu">
+                                <div class="dropdown-content">
+                                    <button class="dropdown-item"
+                                        hx-include="next input"
+                                        hx-delete="/kvs/mapping/@EncodedKey/aliases">
+                                        <span class="icon has-text-danger">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </span>
+                                        <span>remove</span>
+                                    </button>
+                                    <input type="hidden" value="@alias" name="alias"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,90 @@
+﻿@using Haondt.Web.Core.Extensions
+@code {
+    [Parameter, EditorRequired]
+    public required IComponent Content { get; set; }
+}
+
+<style>
+    @@scope {
+        #mother-container {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+
+        #page-container {
+            position: absolute;
+            width: 100%;
+        }
+
+        #toast-container {
+            overflow-y: auto;
+            position: fixed;
+            z-index: 1000;
+            right: 0;
+        }
+
+        .modal, .modal-card-body, .modal-card {
+            overflow: visible;
+        }
+
+        .field.has-addons .file .file-name {
+          border-top-right-radius: 0;
+          border-bottom-right-radius: 0;
+        }
+
+        .field.has-addons .file-cta {
+          border-top-right-radius: 0;
+          border-bottom-right-radius: 0;
+        }
+
+        [data-loading] {
+            display: none;
+        }
+    }
+
+    body {
+        --spendless-form-page-width: 1300px;
+    }
+    
+</style>
+<div id="mother-container" hx-ext="rename,loading-states,include-vals">
+    <div id="toast-container" 
+        class="is-flex is-flex-direction-column is-justify-content-flex-start is-align-items-flex-end mr-5 mt-5">
+        <style>
+            @@scope {
+                .toast {
+                    opacity: 0;
+                    transition: opacity 0.5s ease;
+                    z-index: 1000;
+                }
+
+                .toast.notification {
+                    margin-bottom: 10px;
+                }
+
+                .toast.created {
+                    opacity: 1;
+                }
+            }
+        </style>
+    </div>
+    <div id="modal-container" class="modal">
+
+    </div>
+    <div id="page-container">
+        <div class="columns ml-3 mt-3 mb-3 mr-3">
+            <div class="column is-narrow" style="min-width:256px;">
+                <div class="panel" id="navigation">
+                    <NavigationBar />
+                </div>
+            </div>
+            <div class="column">
+                <div id="content">
+                    <Haondt.Web.Components.ObjectComponent Component="Content" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

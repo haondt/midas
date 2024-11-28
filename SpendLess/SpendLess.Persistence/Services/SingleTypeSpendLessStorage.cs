@@ -36,5 +36,10 @@ namespace SpendLess.Persistence.Services
         {
             await storage.Set(primarkey, value, [TypeForeignKey]);
         }
+
+        public Task Delete(StorageKey<T> primaryKey)
+        {
+            return storage.Delete(primaryKey);
+        }
     }
 }

@@ -1,18 +1,37 @@
 ﻿using Haondt.Web.Core.Controllers;
 using Haondt.Web.Core.Extensions;
-using Haondt.Web.Services;
+using Haondt.Web.Core.Services;
 using Microsoft.AspNetCore.Mvc;
-using SpendLess.Admin.SpendLess.Admin;
+using SpendLess.Kvs.Models;
+using SpendLess.Kvs.Services;
+using SpendLess.Web.Domain.Components;
+using SpendLess.Web.Domain.Extensions;
+using SpendLess.Web.Domain.Models;
 
 namespace SpendLess.Admin.Controllers
 {
     [Route("[controller]")]
-    public class AdminController(IPageComponentFactory pageFactory) : BaseController
+    public class AdminController(IComponentFactory componentFactory,
+        IKvsService kvs) : UIController
     {
-        public async Task<IActionResult> Get()
+        public Task<IResult> Get()
         {
-            var component = await pageFactory.GetComponent<AdminModel>();
-            return component.CreateView(this);
+            return componentFactory.RenderComponentAsync<Admin.Components.Admin>();
+        }
+
+        [HttpPost("import-mappings")]
+        public async Task<IResult> ImportMappings([FromForm] IFormFile file,
+            [FromForm(Name = "overwrite-existing")] bool overwriteExisting)
+        {
+            var parsedData = file.DeserializeFromJson<ExternalKvsMappingsDto>();
+
+            await kvs.ImportKvsMappings(parsedData, overwriteExisting);
+
+            return await componentFactory.RenderComponentAsync(new Toast
+            {
+                Message = "Imported mappings successfully!",
+                Severity = ToastSeverity.Success,
+            });
         }
     }
 }

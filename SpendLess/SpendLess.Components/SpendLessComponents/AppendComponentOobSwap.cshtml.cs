@@ -1,9 +1,8 @@
-using Haondt.Web.Core.Components;
-using SpendLess.Web.Core.Abstractions;
+using System.ComponentModel;
 
 namespace SpendLess.Components.SpendLessComponents
 {
-    public class AppendComponentOobSwapModel : IComponentModel
+    public class AppendComponentOobSwapModel
     {
         public List<OobSwap> Items { get; set; } = [];
     }
@@ -14,14 +13,4 @@ namespace SpendLess.Components.SpendLessComponents
         public required string TargetSelector { get; set; }
     }
 
-    public class AppendComponentOobSwapComponentDescriptorFactory : IComponentDescriptorFactory
-    {
-        public IComponentDescriptor Create()
-        {
-            return new ComponentDescriptor<AppendComponentOobSwapModel>()
-            {
-                ViewPath = $"~/SpendLessComponents/AppendComponentOobSwap.cshtml"
-            };
-        }
-    }
 }

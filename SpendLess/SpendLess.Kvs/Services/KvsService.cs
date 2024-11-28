@@ -196,7 +196,6 @@ namespace SpendLess.Kvs.Services
             if (result.IsSuccessful)
                 return (term, result.Value);
 
-
             return new();
         }
     }

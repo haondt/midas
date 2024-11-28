@@ -1,29 +1,31 @@
-﻿using Haondt.Web.Core.Controllers;
-using Haondt.Web.Core.Extensions;
-using Haondt.Web.Services;
+﻿using Haondt.Web.Core.Extensions;
+using Haondt.Web.Core.Services;
+using Haondt.Web.Middleware;
 using Microsoft.AspNetCore.Mvc;
-using SpendLess.Kvs.SpendLess.Kvs;
+using SpendLess.Web.Domain.Components;
+using SpendLess.Web.Domain.Controllers;
+using SpendLess.Web.Domain.Services;
 
 namespace SpendLess.Kvs.Controllers
 {
-    [Route("[controller]")]
-    public class KvsController(IPageComponentFactory pageFactory) : BaseController
+    [Route("kvs")]
+    public class KvsController(IComponentFactory componentFactory) : SpendLessUIController
     {
         [HttpGet]
-        public async Task<IActionResult> Get()
+        [ServiceFilter(typeof(RenderPageFilter))]
+        public Task<IResult> Get()
         {
-            var component = await pageFactory.GetComponent<KvsModel>();
-            return component.CreateView(this);
+            return componentFactory.RenderComponentAsync<Kvs.Components.Kvs>();
         }
 
-        [HttpGet("{mapping}")]
-        public async Task<IActionResult> GetMapping(string mapping)
+        [HttpPost("prettify")]
+        public Task<IResult> Prettify([FromForm] string value)
         {
-            var component = await pageFactory.GetComponent<KvsModel>(new Dictionary<string, string>
+            return componentFactory.RenderComponentAsync(new CodeWindow
             {
-                { "mapping", mapping }
+                Name = "value",
+                Text = StringFormatter.TryPrettify(value)
             });
-            return component.CreateView(this);
         }
     }
 }

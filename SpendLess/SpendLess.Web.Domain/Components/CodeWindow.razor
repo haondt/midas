@@ -1,0 +1,50 @@
+﻿@using Haondt.Core.Extensions
+@using Haondt.Core.Models
+@code {
+    [Parameter]
+    public Optional<string> Title { get; set; } = new();
+    [Parameter]
+    public Optional<string> Name { get; set; } = new();
+    [Parameter]
+    public Optional<string> Id { get; set; } = new();
+    [Parameter]
+    public string Text { get; set; } = "";
+
+    private Dictionary<string, object> _attributes = new();
+    protected override void OnInitialized()
+    {
+        if (Id.HasValue)
+            _attributes["id"] = Id.Value;
+        if (Name.HasValue)
+            _attributes["name"] = Name.Value;
+    }
+
+}
+<style>
+    @@scope {
+        .message-body {
+            overflow: auto;
+            font-family: monospace;
+            font-size: 1rem;
+            height: 350px;
+            line-height: 1.25rem;
+        }
+
+        textarea.message-body {
+            resize: none;
+            width: 100%;
+            outline: none;
+            vertical-align: top;
+        }
+
+        .message {
+            width: 100%;
+        }
+    }
+</style>
+<article class="message">
+    <div class="message-header">@Title.Or("")</div>
+    <textarea 
+        @attributes="_attributes"
+        class="message-body">@Text</textarea>
+</article>

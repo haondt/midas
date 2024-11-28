@@ -1,0 +1,104 @@
+﻿@using Haondt.Core.Models
+
+@code {
+    [Parameter, EditorRequired]
+    public required string SuggestionUri { get; set; }
+    [Parameter]
+    public Optional<string> Name { get; set; } = new();
+    [Parameter]
+    public Optional<string> Id { get; set; } = new();
+    [Parameter]
+    public Optional<string> Placeholder { get; set; } = new();
+    [Parameter]
+    public Optional<string> HxInclude { get; set; } = new();
+    [Parameter]
+    public Optional<string> CompletionEvent { get; set; } = new();
+    [Parameter]
+    public bool IsRight { get; set; } = false;
+
+    private string HxIncludeString
+    {
+        get
+        {
+            var result = "previous .input";
+            if (HxInclude.HasValue)
+                result = $"{HxInclude.Value}, {result}";
+            return result;
+        }
+    }
+
+    private Dictionary<string, object> InputAttributes = new();
+    protected override void OnInitialized()
+    {
+        if (Name.HasValue)
+            InputAttributes["name"] = Name.Value;
+        if (Id.HasValue)
+            InputAttributes["id"] = Id.Value;
+        if (Placeholder.HasValue)
+            InputAttributes["placeholder"] = Placeholder.Value;
+    }
+}
+<div class="control autocomplete is-flex is-flex-direction-column">
+    <input class="input" type="text" 
+        @attributes="InputAttributes"
+        _="
+            on input debounced at 200ms
+                send focus to me
+            end
+            on selectionClicked
+                set my value to event.detail.text
+                @(CompletionEvent.HasValue ? $"then send {CompletionEvent.Value}" : "")
+            end
+            on focus
+                add .is-active to the next .dropdown 
+                send update to the next .dropdown
+            end
+            on focusout
+                remove .is-active from the next .dropdown
+                set (the next .dropdown-content)'s innerHTML to ''
+            end
+            on keydown
+                if the event's key is 'Enter'
+                    if (the next <.dropdown-item.is-active />) is not null
+                        halt the event
+                        set my value to (the next <.dropdown-item.is-active/>)'s textContent
+                        send focusout to me
+                        @(CompletionEvent.HasValue ? $"then send {CompletionEvent.Value}" : "")
+                    end
+                end
+                if the event's key is 'ArrowDown'
+                    halt the event
+                    if (the next <.dropdown-item.is-active />) is null
+                        if (the next <.dropdown-item />) is not null
+                            add .is-active to the next .dropdown-item
+                        end
+                    else
+                        if (the next <.dropdown-item.is-active + .dropdown-item/>) is not null
+                            add .is-active to the next <.dropdown-item.is-active + .dropdown-item/>
+                            remove .is-active from the next <.dropdown-item.is-active/>
+                        end
+                    end
+                end
+                if the event's key is 'ArrowUp'
+                    halt the event
+                    if (the next <.dropdown-item.is-active />) is not null
+                        if (the next <.dropdown-item:has(+ .dropdown-item.is-active)/>) is not null
+                            add .is-active to the next <.dropdown-item:has(+ .dropdown-item.is-active)/>
+                            remove .is-active from the next <.dropdown-item.is-active + .dropdown-item.is-active/>
+                        end
+                    end
+                end
+            end
+        "/>
+    <div 
+        class="dropdown @(IsRight ? "is-right" : "")"
+        hx-trigger="update" 
+        hx-get="@((MarkupString)SuggestionUri)" 
+        hx-swap="innerHTML" 
+        hx-include="@((MarkupString)HxIncludeString)"
+        hx-target="find .dropdown-content">
+        <div class="dropdown-menu">
+            <div class="dropdown-content"></div>
+        </div>
+    </div>
+</div>

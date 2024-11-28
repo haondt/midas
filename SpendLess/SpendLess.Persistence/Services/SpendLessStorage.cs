@@ -22,6 +22,7 @@ namespace SpendLess.Persistence.Services
         {
             settings = base.ConfigureSerializerSettings(settings);
             settings.Converters.Add(new GenericOptionalJsonConverter());
+            settings.MissingMemberHandling = MissingMemberHandling.Ignore;
             return settings;
         }
 

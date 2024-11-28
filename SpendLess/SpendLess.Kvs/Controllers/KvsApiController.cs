@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SpendLess.Kvs.Services;
+using System.ComponentModel.DataAnnotations;
 
 namespace SpendLess.Kvs.Controllers
 {
@@ -11,8 +12,11 @@ namespace SpendLess.Kvs.Controllers
         /// </summary>
         /// <param name="alias"></param>
         /// <returns></returns>
-        [HttpGet("{alias}/key")]
-        public async Task<IActionResult> GetKey(string alias)
+        [HttpGet("key")]
+        public async Task<IActionResult> GetKey(
+            [FromQuery]
+            [Required(AllowEmptyStrings = false)]
+            string alias)
         {
             var result = await kvs.GetKeyFromKeyOrAlias(alias);
             if (result.HasValue)
@@ -25,8 +29,11 @@ namespace SpendLess.Kvs.Controllers
         /// </summary>
         /// <param name="alias"></param>
         /// <returns></returns>
-        [HttpGet("{alias}/value")]
-        public async Task<IActionResult> GetValue(string alias)
+        [HttpGet("value")]
+        public async Task<IActionResult> GetValue(
+            [FromQuery]
+            [Required(AllowEmptyStrings = false)]
+            string alias)
         {
             var result = await kvs.GetValueFromKeyOrAlias(alias);
             if (result.HasValue)
@@ -40,15 +47,18 @@ namespace SpendLess.Kvs.Controllers
         /// </summary>
         /// <param name="alias"></param>
         /// <returns></returns>
-        [HttpGet("{alias}/mapping")]
-        public async Task<IActionResult> GetMapping(string alias)
+        [HttpGet("mapping")]
+        public async Task<IActionResult> GetMapping(
+            [FromQuery]
+            [Required(AllowEmptyStrings = false)]
+            string alias)
         {
             var result = await kvs.GetKeyAndValueFromKeyOrAlias(alias);
             if (result.HasValue)
                 return Ok(new
                 {
                     key = result.Value.Key,
-                    value = result.Value.Value
+                    value = result.Value.Value.Value
                 });
 
             return NotFound();

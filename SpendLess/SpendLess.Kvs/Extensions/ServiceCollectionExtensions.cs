@@ -1,9 +1,5 @@
-﻿using Haondt.Web.Core.Components;
-using SpendLess.Kvs.Services;
-using SpendLess.Kvs.SpendLess.Kvs;
-using SpendLess.Web.Core.Extensions;
-using SpendLess.Web.Domain.Services;
-using SpendLess.Web.Domain.SpendLess.Domain;
+﻿using SpendLess.Kvs.Services;
+using SpendLess.Web.Domain.Models;
 
 namespace SpendLess.Kvs.Extensions
 {
@@ -11,19 +7,17 @@ namespace SpendLess.Kvs.Extensions
     {
         public static IServiceCollection AddKvs(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton(new SpendLessNavigationItem
+            services.AddSingleton(new NavigationItem
             {
                 Title = "Key-Value Store",
                 Slug = "kvs",
-                TypeIdentity = ComponentDescriptor<KvsModel>.TypeIdentity
             });
 
-            services.AddComponent<KvsComponentDescriptorFactory>();
 
-            services.AddScoped<ISingleEventHandler, AutocompleteEventHandler>();
-            services.AddScoped<ISingleEventHandler, UpsertEventHandler>();
-            services.AddScoped<ISingleEventHandler, AddAliasEventHandler>();
-            services.AddScoped<ISingleEventHandler, RemoveAliasEventHandler>();
+            //services.AddScoped<ISingleEventHandler, AutocompleteEventHandler>();
+            //services.AddScoped<ISingleEventHandler, UpsertEventHandler>();
+            //services.AddScoped<ISingleEventHandler, AddAliasEventHandler>();
+            //services.AddScoped<ISingleEventHandler, RemoveAliasEventHandler>();
 
             services.AddSingleton<IKvsService, KvsService>();
 

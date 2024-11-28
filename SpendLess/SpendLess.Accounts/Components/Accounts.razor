@@ -1,0 +1,96 @@
+﻿@using Haondt.Web.Core.Components
+@using Haondt.Identity.StorageKey
+@using SpendLess.Domain.Models
+@using SpendLess.Persistence.Services
+@inject ISingleTypeSpendLessStorage<AccountDto> Storage
+
+@code {
+
+    [Parameter]
+    public Dictionary<string, AccountDto> AccountDtos { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var accounts = await Storage.GetAll();
+        AccountDtos = accounts.ToDictionary(
+            kvp => kvp.Key.SingleValue(),
+            kvp => kvp.Value);
+    }
+}
+
+<div class="panel is-link" style="max-width:var(--spendless-form-page-width);margin:auto;">
+    <p class="panel-heading">Accounts</p>
+    <div class="panel-block">
+        <div class="control is-flex is-flex-direction-column" style="gap:1rem;">
+            <div>
+                <button
+                    class="button is-primary" 
+                    hx-swap="none"
+                    hx-get="/accounts/create">
+                    Add Account
+                </button>
+            </div>
+            <table class="table is-striped is-fullwidth">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Balance</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach(var account in AccountDtos)
+                    {
+                    <tr>
+                        <td><a
+                            hx-boost="true"
+                            href="/account/@account.Key"
+                            hx-target="#content">
+                            @account.Value.Name</a>
+                        </td>
+                        <td>$@account.Value.Balance</td>
+                        <td>
+                            <div class="is-flex is-flex-direction-column is-align-items-flex-end">
+                                <div>
+                                    <button class="button is-small"
+                                        _="
+                                            set :dd to the next .dropdown
+                                            on click toggle .is-active on :dd
+                                            on click from elsewhere
+                                                if the event's target is not in :dd
+                                                    remove .is-active from :dd">
+                                        <span>actions</span>
+                                        <span class="icon">
+                                            <i class="fa-solid fa-caret-down"></i>
+                                        </span>
+                                    </button>
+                                </div>
+                                <div class="dropdown is-right">
+                                    <div class="dropdown-menu">
+                                        <div class="dropdown-content">
+                                            <button 
+                                                class="dropdown-item"
+                                                hx-swap="none"
+                                                _="on htmx:afterOnLoad
+                                                    if event.detail.xhr.status == 204
+                                                        then remove the closest <tr/>"
+                                                hx-confirm="are you sure?"
+                                                hx-delete="/account/@account.Key">
+                                                <span class="icon has-text-danger">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </span>
+                                                <span>delete</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+

@@ -1,14 +1,14 @@
 using Haondt.Identity.StorageKey;
-using Haondt.Web.Core.Extensions;
 using Haondt.Web.Core.Middleware;
 using Haondt.Web.Extensions;
+using SpendLess.Accounts.Extensions;
 using SpendLess.Admin.Extensions;
-using SpendLess.Components.Extensions;
 using SpendLess.Domain.Extensions;
 using SpendLess.Extensions;
 using SpendLess.Kvs.Extensions;
 using SpendLess.NodeRed.Extensions;
 using SpendLess.Persistence.Extensions;
+using SpendLess.TransactionImport.Extensions;
 using SpendLess.Web.Domain.Extensions;
 
 const string CORS_POLICY = "_fireflyIIIPPPolicy";
@@ -32,16 +32,16 @@ builder.Services.AddControllers()
 builder.Configuration.AddEnvironmentVariables();
 
 builder.Services
-    .AddHaondtWebCoreServices()
     .AddHaondtWebServices(builder.Configuration)
-    .AddSpendLessComponents()
     .AddSpendLessServices(builder.Configuration)
     .AddSpendLessPersistenceServices(builder.Configuration)
     .AddSpendLessDomainServices()
+    .AddAccounts(builder.Configuration)
     .AddKvs(builder.Configuration)
     .AddAdmin(builder.Configuration)
     .AddSpendLessWebDomainServices(builder.Configuration)
-    .AddNodeRedServices(builder.Configuration);
+    .AddNodeRedServices(builder.Configuration)
+    .AddTransactionImport();
 //.AddNodeRedServices(builder.Configuration)
 //.AddLookupServices(builder.Configuration);
 //.AddFireflyIIIPPWebServices(builder.Configuration)
@@ -58,6 +58,7 @@ builder.Services.AddCors(o => o.AddPolicy(CORS_POLICY, p =>
     p.AllowAnyOrigin();
     p.AllowAnyHeader();
 }));
+builder.Services.AddServerSideBlazor();
 
 
 var app = builder.Build();

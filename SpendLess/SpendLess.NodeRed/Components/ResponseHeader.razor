@@ -1,0 +1,35 @@
+﻿@using Haondt.Core.Models
+@code {
+    [Parameter]
+    public bool IsSwap { get; set; } = true;
+    [Parameter]
+    public Optional<int> Status { get; set; } = new();
+
+    private Dictionary<string, object> _attributes = new();
+    protected override void OnInitialized()
+    {
+        if (IsSwap)
+            _attributes["hx-swap-oob"] = "outerHTML";
+    }
+}
+
+<div id="response-header" 
+    @attributes="_attributes"
+    class="message-header">
+    <span>Response</span>
+    @if(Status.HasValue)
+    {
+        @if(Status.Value < 300)
+        {
+            <span class="has-text-success">@Status.Value</span>
+        }
+        else if(Status.Value < 400)
+        {
+            <span class="has-text-warning">@Status.Value</span>
+        }
+        else
+        {
+            <span class="has-text-danger">@Status.Value</span>
+        }
+    }
+</div>

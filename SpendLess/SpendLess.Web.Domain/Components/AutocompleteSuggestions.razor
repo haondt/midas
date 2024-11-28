@@ -1,0 +1,9 @@
+﻿@code {
+    [Parameter]
+    public List<string> Suggestions { get; set; } = [];
+
+}
+@foreach(var item in Suggestions)
+{
+    <a class="dropdown-item" _="on mousedown send selectionClicked(text:(my textContent)) to the previous .input">@item</a>
+}

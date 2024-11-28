@@ -1,9 +1,8 @@
-﻿using Haondt.Web.Core.Controllers;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace SpendLess.Controllers
 {
-    public class SiteController : BaseController
+    public class SiteController : ControllerBase
     {
         [HttpGet("/")]
         public IActionResult Get()

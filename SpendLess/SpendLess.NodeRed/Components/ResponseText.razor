@@ -1,0 +1,21 @@
+﻿@code {
+    [Parameter]
+    public bool IsSwap { get; set; } = true;
+    [Parameter]
+    public required string Text { get; set; }
+
+    private Dictionary<string, object> _attributes = new();
+    protected override void OnInitialized()
+    {
+        if (IsSwap)
+            _attributes["hx-swap-oob"] = "outerHTML";
+    }
+}
+
+<div
+    id="response-text" 
+    @attributes="_attributes"
+    name="response-text"
+    class="message-body response-text">
+    @Text
+</div>

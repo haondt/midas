@@ -1,0 +1,26 @@
+﻿
+
+@{
+}
+
+@* @if(Model is TransactionImportLayoutModel layoutModel)
+{
+    <div id="transaction-import">
+        <div class="panel is-link" style="max-width:var(--spendless-form-page-width);margin:auto;">
+            <p class="panel-heading">Import Transactions</p>
+            <div class="panel-block">
+                <div class="control">TransactionImportSetupModel.ViewPath
+                    @await Html.PartialAsync(TransactionImportSetupModel.ViewPath, layoutModel.Setup)
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else if (Model is TransactionImportEditConfigurationModel editConfigModel)
+{
+    @await Html.PartialAsync(TransactionImportEditConfigurationModel.ViewPath, editConfigModel)
+}
+else if (Model is TransactionImportSetupModel setupModel)
+{
+    @await Html.PartialAsync(TransactionImportSetupModel.ViewPath, setupModel)
+} *@

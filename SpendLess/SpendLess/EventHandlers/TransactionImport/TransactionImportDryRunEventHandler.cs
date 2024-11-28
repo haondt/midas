@@ -1,7 +1,6 @@
-﻿using Haondt.Web.Core.Components;
-using Haondt.Web.Core.Extensions;
+﻿using Haondt.Web.Core.Extensions;
 using Haondt.Web.Core.Http;
-using SpendLess.Components.SpendLessComponents;
+using Haondt.Web.Core.Services;
 using SpendLess.Core.Exceptions;
 using SpendLess.Domain.Models;
 using SpendLess.Domain.Services;
@@ -11,18 +10,17 @@ using SpendLess.NodeRed.Services;
 using SpendLess.Persistence.Extensions;
 using SpendLess.Persistence.Services;
 using SpendLess.Web.Domain.Extensions;
-using SpendLess.Web.Domain.Services;
 
 namespace SpendLess.EventHandlers.TransactionImport
 {
     public class TransactionImportDryRunEventHandler(IComponentFactory componentFactory,
         IAsyncJobRegistry jobRegistry,
         ISingleTypeSpendLessStorage<TransactionImportConfigurationDto> configurationStorage,
-        INodeRedService nodeRed) : ISingleEventHandler
+        INodeRedService nodeRed)
     {
         public string EventName => "TransactionImportDryRun";
 
-        public async Task<IComponent> HandleAsync(IRequestData requestData)
+        public async Task<IResult> HandleAsync(IRequestData requestData)
         {
             var file = (requestData.Form.Files?.FirstOrDefault(f => f.Name == "file"))
                 ?? throw new UserException("Please select a file.");
@@ -93,11 +91,12 @@ namespace SpendLess.EventHandlers.TransactionImport
                 }
             }, cancellationToken);
 
-            return await componentFactory.GetPlainComponent(new TransactionImportUpdateModel
-            {
-                DryRunProgress = 0,
-                DryRunJobId = jobId
-            });
+            //return await componentFactory.GetPlainComponent(new TransactionImportUpdateModel
+            //{
+            //    DryRunProgress = 0,
+            //    DryRunJobId = jobId
+            //});
+            throw new NotImplementedException();
         }
     }
 }

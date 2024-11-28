@@ -29,10 +29,10 @@
 
 @if (Model.DryRunResult.HasValue)
 {
-    @await Html.PartialAsync(TransactionImportSendToNodeRedResultComponentDescriptorFactory.ViewPath,
+@*     @await Html.PartialAsync(TransactionImportSendToNodeRedResultComponentDescriptorFactory.ViewPath,
         new TransactionImportSendToNodeRedResultModel
         {
             Inner = Model.DryRunResult.Value
         });
 
-}
+ *@}

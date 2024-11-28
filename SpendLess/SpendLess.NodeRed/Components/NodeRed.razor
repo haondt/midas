@@ -1,0 +1,56 @@
+﻿@code {
+
+}
+
+<div class="panel is-link" style="max-width:var(--spendless-form-page-width);margin:auto;">
+    <div class="panel-heading">Node-Red</div>
+    <div class="column">
+        <div class="buttons">
+            <button class="button" hx-post="/node-red" hx-include="#request-text">Send to Node-Red</button>
+            <button
+                class="button"
+                hx-post="/domain/prettify"
+                hx-include="#request-text"
+                hx-target="#request-text"
+                hx-select="#request-text">
+                Prettify Request
+            </button>
+            <button class="button" hx-get="/node-red/default-payload" hx-include="#request-text">Load Default Request</button>
+        </div>
+        <div class="level">
+            <style>
+                @@scope {
+                    .response-text {
+                        overflow: auto;
+                        font-family: monospace;
+                        font-size: 1rem;
+                        height: 350px;
+                        line-height: 1.25rem;
+                        white-space: pre-wrap;
+                    }
+
+                    .level-item {
+                        flex: 1 1 0;
+                    }
+
+                    .message {
+                        width: 100%;
+                    }
+                }
+            </style>
+            <div class="level-item">
+                <SpendLess.Web.Domain.Components.CodeWindow
+                    Title="@("Request")"
+                    Id="@("request-text")"
+                    Name="@("request-text")"/>
+            </div>
+            <div class="level-item">
+                <article class="message">
+                    <ResponseHeader IsSwap="false" />
+                    <ResponseText IsSwap="false" />
+                </article>
+            </div>
+        </div>
+    </div>
+</div>
+

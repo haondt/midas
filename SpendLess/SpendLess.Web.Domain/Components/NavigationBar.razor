@@ -1,0 +1,25 @@
+﻿@using global::SpendLess.Web.Domain.Models
+@inject IEnumerable<NavigationItem> Items
+
+@code {
+}
+
+<div class="panel is-primary">
+    <p class="panel-heading">Spend Less</p>
+    <div class="panel-block">
+        <div class="menu is-flex-grow-1">
+            <ul class="menu-list">
+                @foreach(var item in Items)
+                {
+                    <li><a 
+                        class="" 
+                        hx-boost="true"
+                        href="/@item.Slug"
+                        hx-target="#content">
+                        @item.Title
+                    </a></li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>

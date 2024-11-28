@@ -1,11 +1,9 @@
 ﻿using FireflyIIIpp.NodeRed.Settings;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Polly;
 using Polly.Timeout;
 using SpendLess.NodeRed.Services;
+using SpendLess.Web.Domain.Models;
 
 namespace SpendLess.NodeRed.Extensions
 {
@@ -19,6 +17,11 @@ namespace SpendLess.NodeRed.Extensions
                 var settings = sp.GetRequiredService<IOptions<NodeRedSettings>>().Value;
                 client.BaseAddress = new Uri(settings.BaseUrl);
             }).AddPolicyHandler(GetNodeRedPolicy());
+            services.AddSingleton(new NavigationItem
+            {
+                Title = "Node-Red",
+                Slug = "node-red",
+            });
 
             return services;
         }
