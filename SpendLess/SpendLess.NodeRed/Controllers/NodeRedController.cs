@@ -8,8 +8,8 @@ using SpendLess.Core.Extensions;
 using SpendLess.NodeRed.Components;
 using SpendLess.NodeRed.Models;
 using SpendLess.NodeRed.Services;
-using SpendLess.Web.Domain.Services;
 using SpendLess.Web.Domain.Components;
+using SpendLess.Web.Domain.Services;
 
 namespace SpendLess.NodeRed.Controllers
 {
@@ -33,7 +33,14 @@ namespace SpendLess.NodeRed.Controllers
             return await componentFactory.RenderComponentAsync(new AppendComponentLayout
             {
                 Components = [
-                    new ResponseText { Text = text.Or("") },
+                    new ResponseText
+                    {
+                        Text = text.Or(""),
+                    },
+                    new ResponseHeader
+                    {
+                        Status = status,
+                    },
                     new Toast {
                         Message = "Sent to Node Red successfully.",
                         Severity = Web.Domain.Models.ToastSeverity.Success
@@ -51,7 +58,7 @@ namespace SpendLess.NodeRed.Controllers
         [HttpPost("prettify")]
         public Task<IResult> Prettify([FromForm(Name = "request-text")] string requestText)
         {
-            return CreateCodeWindow(requestText);
+            return CreateCodeWindow(StringFormatter.TryPrettify(requestText));
         }
 
         private Task<IResult> CreateCodeWindow(string text)
