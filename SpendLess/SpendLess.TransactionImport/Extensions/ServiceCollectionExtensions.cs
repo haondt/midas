@@ -14,9 +14,6 @@ namespace SpendLess.TransactionImport.Extensions
                 Slug = "transaction-import",
             });
 
-            //services.AddScoped<ISingleEventHandler, TransactionImportUpsertConfigurationEventHandler>();
-
-
             return services;
         }
     }

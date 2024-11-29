@@ -1,40 +1,97 @@
-﻿using Haondt.Web.Core.Controllers;
+﻿using Haondt.Identity.StorageKey;
+using Haondt.Web.Components;
+using Haondt.Web.Core.Extensions;
+using Haondt.Web.Core.Services;
+using Haondt.Web.Middleware;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SpendLess.Domain.Models;
+using SpendLess.Persistence.Extensions;
+using SpendLess.Persistence.Services;
+using SpendLess.TransactionImport.Components;
+using SpendLess.TransactionImport.Models;
+using SpendLess.Web.Domain.Components;
+using SpendLess.Web.Domain.Controllers;
 
 namespace SpendLess.TransactionImport.Controllers
 {
     [Route("transaction-import")]
-    public class TransactionImportController : UIController
-    //IPageComponentFactory pageFactory,
-    //IComponentFactory componentFactory) : HxController
-    //ITransactionImportConfigurationService configService) : BaseController
+    public class TransactionImportController(
+        IComponentFactory componentFactory,
+        ISingleTypeSpendLessStorage<TransactionImportConfigurationDto> configStorage,
+        ISingleTypeSpendLessStorage<TransactionImportAccountMetadataDto> accountMetadataStorage
+        ) : SpendLessUIController
     {
-        //[HttpGet]
-        //public async Task<IResult> Get()
-        //{
+        [HttpGet]
+        [ServiceFilter(typeof(RenderPageFilter))]
+        public Task<IResult> Get()
+        {
+            return componentFactory.RenderComponentAsync<TransactionImport.Components.TransactionImport>();
+        }
 
-        //    //var component = await pageFactory.GetComponent<TransactionImportModel>();
-        //    ////var x = D_.Documents.Projects.spend_less.SpendLess.SpendLess.TransactionImport.SpendLess.TransactionImport.RazorViews.
-        //    ////var x = SpendLess.TransactionImport.
-        //    //return component.CreateView(this);
+        [HttpGet("config")]
+        public async Task<IResult> GetConfigModal(
+            [FromQuery] string? config,
+            [FromQuery] string? account)
+        {
+            var model = new UpsertConfigurationModal();
 
-        //}
+            if (!string.IsNullOrEmpty(config))
+            {
+                model.Id = config;
+                var configDto = await configStorage.Get(config.SeedStorageKey<TransactionImportConfigurationDto>());
+                model.Name = configDto.Name;
+                model.AddImportTag = configDto.AddImportTag;
 
-        //[HttpGet("config")]
-        //public async Task<IActionResult> GetConfig([FromQuery] TransactionImportUpsertConfigRequestDto dto)
-        //{
-        //    var config = await configService.
+            }
+            if (!string.IsNullOrEmpty(account))
+            {
+                var accountMetadata = await accountMetadataStorage.TryGet(account.SeedStorageKey<TransactionImportAccountMetadataDto>());
+                var isDefault = accountMetadata.HasValue
+                    && accountMetadata.Value.DefaultConfiguration.HasValue
+                    && accountMetadata.Value.DefaultConfiguration.Value.SingleValue() == config;
+
+                model.SelectedAccount = new((account, isDefault));
+
+            }
+            return await componentFactory.RenderComponentAsync(model);
+        }
 
 
-        //}
+        [HttpPost("{config}")]
+        public async Task<IResult> UpsertConfig([FromForm] TransactionImportUpsertConfigRequestDto request)
+        {
+            request.Name = request.Name.Trim();
+            request.Id ??= Guid.NewGuid().ToString();
+            var configStorageKey = request.Id.SeedStorageKey<TransactionImportConfigurationDto>();
 
+            var updatedConfig = new TransactionImportConfigurationDto
+            {
+                AddImportTag = request.AddImportTag,
+                Name = request.Name,
+            };
+            await configStorage.Set(configStorageKey, updatedConfig);
 
-        //[HttpPost("{config}")]
-        //public async Task<IActionResult> Upsert()
-        //{
+            if (!string.IsNullOrEmpty(request.Account))
+            {
+                var accountStorageKey = request.Account.SeedStorageKey<TransactionImportAccountMetadataDto>();
+                await accountMetadataStorage.Set(accountStorageKey, new TransactionImportAccountMetadataDto
+                {
+                    DefaultConfiguration = configStorageKey
+                });
+            }
 
-
-        //}
+            var setupModel = new Setup();
+            if (!string.IsNullOrEmpty(request.Account))
+                setupModel.SelectedAccount = request.Account;
+            return await componentFactory.RenderComponentAsync(new AppendComponentLayout
+            {
+                Components = [
+                    new CloseModal(),
+                    setupModel
+                ]
+            });
+        }
 
     }
 

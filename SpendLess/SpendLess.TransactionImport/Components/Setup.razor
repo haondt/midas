@@ -1,13 +1,56 @@
-﻿@* @{
-    var typeIdentity = "";
+﻿@using Haondt.Core.Extensions
+@using Haondt.Core.Models
+@using Haondt.Identity.StorageKey
+@using global::SpendLess.Domain.Models
+@using global::SpendLess.Persistence.Services
+@using global::SpendLess.TransactionImport.Models
+
+@inject ISingleTypeSpendLessStorage<AccountDto> accountStorage
+@inject ISingleTypeSpendLessStorage<TransactionImportConfigurationDto> configStorage
+@inject ISingleTypeSpendLessStorage<TransactionImportAccountMetadataDto> accountMetadataStorage
+
+@code {
+    [Parameter]
+    public Optional<string> SelectedAccount { get; set; } = new();
+    [Parameter]
+    public bool IsSwap { get; set; } = true;
+
+    private Dictionary<string, string> _accounts { get; set; } = [];
+    private Dictionary<string, string> _configurations { get; set; } = [];
+    private Dictionary<string, string> _accountDefaultConfigurations { get; set; } = [];
+    private Dictionary<string, object> _attributes = new();
+    protected override async Task OnInitializedAsync()
+    {
+        if (IsSwap)
+            _attributes["hx-swap-oob"] = "outerHTML";
+        var accounts = await accountStorage.GetAll();
+        _accounts = accounts.ToDictionary(
+            kvp => kvp.Key.SingleValue(),
+            kvp => kvp.Value.Name);
+
+        var importConfigs = await configStorage.GetAll();
+        _configurations = importConfigs.ToDictionary(
+           kvp => kvp.Key.SingleValue(),
+           kvp => kvp.Value.Name);
+
+        var accountMetadatas = await accountMetadataStorage.GetAll();
+        foreach(var (key, value) in accountMetadatas)
+        {
+            if (!value.DefaultConfiguration.HasValue)
+                continue;
+            _accountDefaultConfigurations[key.SingleValue()] = value.DefaultConfiguration.Value.SingleValue();
+        }
+    }
 }
+
 <form id="setup" 
-    @(Model.IsSwap ? "hx-swap=\"true\"" : "")
-    hx-post="/_event/TransactionImportDryRun" hx-encoding="multipart/form-data">
+    @attributes="_attributes"
+    hx-post="/_event/TransactionImportDryRun" 
+    hx-encoding="multipart/form-data">
     <div class="field">
         <label class="label">Input file</label>
         <div class="file">
-          <label class="file-label">
+            <label class="file-label">
             <input 
                 _="on change 
                     set files to the event's target.files
@@ -22,78 +65,97 @@
                     end
                     "
                 class="file-input" type="file" name="file" accept=".csv" />
-            <span class="file-cta">
-              <span class="file-icon">
-                <i class="fas fa-upload"></i>
-              </span>
-              <span class="file-label"> Choose a file… </span>
-            </span>
-            <span class="file-name is-hidden"></span>
-          </label>
+                <span class="file-cta">
+                    <span class="file-icon">
+                        <i class="fas fa-upload"></i>
+                    </span>
+                    <span class="file-label"> Choose a file… </span>
+                </span>
+                <span class="file-name is-hidden"></span>
+            </label>
         </div>
     </div>
     <div class="field">
-      <label class="label">Account</label>
-      <div class="control">
-        <div class="select">
-          <select name="@nameof(TransactionImportSetupRequestDto.Account)"
-              _="on change 
-                    set account to the first <option[value=$(my value)]/> in me 
-                    set defaultConfig to the account's @@sl-default-config
-                        log defaultConfig">
-            @foreach(var (id, (name, defaultConfig)) in Model.Accounts)
-            {
-                <option
-                    @(defaultConfig.HasValue ? $"sl-default-config=\"{defaultConfig.Value}\"" : "")
-                    @(id == Model.SelectedAccount ? "selected" : "")
-                    value="@id">
-                    @name
-                </option>
-            }
-          </select>
+        <label class="label">Account</label>
+        <div class="control">
+            <div class="select">
+                <select name="account"
+                    _="on change 
+                        set account to the first <option[value=$(my value)]/> in me 
+                        set defaultConfig to the account's @@sl-default-config
+                        if defaultConfig is not null
+                            set (the next <select/>)'s value to defaultConfig
+                        ">
+                        @foreach (var (id, name) in _accounts)
+                        {
+                            var attributes = new Dictionary<string, object>();
+                            if (_accountDefaultConfigurations.TryGetValue(id, out var configId))
+                                attributes["sl-default-config"] = configId;
+                            if(SelectedAccount.HasValue && SelectedAccount.Value == id)
+                                attributes["selected"] = "";
+                            <option
+                                @attributes="attributes"
+                                value="@id">
+                                @name
+                            </option>
+                        }
+                </select>
+            </div>
         </div>
-      </div>
     </div>
     <div class="field" id="import-configuration-selection-field">
         <label class="label">Import Configuration</label>
         <div class="control buttons" >
             <div class="select">
                 <select name="config">
-                    @foreach(var (id, name) in Model.Configurations)
-                    {
-                        <option
-                            @(id == Model.SelectedConfiguration ? "selected" : "")
-                            value="@id">
-                            @name
-                        </option>
+                    @{
+
+                        Optional<string> firstAccountConfig = new();
+                        if (_accounts.Count > 0)
+                        {
+                            var firstAccountId = _accounts.First().Key;
+                            if (_accountDefaultConfigurations.TryGetValue(firstAccountId, out var configId))
+                                firstAccountConfig = configId;
+                        }
+                        foreach(var (id, name) in _configurations)
+                        {
+                            var attributes = new Dictionary<string, object>();
+                            if (firstAccountConfig.HasValue && firstAccountConfig.Value == id)
+                                attributes["selected"] = "";
+                            <option
+                                @attributes="attributes"
+                                value="@id">
+                                @name
+                            </option>
+                        }
                     }
                 </select>
             </div>
-                @if (Model.Configurations.Count > 0)
-                {
-                    <button class="button is-link is-outlined"
-                    hx-get="/transaction-import-v2/config"
-                    hx-include="closest form"
-                    include-vals="'launch-modal':true"
-                    hx-swap="none">
-                        <span class="icon is-small">
-                            <i class="fas fa-edit"></i>
-                        </span>
-                        <span>Edit</span>
-                    </button>
-                }
+            @if (_configurations.Count > 0)
+            {
                 <button class="button is-link is-outlined"
-                hx-get="/transaction-import-v2/config"
-                hx-include="closest form"
-                include-vals="'launch-modal':true, create:true"
-                hx-swap="none">
+                    hx-get="/transaction-import/config"
+                    hx-include="closest form"
+                    hx-swap="none">
                     <span class="icon is-small">
-                        <i class="fas fa-add"></i>
+                        <i class="fas fa-edit"></i>
                     </span>
-                    <span>Add</span>
+                    <span>Edit</span>
                 </button>
-            </div>
+            }
+            <button class="button is-link is-outlined"
+                hx-get="/transaction-import/config"
+                hx-include="closest form"
+                hx-params="not config"
+                hx-swap="none">
+                <span class="icon is-small">
+                    <i class="fas fa-add"></i>
+                </span>
+                <span>Add</span>
+            </button>
+        </div>
     </div>
+
     <hr/>
     <div id="preprocess-file-controls">
         <div class="field">
@@ -103,4 +165,3 @@
         </div>
     </div>
 </form>
- *@
