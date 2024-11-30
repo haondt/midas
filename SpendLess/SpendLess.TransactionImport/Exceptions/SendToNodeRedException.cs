@@ -1,4 +1,4 @@
-﻿namespace SpendLess.Exceptions
+﻿namespace SpendLess.TransactionImport.Exceptions
 {
     public class SendToNodeRedException : Exception
     {

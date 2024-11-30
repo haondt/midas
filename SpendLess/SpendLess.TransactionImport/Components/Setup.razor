@@ -45,7 +45,9 @@
 
 <form id="setup" 
     @attributes="_attributes"
-    hx-post="/_event/TransactionImportDryRun" 
+    hx-post="/transaction-import/dry-run" 
+    hx-swap="beforeend"
+    hx-target="#transaction-import"
     hx-encoding="multipart/form-data">
     <div class="field">
         <label class="label">Input file</label>
@@ -160,7 +162,12 @@
     <div id="preprocess-file-controls">
         <div class="field">
             <div class="control">
-                <button class="button is-primary">Preprocess File</button>
+                <button 
+                    class="button is-primary">
+                    
+                    
+                    Process File
+                </button>
             </div>
         </div>
     </div>

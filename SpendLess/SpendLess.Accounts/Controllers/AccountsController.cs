@@ -20,7 +20,7 @@ namespace SpendLess.Accounts.Controllers
         [ServiceFilter(typeof(RenderPageFilter))]
         public Task<IResult> Get()
         {
-            return componentFactory.RenderComponentAsync<Components.Accounts>();
+            return componentFactory.RenderComponentAsync<SpendLess.Accounts.Components.Accounts>();
         }
 
         [HttpGet("create")]

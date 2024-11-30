@@ -5,8 +5,6 @@ VisualStudioVersion = 17.11.35208.52
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendLess", "SpendLess\SpendLess.csproj", "{65D2EBA4-A0A7-4BC3-A734-64F27C7ABD51}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendLess.Components", "SpendLess.Components\SpendLess.Components.csproj", "{C7F1E806-7FF2-420E-A4A3-85CFE6074C6B}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendLess.Core", "SpendLess.Core\SpendLess.Core.csproj", "{C527E2B4-8F53-4204-A9F5-96EE7E34CE49}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendLess.NodeRed", "SpendLess.NodeRed\SpendLess.NodeRed.csproj", "{FF10F8B6-314D-4BAD-B39C-0B8760D5B33F}"
@@ -42,10 +40,6 @@ Global
 		{65D2EBA4-A0A7-4BC3-A734-64F27C7ABD51}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65D2EBA4-A0A7-4BC3-A734-64F27C7ABD51}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65D2EBA4-A0A7-4BC3-A734-64F27C7ABD51}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C7F1E806-7FF2-420E-A4A3-85CFE6074C6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C7F1E806-7FF2-420E-A4A3-85CFE6074C6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C7F1E806-7FF2-420E-A4A3-85CFE6074C6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C7F1E806-7FF2-420E-A4A3-85CFE6074C6B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C527E2B4-8F53-4204-A9F5-96EE7E34CE49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C527E2B4-8F53-4204-A9F5-96EE7E34CE49}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C527E2B4-8F53-4204-A9F5-96EE7E34CE49}.Release|Any CPU.ActiveCfg = Release|Any CPU

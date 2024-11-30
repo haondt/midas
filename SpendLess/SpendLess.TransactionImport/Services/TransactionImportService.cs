@@ -1,37 +1,36 @@
-﻿using Haondt.Web.Core.Extensions;
-using Haondt.Web.Core.Http;
-using Haondt.Web.Core.Services;
-using SpendLess.Core.Exceptions;
+﻿using Haondt.Core.Models;
 using SpendLess.Domain.Models;
 using SpendLess.Domain.Services;
-using SpendLess.Exceptions;
 using SpendLess.NodeRed.Models;
 using SpendLess.NodeRed.Services;
-using SpendLess.Persistence.Extensions;
-using SpendLess.Persistence.Services;
-using SpendLess.Web.Domain.Extensions;
+using SpendLess.TransactionImport.Exceptions;
 
-namespace SpendLess.EventHandlers.TransactionImport
+namespace SpendLess.TransactionImport.Services
 {
-    public class TransactionImportDryRunEventHandler(IComponentFactory componentFactory,
-        IAsyncJobRegistry jobRegistry,
-        ISingleTypeSpendLessStorage<TransactionImportConfigurationDto> configurationStorage,
-        INodeRedService nodeRed)
+    public class TransactionImportService(IAsyncJobRegistry jobRegistry,
+        INodeRedService nodeRed) : ITransactionImportService
     {
-        public string EventName => "TransactionImportDryRun";
 
-        public async Task<IResult> HandleAsync(IRequestData requestData)
+        public Result<SendToNodeRedResultDto, double> GetDryRunResult(string jobId)
         {
-            var file = (requestData.Form.Files?.FirstOrDefault(f => f.Name == "file"))
-                ?? throw new UserException("Please select a file.");
-
-            var accountId = requestData.Form.GetValue<string>("account");
-            var configurationId = requestData.Form.GetValue<string>("config-id");
-            var configuration = await configurationStorage.Get(configurationId.SeedStorageKey<TransactionImportConfigurationDto>());
-
-            var csvData = file.ParseAsCsv();
+            var (status, progress) = jobRegistry.GetJobProgress(jobId);
+            if (status < AsyncJobStatus.Complete)
+                return new(progress * 100);
+            var result = jobRegistry.GetJobResult(jobId);
+            if (!result.HasValue)
+                throw new InvalidOperationException($"Job {jobId} has status {status} and no result.");
+            if (result.Value is not SendToNodeRedResultDto castedResult)
+                throw new InvalidOperationException($"Job {jobId} has status {status} and a result of type {result.Value.GetType()} instead of {typeof(SendToNodeRedResultDto)}.");
+            return new(castedResult);
+        }
+        public string StartDryRun(
+            TransactionImportConfigurationDto configuration,
+            string accountId,
+            List<List<string>> csvData)
+        {
 
             var (jobId, cancellationToken) = jobRegistry.RegisterJob();
+
             _ = Task.Run(async () =>
             {
                 var result = new SendToNodeRedResultDto();
@@ -91,12 +90,7 @@ namespace SpendLess.EventHandlers.TransactionImport
                 }
             }, cancellationToken);
 
-            //return await componentFactory.GetPlainComponent(new TransactionImportUpdateModel
-            //{
-            //    DryRunProgress = 0,
-            //    DryRunJobId = jobId
-            //});
-            throw new NotImplementedException();
+            return jobId;
         }
     }
 }

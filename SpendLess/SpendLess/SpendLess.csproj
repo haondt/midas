@@ -20,7 +20,6 @@
   <ItemGroup>
     <ProjectReference Include="..\SpendLess.Admin\SpendLess.Admin.csproj" />
     <ProjectReference Include="..\SpendLess.Accounts\SpendLess.Accounts.csproj" />
-    <ProjectReference Include="..\SpendLess.Components\SpendLess.Components.csproj" />
     <ProjectReference Include="..\SpendLess.Core\SpendLess.Core.csproj" />
     <ProjectReference Include="..\SpendLess.Domain\SpendLess.Domain.csproj" />
     <ProjectReference Include="..\SpendLess.Kvs\SpendLess.Kvs.csproj" />

@@ -1,0 +1,15 @@
+
+@code {
+    [Parameter, EditorRequired]
+    public required double ProgressPercent { get; set; }
+    [Parameter, EditorRequired]
+    public required string CallbackEndpoint { get; set; }
+}
+<div class="box">
+    <progress 
+        hx-get="@CallbackEndpoint"
+        hx-swap="outerHTML"
+        hx-target="closest div"
+        hx-trigger="load delay:500ms"
+        class="is-primary progress" value="@ProgressPercent" max="100"></progress>
+</div>

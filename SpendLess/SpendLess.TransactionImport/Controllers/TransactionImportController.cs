@@ -10,8 +10,11 @@ using SpendLess.Persistence.Extensions;
 using SpendLess.Persistence.Services;
 using SpendLess.TransactionImport.Components;
 using SpendLess.TransactionImport.Models;
+using SpendLess.TransactionImport.Services;
 using SpendLess.Web.Domain.Components;
 using SpendLess.Web.Domain.Controllers;
+using SpendLess.Web.Domain.Extensions;
+using System.ComponentModel.DataAnnotations;
 
 namespace SpendLess.TransactionImport.Controllers
 {
@@ -19,8 +22,8 @@ namespace SpendLess.TransactionImport.Controllers
     public class TransactionImportController(
         IComponentFactory componentFactory,
         ISingleTypeSpendLessStorage<TransactionImportConfigurationDto> configStorage,
-        ISingleTypeSpendLessStorage<TransactionImportAccountMetadataDto> accountMetadataStorage
-        ) : SpendLessUIController
+        ISingleTypeSpendLessStorage<TransactionImportAccountMetadataDto> accountMetadataStorage,
+        ITransactionImportService import) : SpendLessUIController
     {
         [HttpGet]
         [ServiceFilter(typeof(RenderPageFilter))]
@@ -93,19 +96,38 @@ namespace SpendLess.TransactionImport.Controllers
             });
         }
 
+        [HttpPost("dry-run")]
+        public async Task<IResult> StartDryRun(
+            [FromForm, Required] string account,
+            [FromForm, Required] string config,
+            [FromForm, Required] IFormFile file)
+        {
+            var csvData = file.ParseAsCsv();
+            var configDto = await configStorage.Get(config.SeedStorageKey<TransactionImportConfigurationDto>());
+            var jobId = import.StartDryRun(configDto, account, csvData);
+
+            return await componentFactory.RenderComponentAsync(new ProgressPanel
+            {
+                CallbackEndpoint = $"/transaction-import/dry-run/{jobId}",
+                ProgressPercent = 0
+            });
+        }
+
+        [HttpGet("dry-run/{id}")]
+        public async Task<IResult> GetJobStatus(string id)
+        {
+            var result = import.GetDryRunResult(id);
+            if (!result.IsSuccessful)
+            {
+                return await componentFactory.RenderComponentAsync(new ProgressPanel
+                {
+                    CallbackEndpoint = $"/transaction-import/dry-run/{id}",
+                    ProgressPercent = result.Reason
+                });
+            }
+
+            return await componentFactory.RenderComponentAsync(new DryRunResult { Inner = result.Value });
+        }
     }
 
-    //public class Test : TransactionImportController
-    //{
-    //    [HttpGet]
-    //    public async Task<IResult> Get()
-    //    {
-    //        return new RazorComponentResult<TestOne>(new TestOne
-    //        {
-    //            Color = "blue",
-    //            Size = 100
-    //        });
-    //    }
-
-    //}
 }

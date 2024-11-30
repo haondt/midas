@@ -1,5 +1,10 @@
-﻿@model SpendLess.Components.SpendLessComponents.TransactionImportSendToNodeRedResultModel
-<div class="box" id="dry-run-result" hx-swap-oob="outerHTML">
+@using SpendLess.Domain.Models
+
+@code {
+    [Parameter]
+    public required SendToNodeRedResultDto Inner { get; set; }
+}
+<div class="box" id="dry-run-result">
     <p class="subtitle">Dry Run Summary</p>
     <p class="subtitle">Incoming changes</p>
 
@@ -94,7 +99,7 @@
         </div>
     </div>
 
-    @if(Model.Inner.Errors.Count > 0)
+    @if(Inner.Errors.Count > 0)
     {
         <p class="subtitle">Errors</p>
         <div class="message is-danger">
@@ -106,7 +111,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach(var (message, sourcePayload) in Model.Inner.Errors)
+                        @foreach(var (message, sourcePayload) in Inner.Errors)
                         {
                             <tr class="is-danger">
                                 <td>

@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SpendLess.Domain\SpendLess.Domain.csproj" />
+    <ProjectReference Include="..\SpendLess.NodeRed\SpendLess.NodeRed.csproj" />
     <ProjectReference Include="..\SpendLess.Persistence\SpendLess.Persistence.csproj" />
     <ProjectReference Include="..\SpendLess.Web.Domain\SpendLess.Web.Domain.csproj" />
   </ItemGroup>

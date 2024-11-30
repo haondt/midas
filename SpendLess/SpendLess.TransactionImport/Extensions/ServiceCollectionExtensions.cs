@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using SpendLess.TransactionImport.Services;
 using SpendLess.Web.Domain.Models;
 
 namespace SpendLess.TransactionImport.Extensions
@@ -13,6 +14,8 @@ namespace SpendLess.TransactionImport.Extensions
                 Title = "Import Transactions",
                 Slug = "transaction-import",
             });
+
+            services.AddSingleton<ITransactionImportService, TransactionImportService>();
 
             return services;
         }

@@ -7,8 +7,6 @@ namespace SpendLess.Extensions
     {
         public static IServiceCollection AddSpendLessServices(this IServiceCollection services, IConfiguration configuration)
         {
-            // event handlers
-
 
             // middleware
             services.AddSingleton<ISpecificExceptionActionResultFactory, PageExceptionActionResultFactory>();
@@ -17,7 +15,5 @@ namespace SpendLess.Extensions
 
             return services;
         }
-
-
     }
 }
