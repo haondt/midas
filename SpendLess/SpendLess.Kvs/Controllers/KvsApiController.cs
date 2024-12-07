@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SpendLess.Kvs.Models;
 using SpendLess.Kvs.Services;
 using System.ComponentModel.DataAnnotations;
 
 namespace SpendLess.Kvs.Controllers
 {
     [Route("api/kvs")]
+    [ApiController]
     public class KvsApiController(IKvsService kvs) : ControllerBase
     {
         /// <summary>
@@ -40,6 +42,18 @@ namespace SpendLess.Kvs.Controllers
                 return Ok(result.Value.Value);
 
             return NotFound();
+        }
+
+        /// <summary>
+        /// Upsert a value by its key
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        [HttpPost("value")]
+        public async Task<IActionResult> SetValue([FromBody] ApiUpsertValueRequest request)
+        {
+            await kvs.UpsertValue(request.Key, request.Value);
+            return new StatusCodeResult(StatusCodes.Status201Created);
         }
 
         /// <summary>

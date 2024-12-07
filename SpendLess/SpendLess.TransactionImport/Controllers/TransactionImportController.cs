@@ -1,4 +1,6 @@
-﻿using Haondt.Identity.StorageKey;
+﻿using Haondt.Core.Extensions;
+using Haondt.Core.Models;
+using Haondt.Identity.StorageKey;
 using Haondt.Web.Components;
 using Haondt.Web.Core.Extensions;
 using Haondt.Web.Core.Services;
@@ -122,12 +124,206 @@ namespace SpendLess.TransactionImport.Controllers
                 return await componentFactory.RenderComponentAsync(new ProgressPanel
                 {
                     CallbackEndpoint = $"/transaction-import/dry-run/{id}",
-                    ProgressPercent = result.Reason
+                    ProgressPercent = result.Reason.Progress
                 });
             }
 
-            return await componentFactory.RenderComponentAsync(new DryRunResult { Inner = result.Value });
+            return await componentFactory.RenderComponentAsync(new DryRunResult
+            {
+                Errors = result.Value.Transactions.SelectMany(r => r.Errors)
+                    .GroupBy(e => e)
+                    .Select(grp => (grp.Key, grp.Count()))
+                    .ToList(),
+                Warnings = result.Value.Transactions.SelectMany(r => r.Warnings)
+                    .GroupBy(w => w)
+                    .Select(grp => (TransactionImportWarning.GetDescription(grp.Key), grp.Count()))
+                    .ToList(),
+                NewAccounts = result.Value.NewAccounts.Select(kvp => kvp.Value).ToList(),
+                JobId = id
+            });
+        }
+
+        [HttpGet("dry-run/{id}/transactions")]
+        public Task<IResult> GetDryRunTransactions(string id)
+        {
+            return componentFactory.RenderComponentAsync(new DryRunTransactionsModal
+            {
+                JobId = id
+            });
+        }
+
+        [HttpPost("dry-run/{id}/transactions/filter")]
+        public Task<IResult> AddFilter(
+            string id,
+            [FromForm] string target)
+        {
+            var filterText = GetFilterText(id, target);
+            if (filterText.HasValue)
+                return componentFactory.RenderComponentAsync(new DryRunTransactionFilter { Text = filterText.Value });
+
+            return Task.FromResult(Results.BadRequest());
+        }
+
+        private Optional<string> GetFilterText(string id, string target)
+        {
+            var rd = Request.AsRequestData();
+            var value = rd.Form
+                .TryGetValue<string>($"{target}-value");
+            var op = rd.Form
+                .GetValue<string>("operator");
+
+            Optional<string> defaultedValue = target switch
+            {
+                TransactionFilterTargets.Amount => !value.HasValue
+                    ? new Optional<string>()
+                    : decimal.TryParse(value.Value, out var decimalValue)
+                        ? new(decimalValue.ToString("F"))
+                        : new(),
+                TransactionFilterTargets.Status => value.Value,
+                TransactionFilterTargets.Warning => value.Value,
+                TransactionFilterTargets.Description => value.Or(""),
+                _ => new()
+            };
+
+            return defaultedValue.As(v => $"{target} {op} {v}");
+        }
+
+        [HttpPost("dry-run/{id}/transactions")]
+        public async Task<IResult> GetDryRunTransactions(
+            string id,
+            [FromForm] IEnumerable<string> filters,
+            [FromForm(Name = "page-size")] int? pageSize,
+            [FromForm] int? page)
+        {
+            pageSize ??= 25;
+            page ??= 1;
+
+            var result = import.GetDryRunResult(id);
+            if (!result.IsSuccessful)
+                throw new InvalidOperationException($"Dry run {id} is not complete yet.");
+
+            var transactions = result.Value.Transactions;
+            var filteredTransactions = transactions.AsEnumerable();
+            foreach (var filter in filters)
+            {
+                var splitFilter = filter.Split(' ');
+                var target = splitFilter[0];
+                var op = splitFilter[1];
+                var value = splitFilter[2];
+
+                switch (target)
+                {
+                    case TransactionFilterTargets.Status:
+                        switch (op)
+                        {
+                            case TransactionFilterOperators.IsEqualTo:
+                                filteredTransactions = filteredTransactions.Where(t => t.Status == value);
+                                break;
+                            case TransactionFilterOperators.IsNotEqualTo:
+                                filteredTransactions = filteredTransactions.Where(t => t.Status != value);
+                                break;
+                            case TransactionFilterOperators.Contains:
+                                filteredTransactions = filteredTransactions.Where(t => t.Status.Contains(value));
+                                break;
+                            case TransactionFilterOperators.StartsWith:
+                                filteredTransactions = filteredTransactions.Where(t => t.Status.StartsWith(value));
+                                break;
+                            default:
+                                throw new InvalidOperationException($"unknown operator {op}");
+                        }
+                        break;
+                    case TransactionFilterTargets.Warning:
+                        switch (op)
+                        {
+                            case TransactionFilterOperators.IsEqualTo:
+                                filteredTransactions = filteredTransactions.Where(t => t.Warnings.Contains(value));
+                                break;
+                            case TransactionFilterOperators.IsNotEqualTo:
+                                filteredTransactions = filteredTransactions.Where(t => !t.Warnings.Contains(value));
+                                break;
+                            case TransactionFilterOperators.Contains:
+                                filteredTransactions = filteredTransactions.Where(t => t.Warnings.Any(w => w.Contains(value)));
+                                break;
+                            case TransactionFilterOperators.StartsWith:
+                                filteredTransactions = filteredTransactions.Where(t => t.Warnings.Any(w => w.StartsWith(value)));
+                                break;
+                            default:
+                                throw new InvalidOperationException($"unknown operator {op}");
+                        }
+                        break;
+                    case TransactionFilterTargets.Error:
+                        switch (op)
+                        {
+                            case TransactionFilterOperators.IsEqualTo:
+                                filteredTransactions = filteredTransactions.Where(t => t.Errors.Contains(value));
+                                break;
+                            case TransactionFilterOperators.IsNotEqualTo:
+                                filteredTransactions = filteredTransactions.Where(t => !t.Errors.Contains(value));
+                                break;
+                            case TransactionFilterOperators.Contains:
+                                filteredTransactions = filteredTransactions.Where(t => t.Errors.Any(e => e.Contains(value)));
+                                break;
+                            case TransactionFilterOperators.StartsWith:
+                                filteredTransactions = filteredTransactions.Where(t => t.Errors.Any(e => e.StartsWith(value)));
+                                break;
+                            default:
+                                throw new InvalidOperationException($"unknown operator {op}");
+                        }
+                        break;
+                    case TransactionFilterTargets.Description:
+                        switch (op)
+                        {
+                            case TransactionFilterOperators.IsEqualTo:
+                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Description == value).Or(false));
+                                break;
+                            case TransactionFilterOperators.IsNotEqualTo:
+                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Description != value).Or(false));
+                                break;
+                            case TransactionFilterOperators.Contains:
+                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Description.Contains(value)).Or(false));
+                                break;
+                            case TransactionFilterOperators.StartsWith:
+                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Description.StartsWith(value)).Or(false));
+                                break;
+                            default:
+                                throw new InvalidOperationException($"unknown operator {op}");
+                        }
+                        break;
+                    case TransactionFilterTargets.Amount:
+                        switch (op)
+                        {
+                            case TransactionFilterOperators.IsEqualTo:
+                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Amount == decimal.Parse(value)).Or(false));
+                                break;
+                            case TransactionFilterOperators.IsNotEqualTo:
+                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Amount != decimal.Parse(value)).Or(false));
+                                break;
+                            case TransactionFilterOperators.Contains:
+                            case TransactionFilterOperators.StartsWith:
+                                break;
+                            default:
+                                throw new InvalidOperationException($"unknown operator {op}");
+                        }
+                        break;
+                    default:
+                        throw new InvalidOperationException($"unknown target {target}");
+                }
+            }
+
+            var totalItems = filteredTransactions.Count();
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize.Value);
+            filteredTransactions = filteredTransactions
+                .Skip((page.Value - 1) * pageSize.Value)
+                .Take(pageSize.Value);
+
+            return await componentFactory.RenderComponentAsync(new DryRunTransactionsSearchResult
+            {
+                Results = filteredTransactions.ToList(),
+                Page = page.Value,
+                TotalPages = totalPages
+            });
         }
     }
+
 
 }

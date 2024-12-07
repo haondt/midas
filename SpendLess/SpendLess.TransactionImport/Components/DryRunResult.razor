@@ -1,11 +1,25 @@
 @using SpendLess.Domain.Models
 
 @code {
+    [Parameter, EditorRequired]
+    public required List<(string Message, int Count)> Warnings { get; set; }
+    [Parameter, EditorRequired]
+    public required List<(string Message, int Count)> Errors { get; set; }
     [Parameter]
-    public required SendToNodeRedResultDto Inner { get; set; }
+    public List<string> NewAccounts { get; set; } = [];
+    [Parameter, EditorRequired]
+    public required string JobId { get; set; } 
 }
-<div class="box" id="dry-run-result">
-    <p class="subtitle">Dry Run Summary</p>
+<div class="box">
+    <div class="is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between">
+        <p class="title is-4">Dry Run Summary</p>
+        <button 
+            class="button is-info"
+            hx-get="transaction-import/dry-run/@JobId/transactions"
+            hx-swap="none">
+            Review Transactions
+        </button>
+    </div>
     <p class="subtitle">Incoming changes</p>
 
     <div class="message">
@@ -50,6 +64,7 @@
         </div>
     </div>
 
+        
     <div class="message">
         <div class="message-body">
             <table class="table is-hoverable  is-fullwidth" >
@@ -60,7 +75,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr >
+                    <tr>
                         <td>
                             foo
                         </td>
@@ -71,35 +86,61 @@
         </div>
     </div>
 
-    <p class="subtitle">Warnings</p>
-    <div class="message is-warning">
-        <div class="message-body">
-            <table class="table is-hoverable  is-fullwidth" >
-                <thead>
-                    <tr>
-                        <th>Warning</th>
-                        <th>Affected Transactions</th>
-                        <th>Reprocess transactions in this group</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="is-warning">
-                        <td>
-                            No category was set. The default category "Uncategorized" will be used.
-                        </td>
-                        <td>100</td>
-                        <td><button class="button is-loading">
-                            <span class="icon is-small">
-                                <i class="fas fa-rotate"></i>
-                            </span>
-                        </button></td>
-                    </tr>
-                </tbody>
-            </table>
+    @if (NewAccounts.Count > 0)
+    {
+        <div class="message">
+            <div class="message-body">
+                <table class="table is-hoverable  is-fullwidth" >
+                    <thead>
+                        <tr>
+                            <th>New Accounts</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var name in NewAccounts)
+                        {
+                            <tr><td>@name</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
+    }
 
-    @if(Inner.Errors.Count > 0)
+    @if (Warnings.Count > 0)
+    {
+        <p class="subtitle">Warnings</p>
+        <div class="message is-warning">
+            <div class="message-body">
+                <table class="table is-hoverable  is-fullwidth" >
+                    <thead>
+                        <tr>
+                            <th>Warning</th>
+                            <th>Affected Transactions</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var (message, count) in Warnings)
+                        {
+                            <tr class="is-warning">
+                                <td>
+                                    @message
+                                </td>
+                                <td>@count</td>
+                                <td>
+
+                                </td>
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+    @if(Errors.Count > 0)
     {
         <p class="subtitle">Errors</p>
         <div class="message is-danger">
@@ -111,7 +152,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach(var (message, sourcePayload) in Inner.Errors)
+                        @foreach(var (message, sourcePayload) in Errors)
                         {
                             <tr class="is-danger">
                                 <td>

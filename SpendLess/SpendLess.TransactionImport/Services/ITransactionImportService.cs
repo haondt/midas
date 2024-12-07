@@ -5,7 +5,7 @@ namespace SpendLess.TransactionImport.Services
 {
     public interface ITransactionImportService
     {
-        Result<SendToNodeRedResultDto, double> GetDryRunResult(string jobId);
+        Result<SendToNodeRedResultDto, (double Progress, Optional<string> ProgressMessage)> GetDryRunResult(string jobId);
         string StartDryRun(TransactionImportConfigurationDto configuration, string accountId, List<List<string>> csvData);
     }
 }

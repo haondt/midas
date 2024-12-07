@@ -1,0 +1,57 @@
+@code {
+    [Parameter, EditorRequired]
+    public required int TotalPages { get; set; } 
+    [Parameter, EditorRequired]
+    public required int Page { get; set; }
+
+    private RenderFragment<(int Page, bool IsCurrent)> CreateSelectPageListItem = (args) =>
+    {
+        var attrs = new Dictionary<string, object>
+        {
+            { "class", "pagination-link"}
+        };
+        if (args.IsCurrent)
+            attrs["class"] += " is-current";
+        else
+            attrs["_"] = $"on click set (the previous <input/>)'s value to {args.Page} then send submit to #filters";
+
+        return @<li>
+            <button @attributes="attrs">
+                @(args.Page)
+            </button>
+        </li>;
+    };
+}
+<div id="paginator">
+    <nav class="pagination is-right">
+        <div class="select">
+            <select name="page-size" _="on change send submit to #filters">
+                <option value="25">25 rows per page</option>
+                <option value="50">50 rows per page</option>
+                <option value="100">100 rows per page</option>
+            </select>
+        </div>
+        <input type="hidden" name="page" value="1" />
+        <ul class="pagination-list">
+            @if(Page > 2)
+            {
+                @CreateSelectPageListItem((1, false))
+                <li><span class="pagination-ellipsis">&hellip;</span></li>
+            }
+            @if(Page > 1)
+            {
+                @CreateSelectPageListItem((Page - 1, false))
+            }
+            @CreateSelectPageListItem((Page, true))
+            @if(TotalPages > Page)
+            {
+                @CreateSelectPageListItem((Page + 1, false))
+            }
+            @if(TotalPages > (Page + 1))
+            {
+                <li><span class="pagination-ellipsis">&hellip;</span></li>
+                @CreateSelectPageListItem((TotalPages, false))
+            }
+        </ul>
+    </nav>
+</div>

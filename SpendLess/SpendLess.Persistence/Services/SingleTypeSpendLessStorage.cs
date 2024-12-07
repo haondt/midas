@@ -41,5 +41,20 @@ namespace SpendLess.Persistence.Services
         {
             return storage.Delete(primaryKey);
         }
+
+        public Task<bool> ContainsKey(StorageKey<T> primaryKey)
+        {
+            return storage.ContainsKey(primaryKey);
+        }
+
+        public async Task<bool> ContainsForeignKey(StorageKey<T> foreignKey)
+        {
+            return (await storage.GetManyByForeignKey(foreignKey)).Count > 0;
+        }
+
+        public Task Set(StorageKey<T> primarkey, T value, List<StorageKey<T>> foreignKeys)
+        {
+            return storage.Set(primarkey, value, foreignKeys.Append(TypeForeignKey).ToList());
+        }
     }
 }

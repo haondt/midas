@@ -1,0 +1,53 @@
+@using SpendLess.Domain.Models
+@using SpendLess.NodeRed.Models
+@using System.Web
+
+@code {
+    [Parameter]
+    public List<SendToNodeRedSingleResultDto> Results { get; set; } = [];
+
+    [Parameter, EditorRequired]
+    public required int Page { get; set; }
+    [Parameter, EditorRequired]
+    public required int TotalPages { get; set; }
+
+
+
+}
+<tbody id="transactions-list">
+    @foreach(var result in Results)
+    {
+        <tr>
+            @if (result.Transaction.HasValue)
+            {
+                <td>@result.Transaction.Value.Source.Name</td>
+                <td>@result.Transaction.Value.Destination.Name</td>
+                <td>@result.Transaction.Value.Description</td>
+                <td>$@result.Transaction.Value.Amount.ToString("F")</td>
+            }
+            else
+            {
+                <td colspan="4"></td>
+            }
+            <td style="text-align:center;"><button 
+                class="button"
+                _="
+                    on click
+                        writeText('@result.SourceRequestPayload.Replace("\'", "\\'")') into the navigator's clipboard
+                        set target to the first <i/> in me
+                        set the target's @@class to 'fa-solid fa-check'
+                            then wait 1.3s
+                            then set the target's @@class to 'fas fa-copy'
+                ">
+                <span class="icon is-small">
+                    <i class="fas fa-copy"></i>
+                </span>
+            </button></td>
+        </tr>
+    }
+    <tr>
+        <td colspan="5">
+            <Paginator Page="@Page" TotalPages="@TotalPages" />
+        </td>
+    </tr>
+</tbody>

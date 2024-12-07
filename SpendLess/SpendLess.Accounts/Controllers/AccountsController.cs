@@ -41,7 +41,7 @@ namespace SpendLess.Accounts.Controllers
             {
                 Balance = 0,
                 Name = name
-            });
+            }, [AccountDto.GetNameForeignKey(name)]);
 
 
             Response.AsResponseData()

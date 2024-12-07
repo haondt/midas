@@ -8,7 +8,7 @@ namespace SpendLess.Domain.Services
         private Dictionary<string, AsyncJob> _jobs = [];
         private readonly TimeSpan _expiration = TimeSpan.FromHours(1);
 
-        public (string, CancellationToken) RegisterJob()
+        public (string, CancellationToken) RegisterJob(Optional<string> progressMessage = default)
         {
             var jobId = Guid.NewGuid().ToString();
             var job = new AsyncJob
@@ -16,7 +16,8 @@ namespace SpendLess.Domain.Services
                 Timer = new System.Timers.Timer(_expiration.TotalMilliseconds)
                 {
                     AutoReset = false,
-                }
+                },
+                ProgressMessage = progressMessage
             };
             job.Timer.Elapsed += (_, _) =>
             {
@@ -95,16 +96,18 @@ namespace SpendLess.Domain.Services
             return job;
         }
 
-        public (AsyncJobStatus, double) GetJobProgress(string jobId)
+        public (AsyncJobStatus, double, Optional<string>) GetJobProgress(string jobId)
         {
             var job = GetJob(jobId);
-            return (job.Status, job.Progress);
+            return (job.Status, job.Progress, job.ProgressMessage);
         }
 
-        public void UpdateJobProgress(string jobId, double progress)
+        public void UpdateJobProgress(string jobId, double progress, Optional<Optional<string>> progressMessage = default)
         {
             var job = GetJob(jobId);
             job.Progress = progress;
+            if (progressMessage.HasValue)
+                job.ProgressMessage = progressMessage.Value;
         }
     }
 }
