@@ -248,7 +248,7 @@
         ],
         "out": [
             {
-                "x": 1720,
+                "x": 1760,
                 "y": 40,
                 "wires": [
                     {
@@ -258,7 +258,7 @@
                 ]
             },
             {
-                "x": 1740,
+                "x": 1780,
                 "y": 100,
                 "wires": [
                     {
@@ -375,6 +375,45 @@
         "meta": {
             "module": "node-red-contrib-haondt-spend-less-subflows",
             "type": "haondt-spend-less-throw-error"
+        },
+        "color": "#00ebc7",
+        "icon": "font-awesome/fa-dollar"
+    },
+    {
+        "id": "1fd0f49415234d19",
+        "type": "subflow",
+        "name": "kvs set value",
+        "info": "Set the value for `msg.spendless.kvs.key` to `msg.spendless.kvs.value`. Value must be a string.",
+        "category": "spendless",
+        "in": [
+            {
+                "x": 40,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "7bd4eca5f1910abc"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 740,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "cf586b6e66370837",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {
+            "module": "node-red-contrib-haondt-spend-less-subflows",
+            "type": "haondt-spend-less-kvs-set-value",
+            "version": "1.0.0",
+            "desc": "Set value in kvs"
         },
         "color": "#00ebc7",
         "icon": "font-awesome/fa-dollar"
@@ -968,10 +1007,10 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.sourceAccount",
+                "p": "spendless.context.source",
                 "pt": "msg",
-                "to": "spendless.account",
-                "tot": "msg"
+                "to": "{\t    \"id\": spendless.account\t}",
+                "tot": "jsonata"
             }
         ],
         "action": "",
@@ -995,10 +1034,10 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.destinationAccount",
+                "p": "spendless.context.destination",
                 "pt": "msg",
-                "to": "spendless.account",
-                "tot": "msg"
+                "to": "{\t    \"id\": spendless.account\t}",
+                "tot": "jsonata"
             }
         ],
         "action": "",
@@ -2989,8 +3028,8 @@
                 "type": "str"
             }
         ],
-        "x": 760,
-        "y": 280,
+        "x": 780,
+        "y": 160,
         "wires": []
     },
     {
@@ -2999,8 +3038,8 @@
         "z": "463da193503067ee",
         "name": "",
         "method": "GET",
-        "ret": "txt",
-        "paytoqs": "ignore",
+        "ret": "obj",
+        "paytoqs": "query",
         "url": "",
         "tls": "",
         "persist": false,
@@ -3009,7 +3048,7 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 330,
+        "x": 370,
         "y": 40,
         "wires": [
             [
@@ -3021,13 +3060,20 @@
         "id": "04ef9a0945917c06",
         "type": "change",
         "z": "463da193503067ee",
-        "name": "set path",
+        "name": "prepare request",
         "rules": [
             {
                 "t": "set",
                 "p": "url",
                 "pt": "msg",
-                "to": "$env('SPEND_LESS_API_URL')\t    & \"api/kvs/\"\t    & msg.spendless.kvs\t    & \"/mapping\"",
+                "to": "$env('SPEND_LESS_API_URL')\t    & \"api/kvs/mapping\"",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{ \"alias\": msg.spendless.kvs }",
                 "tot": "jsonata"
             }
         ],
@@ -3036,7 +3082,7 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 160,
+        "x": 180,
         "y": 40,
         "wires": [
             [
@@ -3069,7 +3115,7 @@
         "checkall": "true",
         "repair": false,
         "outputs": 3,
-        "x": 530,
+        "x": 570,
         "y": 40,
         "wires": [
             [
@@ -3097,8 +3143,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 770,
-        "y": 240,
+        "x": 790,
+        "y": 120,
         "wires": []
     },
     {
@@ -3120,7 +3166,7 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 760,
+        "x": 800,
         "y": 40,
         "wires": [
             [
@@ -3146,7 +3192,7 @@
         "checkall": "true",
         "repair": false,
         "outputs": 2,
-        "x": 970,
+        "x": 1010,
         "y": 40,
         "wires": [
             [
@@ -3176,7 +3222,7 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1340,
+        "x": 1380,
         "y": 80,
         "wires": [
             [
@@ -3189,10 +3235,10 @@
         "type": "json",
         "z": "463da193503067ee",
         "name": "parse json",
-        "property": "spendless.kvs",
+        "property": "spendless.kvs.value",
         "action": "obj",
         "pretty": false,
-        "x": 1330,
+        "x": 1370,
         "y": 40,
         "wires": [
             [
@@ -3205,7 +3251,7 @@
         "type": "switch",
         "z": "463da193503067ee",
         "name": "has value?",
-        "property": "spendless.kvs",
+        "property": "spendless.kvs.value",
         "propertyType": "msg",
         "rules": [
             {
@@ -3218,7 +3264,7 @@
         "checkall": "true",
         "repair": false,
         "outputs": 2,
-        "x": 1150,
+        "x": 1190,
         "y": 40,
         "wires": [
             [
@@ -3238,7 +3284,7 @@
             "0188f78dcd7a35f7",
             "439ac240c46053bd"
         ],
-        "x": 1615,
+        "x": 1655,
         "y": 40,
         "wires": [
             []
@@ -3253,7 +3299,7 @@
         "links": [
             "44cb5aef5c3c2a60"
         ],
-        "x": 1475,
+        "x": 1515,
         "y": 40,
         "wires": []
     },
@@ -3266,7 +3312,7 @@
         "links": [
             "44cb5aef5c3c2a60"
         ],
-        "x": 1095,
+        "x": 1135,
         "y": 80,
         "wires": []
     },
@@ -3278,7 +3324,7 @@
         "links": [
             "c92c92846b0d4c52"
         ],
-        "x": 1615,
+        "x": 1655,
         "y": 100,
         "wires": [
             []
@@ -3293,7 +3339,7 @@
         "links": [
             "98a045dfd8f165b5"
         ],
-        "x": 675,
+        "x": 715,
         "y": 80,
         "wires": []
     },
@@ -3354,7 +3400,7 @@
         "rules": [
             {
                 "t": "hask",
-                "v": "sourceAccount",
+                "v": "source",
                 "vt": "str"
             },
             {
@@ -3371,38 +3417,7 @@
                 "5794db8da4cdc39c"
             ],
             [
-                "f698c7c693058ca1"
-            ]
-        ]
-    },
-    {
-        "id": "f698c7c693058ca1",
-        "type": "switch",
-        "z": "b86a301c9c586c6c",
-        "name": "has destinationAccount ?",
-        "property": "spendless.context",
-        "propertyType": "msg",
-        "rules": [
-            {
-                "t": "hask",
-                "v": "destinationAccount",
-                "vt": "str"
-            },
-            {
-                "t": "else"
-            }
-        ],
-        "checkall": "true",
-        "repair": false,
-        "outputs": 2,
-        "x": 210,
-        "y": 160,
-        "wires": [
-            [
-                "95d3f0ba96ad9a17"
-            ],
-            [
-                "8a3a8485453cd804"
+                "6d99e44eb15240a5"
             ]
         ]
     },
@@ -3414,9 +3429,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.response.transaction.sourceAccount",
+                "p": "spendless.response.transaction.source",
                 "pt": "msg",
-                "to": "spendless.context.sourceAccount",
+                "to": "spendless.context.source",
                 "tot": "msg"
             }
         ],
@@ -3429,34 +3444,7 @@
         "y": 120,
         "wires": [
             [
-                "f698c7c693058ca1"
-            ]
-        ]
-    },
-    {
-        "id": "95d3f0ba96ad9a17",
-        "type": "change",
-        "z": "b86a301c9c586c6c",
-        "name": "set destination account",
-        "rules": [
-            {
-                "t": "set",
-                "p": "spendless.response.transaction.destinationAccount",
-                "pt": "msg",
-                "to": "spendless.context.destinationAccount",
-                "tot": "msg"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 460,
-        "y": 160,
-        "wires": [
-            [
-                "8a3a8485453cd804"
+                "6d99e44eb15240a5"
             ]
         ]
     },
@@ -3469,8 +3457,8 @@
         "links": [
             "9c2a7410b0650875"
         ],
-        "x": 275,
-        "y": 240,
+        "x": 535,
+        "y": 200,
         "wires": []
     },
     {
@@ -3479,8 +3467,7 @@
         "z": "b86a301c9c586c6c",
         "name": "link in 5",
         "links": [
-            "d5a019dabd4fc640",
-            "0a52cce1d059d88d"
+            "d5a019dabd4fc640"
         ],
         "x": 685,
         "y": 60,
@@ -3534,11 +3521,69 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 160,
-        "y": 240,
+        "x": 420,
+        "y": 200,
         "wires": [
             [
                 "d5a019dabd4fc640"
+            ]
+        ]
+    },
+    {
+        "id": "6d99e44eb15240a5",
+        "type": "switch",
+        "z": "b86a301c9c586c6c",
+        "name": "has destinationAccount ?",
+        "property": "spendless.context",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "hask",
+                "v": "destination",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 210,
+        "y": 160,
+        "wires": [
+            [
+                "71b2ab28358ca187"
+            ],
+            [
+                "8a3a8485453cd804"
+            ]
+        ]
+    },
+    {
+        "id": "71b2ab28358ca187",
+        "type": "change",
+        "z": "b86a301c9c586c6c",
+        "name": "set destination account",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.response.transaction.destination",
+                "pt": "msg",
+                "to": "spendless.context.destination",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 460,
+        "y": 160,
+        "wires": [
+            [
+                "8a3a8485453cd804"
             ]
         ]
     },
@@ -3561,6 +3606,132 @@
         ]
     },
     {
+        "id": "7bd4eca5f1910abc",
+        "type": "change",
+        "z": "1fd0f49415234d19",
+        "name": "prepare request",
+        "rules": [
+            {
+                "t": "set",
+                "p": "url",
+                "pt": "msg",
+                "to": "$env('SPEND_LESS_API_URL')\t    & \"api/kvs/value\"",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{ \t    \"key\": msg.spendless.kvs.key, \t    \"value\": msg.spendless.kvs.value\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 180,
+        "y": 40,
+        "wires": [
+            [
+                "7fbb7258f4e7bf24"
+            ]
+        ]
+    },
+    {
+        "id": "7fbb7258f4e7bf24",
+        "type": "http request",
+        "z": "1fd0f49415234d19",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "query",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 370,
+        "y": 40,
+        "wires": [
+            [
+                "cf586b6e66370837"
+            ]
+        ]
+    },
+    {
+        "id": "cf586b6e66370837",
+        "type": "switch",
+        "z": "1fd0f49415234d19",
+        "name": "check status code",
+        "property": "statusCode",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "201",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 570,
+        "y": 40,
+        "wires": [
+            [],
+            [
+                "3c1d5a2c9eeb6eea",
+                "6816f48870785fe0"
+            ]
+        ]
+    },
+    {
+        "id": "6816f48870785fe0",
+        "type": "subflow:e650a01280df74d9",
+        "z": "1fd0f49415234d19",
+        "name": "",
+        "env": [
+            {
+                "name": "ERROR_STATUS",
+                "value": "500",
+                "type": "str"
+            },
+            {
+                "name": "ERROR_MESSAGE",
+                "value": "Unexpected response setting value kvs",
+                "type": "str"
+            }
+        ],
+        "x": 800,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "3c1d5a2c9eeb6eea",
+        "type": "debug",
+        "z": "1fd0f49415234d19",
+        "name": "kvs set value failure",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 820,
+        "y": 80,
+        "wires": []
+    },
+    {
         "id": "68b35bba8b3a7e1e",
         "type": "subflow:99f384cef6a769fb",
         "z": "f6f2187d.f17ca8",
@@ -3578,8 +3749,8 @@
         "type": "subflow:b2028b08979e589d",
         "z": "f6f2187d.f17ca8",
         "name": "",
-        "x": 2300,
-        "y": 100,
+        "x": 420,
+        "y": 700,
         "wires": []
     },
     {
@@ -3719,32 +3890,16 @@
         ]
     },
     {
-        "id": "6d7fb619ad0f7f05",
-        "type": "debug",
-        "z": "f6f2187d.f17ca8",
-        "name": "debug 2",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 2060,
-        "y": 180,
-        "wires": []
-    },
-    {
         "id": "ac5c1b947fa68cbe",
         "type": "subflow:b86a301c9c586c6c",
         "z": "f6f2187d.f17ca8",
         "name": "",
-        "x": 2110,
-        "y": 100,
+        "x": 230,
+        "y": 700,
         "wires": [
             [
-                "10e382e0334a13a3"
+                "10e382e0334a13a3",
+                "6d7fb619ad0f7f05"
             ]
         ]
     },
@@ -3771,7 +3926,7 @@
         "y": 140,
         "wires": [
             [
-                "1dd0844ec4b005bc"
+                "0685021a5680745d"
             ]
         ]
     },
@@ -3787,8 +3942,8 @@
                 "type": "str"
             }
         ],
-        "x": 1680,
-        "y": 180,
+        "x": 740,
+        "y": 520,
         "wires": []
     },
     {
@@ -3814,7 +3969,7 @@
         "y": 100,
         "wires": [
             [
-                "1dd0844ec4b005bc"
+                "0685021a5680745d"
             ]
         ]
     },
@@ -3823,14 +3978,14 @@
         "type": "subflow:463da193503067ee",
         "z": "f6f2187d.f17ca8",
         "name": "",
-        "x": 1230,
-        "y": 100,
+        "x": 210,
+        "y": 260,
         "wires": [
             [
-                "2dec95fb57fd1b6b"
+                "04d21e9ade194598"
             ],
             [
-                "7196f52d6089bf22"
+                "2f939823c2193579"
             ]
         ]
     },
@@ -3842,10 +3997,10 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.sourceAccount",
+                "p": "spendless.context.source",
                 "pt": "msg",
-                "to": "msg.spendless.kvs.key",
-                "tot": "str"
+                "to": "{\t    \"name\": msg.spendless.kvs.key,\t    \"id\": msg.spendless.kvs.value.id\t}",
+                "tot": "jsonata"
             }
         ],
         "action": "",
@@ -3853,8 +4008,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1710,
-        "y": 100,
+        "x": 770,
+        "y": 440,
         "wires": [
             [
                 "7386451bd5ce1272"
@@ -3866,15 +4021,15 @@
         "type": "function",
         "z": "f6f2187d.f17ca8",
         "name": "determine opposing account",
-        "func": "const ctx = msg.spendless.context;\nif (ctx.hasOwnProperty('sourceAccount') && !ctx.hasOwnProperty('destinationAccount'))\n    return [msg, null, null];\nif (!ctx.hasOwnProperty('sourceAccount') && ctx.hasOwnProperty('destinationAccount'))\n    return [null, msg, null];\nreturn [null, null, msg];",
+        "func": "const ctx = msg.spendless.context;\nif (!ctx.hasOwnProperty('source') && ctx.hasOwnProperty('destination'))\n    return [msg, null, null];\nif (ctx.hasOwnProperty('source') && !ctx.hasOwnProperty('destination'))\n    return [null, msg, null];\nreturn [null, null, msg];",
         "outputs": 3,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1460,
-        "y": 100,
+        "x": 520,
+        "y": 440,
         "wires": [
             [
                 "fd88824b2e16b798"
@@ -3900,10 +4055,10 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.destinationAccount",
+                "p": "spendless.context.destination",
                 "pt": "msg",
-                "to": "msg.spendless.kvs.key",
-                "tot": "str"
+                "to": "{\t    \"name\": msg.spendless.kvs.key,\t    \"id\": msg.spendless.kvs.value.id\t}",
+                "tot": "jsonata"
             }
         ],
         "action": "",
@@ -3911,8 +4066,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1720,
-        "y": 140,
+        "x": 780,
+        "y": 480,
         "wires": [
             [
                 "7386451bd5ce1272"
@@ -3926,14 +4081,14 @@
         "name": "link in 4",
         "links": [
             "7386451bd5ce1272",
-            "7196f52d6089bf22"
+            "7196f52d6089bf22",
+            "26a58a4805459d96"
         ],
-        "x": 1965,
-        "y": 100,
+        "x": 75,
+        "y": 700,
         "wires": [
             [
-                "ac5c1b947fa68cbe",
-                "6d7fb619ad0f7f05"
+                "ac5c1b947fa68cbe"
             ]
         ]
     },
@@ -3946,21 +4101,391 @@
         "links": [
             "6ab4de770590f69f"
         ],
-        "x": 1875,
-        "y": 100,
+        "x": 935,
+        "y": 440,
         "wires": []
     },
     {
-        "id": "7196f52d6089bf22",
+        "id": "be400be83c4f1323",
+        "type": "link in",
+        "z": "f6f2187d.f17ca8",
+        "name": "link in 6",
+        "links": [
+            "0685021a5680745d"
+        ],
+        "x": 75,
+        "y": 260,
+        "wires": [
+            [
+                "1dd0844ec4b005bc",
+                "9db28cc162565c8d"
+            ]
+        ]
+    },
+    {
+        "id": "0685021a5680745d",
         "type": "link out",
         "z": "f6f2187d.f17ca8",
-        "name": "link out 20",
+        "name": "link out 22",
+        "mode": "link",
+        "links": [
+            "be400be83c4f1323"
+        ],
+        "x": 1175,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "9e2b8b64bd0c76d7",
+        "type": "switch",
+        "z": "f6f2187d.f17ca8",
+        "name": "has an id ?",
+        "property": "spendless.kvs.value",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "hask",
+                "v": "id",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 470,
+        "y": 300,
+        "wires": [
+            [
+                "bc3dba53cbcc9e03"
+            ],
+            [
+                "f907d63aec1ed943"
+            ]
+        ]
+    },
+    {
+        "id": "04d21e9ade194598",
+        "type": "switch",
+        "z": "f6f2187d.f17ca8",
+        "name": "value is empty?",
+        "property": "spendless.kvs.value",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 480,
+        "y": 260,
+        "wires": [
+            [
+                "b77b39a4eafcc4bf"
+            ],
+            [
+                "9e2b8b64bd0c76d7"
+            ]
+        ]
+    },
+    {
+        "id": "b77b39a4eafcc4bf",
+        "type": "change",
+        "z": "f6f2187d.f17ca8",
+        "name": "Set to empty dict",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.kvs.value",
+                "pt": "msg",
+                "to": "{}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 690,
+        "y": 260,
+        "wires": [
+            [
+                "9e2b8b64bd0c76d7"
+            ]
+        ]
+    },
+    {
+        "id": "8ebcea41c9ebf31e",
+        "type": "link in",
+        "z": "f6f2187d.f17ca8",
+        "name": "link in 7",
+        "links": [
+            "bc3dba53cbcc9e03",
+            "911a513fcded1124"
+        ],
+        "x": 335,
+        "y": 440,
+        "wires": [
+            [
+                "2dec95fb57fd1b6b"
+            ]
+        ]
+    },
+    {
+        "id": "bc3dba53cbcc9e03",
+        "type": "link out",
+        "z": "f6f2187d.f17ca8",
+        "name": "link out 23",
+        "mode": "link",
+        "links": [
+            "8ebcea41c9ebf31e",
+            "455b15f142f47f0e"
+        ],
+        "x": 615,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "9e2d909ca1b8a78e",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "serialize the value",
+        "func": "msg.spendless.kvs.unserializedKvsValue = msg.spendless.kvs.value;\nmsg.spendless.kvs.value = JSON.stringify(msg.spendless.kvs.value);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 690,
+        "y": 340,
+        "wires": [
+            [
+                "820ae71df6d380af"
+            ]
+        ]
+    },
+    {
+        "id": "f907d63aec1ed943",
+        "type": "uuid",
+        "z": "f6f2187d.f17ca8",
+        "uuidVersion": "v4",
+        "namespaceType": "",
+        "namespace": "",
+        "namespaceCustom": "",
+        "name": "generate an id",
+        "field": "spendless.kvs.value.id",
+        "fieldType": "msg",
+        "x": 480,
+        "y": 340,
+        "wires": [
+            [
+                "9e2d909ca1b8a78e"
+            ]
+        ]
+    },
+    {
+        "id": "ba25a72769404fe9",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "deserialize the value",
+        "func": "msg.spendless.kvs.value = msg.spendless.kvs.unserializedKvsValue;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1100,
+        "y": 340,
+        "wires": [
+            [
+                "911a513fcded1124"
+            ]
+        ]
+    },
+    {
+        "id": "820ae71df6d380af",
+        "type": "subflow:1fd0f49415234d19",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "x": 890,
+        "y": 340,
+        "wires": [
+            [
+                "ba25a72769404fe9"
+            ]
+        ]
+    },
+    {
+        "id": "911a513fcded1124",
+        "type": "link out",
+        "z": "f6f2187d.f17ca8",
+        "name": "link out 24",
+        "mode": "link",
+        "links": [
+            "8ebcea41c9ebf31e"
+        ],
+        "x": 1255,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "9db28cc162565c8d",
+        "type": "debug",
+        "z": "f6f2187d.f17ca8",
+        "name": "debug 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 200,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "6d7fb619ad0f7f05",
+        "type": "debug",
+        "z": "f6f2187d.f17ca8",
+        "name": "debug 2",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 420,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "2f939823c2193579",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "determine opposing account",
+        "func": "const ctx = msg.spendless.context;\nif (!ctx.hasOwnProperty('source') && ctx.hasOwnProperty('destination'))\n    return [msg, null, null];\nif (ctx.hasOwnProperty('source') && !ctx.hasOwnProperty('destination'))\n    return [null, msg, null];\nreturn [null, null, msg];",
+        "outputs": 3,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 520,
+        "y": 560,
+        "wires": [
+            [
+                "c8a92e5b5d0cba2f"
+            ],
+            [
+                "cd44e4746c87240d"
+            ],
+            [
+                "ab147de7047d3973"
+            ]
+        ],
+        "outputLabels": [
+            "source",
+            "destination",
+            "error"
+        ]
+    },
+    {
+        "id": "c8a92e5b5d0cba2f",
+        "type": "change",
+        "z": "f6f2187d.f17ca8",
+        "name": "set source account name only",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.source",
+                "pt": "msg",
+                "to": "{\t    \"name\": msg.spendless.kvs\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 810,
+        "y": 560,
+        "wires": [
+            [
+                "26a58a4805459d96"
+            ]
+        ]
+    },
+    {
+        "id": "cd44e4746c87240d",
+        "type": "change",
+        "z": "f6f2187d.f17ca8",
+        "name": "set destination account name only",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.destination",
+                "pt": "msg",
+                "to": "{\t    \"name\": msg.spendless.kvs\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 820,
+        "y": 600,
+        "wires": [
+            [
+                "26a58a4805459d96"
+            ]
+        ]
+    },
+    {
+        "id": "ab147de7047d3973",
+        "type": "subflow:3b3449ca0b5f5b24",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "env": [
+            {
+                "name": "ERROR_MESSAGE",
+                "value": "unable to determine opposing account",
+                "type": "str"
+            }
+        ],
+        "x": 750,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "26a58a4805459d96",
+        "type": "link out",
+        "z": "f6f2187d.f17ca8",
+        "name": "link out 25",
         "mode": "link",
         "links": [
             "6ab4de770590f69f"
         ],
-        "x": 1355,
-        "y": 160,
+        "x": 1015,
+        "y": 560,
         "wires": []
     }
 ]
