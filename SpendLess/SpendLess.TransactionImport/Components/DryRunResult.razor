@@ -1,14 +1,24 @@
 @using SpendLess.Domain.Models
+@using SpendLess.Web.Domain.Services
 
 @code {
     [Parameter, EditorRequired]
     public required List<(string Message, int Count)> Warnings { get; set; }
     [Parameter, EditorRequired]
-    public required List<(string Message, int Count)> Errors { get; set; }
+    public required List<(string Message, int Count, string SamplePayload)> Errors { get; set; }
     [Parameter]
     public List<string> NewAccounts { get; set; } = [];
+    [Parameter]
+    public Dictionary<string, int> NewCategories { get; set; } = [];
+    [Parameter]
+    public Dictionary<string, int> NewTags { get; set; } = [];
     [Parameter, EditorRequired]
-    public required string JobId { get; set; } 
+    public required string JobId { get; set; }
+
+    [Parameter, EditorRequired]
+    public required decimal BalanceChange { get; set; }
+    [Parameter, EditorRequired]
+    public required string ImportAccountName { get; set; }
 }
 <div class="box">
     <div class="is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between">
@@ -20,82 +30,89 @@
             Review Transactions
         </button>
     </div>
-    <p class="subtitle">Incoming changes</p>
 
+    <p class="subtitle mb-2">Changed Account Balance</p>
     <div class="message">
         <div class="message-body">
             <table class="table is-hoverable  is-fullwidth" >
-                <thead>
-                    <tr>
-                        <th>Updated Account Balances</th>
-                        <th>Balance</th>
-                    </tr>
-                </thead>
                 <tbody>
                     <tr>
                         <td>
-                            oooooo
+                            @ImportAccountName
                         </td>
-                        <td>$1</td>
+                        @if(BalanceChange < 0)
+                        {
+                            <td class="has-text-danger">@StringFormatter.FormatCurrency(BalanceChange)</td>
+                        }
+                        else
+                        {
+                            <td class="has-text-success">@StringFormatter.FormatCurrency(BalanceChange)</td>
+                        }
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <div class="message">
-        <div class="message-body">
-            <table class="table is-hoverable  is-fullwidth" >
-                <thead>
-                    <tr>
-                        <th>New Categories</th>
-                        <th>Transactions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            foo
-                        </td>
-                        <td>$1</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-        
-    <div class="message">
-        <div class="message-body">
-            <table class="table is-hoverable  is-fullwidth" >
-                <thead>
-                    <tr>
-                        <th>New Tags</th>
-                        <th>Transactions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            foo
-                        </td>
-                        <td>$1</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    @if (NewAccounts.Count > 0)
+    @if(NewCategories.Count > 0)
     {
+        <p class="subtitle mb-2">New Categories</p>
         <div class="message">
             <div class="message-body">
                 <table class="table is-hoverable  is-fullwidth" >
                     <thead>
                         <tr>
-                            <th>New Accounts</th>
+                            <th>Category</th>
+                            <th>Transactions</th>
                         </tr>
                     </thead>
+                    <tbody>
+                        @foreach(var (name, transactions) in NewCategories)
+                        {
+                            <tr>
+                                <td>@name</td>
+                                <td>@transactions</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+        
+    @if(NewTags.Count > 0)
+    {
+        <p class="subtitle mb-2">New Tags</p>
+        <div class="message">
+            <div class="message-body">
+                <table class="table is-hoverable  is-fullwidth" >
+                    <thead>
+                        <tr>
+                            <th>New Tags</th>
+                            <th>Transactions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var (name, transactions) in NewTags)
+                        {
+                            <tr>
+                                <td>@name</td>
+                                <td>@transactions</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+    @if (NewAccounts.Count > 0)
+    {
+        <p class="subtitle mb-2">New Accounts</p>
+        <div class="message">
+            <div class="message-body">
+                <table class="table is-hoverable  is-fullwidth" >
                     <tbody>
                         @foreach(var name in NewAccounts)
                         {
@@ -109,7 +126,7 @@
 
     @if (Warnings.Count > 0)
     {
-        <p class="subtitle">Warnings</p>
+        <p class="subtitle mb-2">Warnings</p>
         <div class="message is-warning">
             <div class="message-body">
                 <table class="table is-hoverable  is-fullwidth" >
@@ -142,27 +159,32 @@
 
     @if(Errors.Count > 0)
     {
-        <p class="subtitle">Errors</p>
+        <p class="subtitle mb-2">Errors</p>
         <div class="message is-danger">
             <div class="message-body">
                 <table class="table is-hoverable  is-fullwidth" >
                     <thead>
                         <tr>
                             <th>Error</th>
+                            <th>Affected Transactions</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach(var (message, sourcePayload) in Errors)
+                        @foreach(var (message, count, samplePayload) in Errors)
                         {
                             <tr class="is-danger">
                                 <td>
                                     @message
                                 </td>
+                                <td>
+                                    @count
+                                </td>
                                 <td><button 
                                     class="button"
                                     _="
                                         on click
-                                            writeText('@sourcePayload') into the navigator's clipboard
+                                            writeText('@samplePayload.Replace("'", "\\'")') into the navigator's clipboard
                                             set target to the first .copy-button-text in me
                                             set the target's innerHTML to 'Copied!'
                                                 then wait 1.3s

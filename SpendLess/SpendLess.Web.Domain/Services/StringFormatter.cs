@@ -42,5 +42,13 @@ namespace SpendLess.Web.Domain.Services
             var decoded = Convert.FromBase64String(text);
             return Encoding.UTF8.GetString(decoded);
         }
+
+        public static string FormatCurrency(decimal amount)
+        {
+            // TODO: appsettings the symbol
+            if (amount < 0)
+                return $"(${(amount * -1).ToString("F2")})";
+            return $"${amount.ToString("F2")}";
+        }
     }
 }

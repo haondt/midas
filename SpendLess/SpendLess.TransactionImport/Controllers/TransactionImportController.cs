@@ -128,17 +128,26 @@ namespace SpendLess.TransactionImport.Controllers
                 });
             }
 
+
             return await componentFactory.RenderComponentAsync(new DryRunResult
             {
-                Errors = result.Value.Transactions.SelectMany(r => r.Errors)
-                    .GroupBy(e => e)
-                    .Select(grp => (grp.Key, grp.Count()))
+                BalanceChange = result.Value.BalanceChange,
+                ImportAccountName = result.Value.ImportAccount.Name,
+                Errors = result.Value.Transactions.SelectMany(r => r.Errors.Select(e => (e, r)))
+                    .GroupBy(t => t.e)
+                    .Select(grp => (grp.Key, grp.Count(), grp.First().r.SourceRequestPayload))
                     .ToList(),
+                //Errors = result.Value.Transactions.SelectMany(r => r.Errors)
+                //    .GroupBy(e => e)
+                //    .Select(grp => (grp.Key, grp.Count()))
+                //    .ToList(),
                 Warnings = result.Value.Transactions.SelectMany(r => r.Warnings)
                     .GroupBy(w => w)
                     .Select(grp => (TransactionImportWarning.GetDescription(grp.Key), grp.Count()))
                     .ToList(),
                 NewAccounts = result.Value.NewAccounts.Select(kvp => kvp.Value).ToList(),
+                NewCategories = result.Value.NewCategories,
+                NewTags = result.Value.NewTags,
                 JobId = id
             });
         }
@@ -177,7 +186,7 @@ namespace SpendLess.TransactionImport.Controllers
                 TransactionFilterTargets.Amount => !value.HasValue
                     ? new Optional<string>()
                     : decimal.TryParse(value.Value, out var decimalValue)
-                        ? new(decimalValue.ToString("F"))
+                        ? new(decimalValue.ToString("F2"))
                         : new(),
                 TransactionFilterTargets.Status => value.Value,
                 TransactionFilterTargets.Warning => value.Value,
@@ -211,6 +220,7 @@ namespace SpendLess.TransactionImport.Controllers
                 var op = splitFilter[1];
                 var value = splitFilter[2];
 
+                // todo: case insensitive
                 switch (target)
                 {
                     case TransactionFilterTargets.Status:

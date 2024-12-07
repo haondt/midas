@@ -8,6 +8,10 @@ namespace SpendLess.Domain.Models
     {
         public List<SendToNodeRedSingleResultDto> Transactions { get; set; } = [];
         public Dictionary<string, string> NewAccounts { get; set; } = [];
+        public Dictionary<string, int> NewCategories { get; set; } = [];
+        public Dictionary<string, int> NewTags { get; set; } = [];
+        public decimal BalanceChange { get; set; } = 0;
+        public required SendToNodeRedResultAccountDataDto ImportAccount { get; set; }
     }
 
     public class SendToNodeRedSingleResultDto

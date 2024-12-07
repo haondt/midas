@@ -1,4 +1,6 @@
-﻿using Haondt.Core.Models;
+﻿using Haondt.Core.Extensions;
+using Haondt.Core.Models;
+using Haondt.Identity.StorageKey;
 using SpendLess.Core.Extensions;
 using SpendLess.Domain.Constants;
 using SpendLess.Domain.Models;
@@ -14,7 +16,9 @@ namespace SpendLess.TransactionImport.Services
 {
     public class TransactionImportService(IAsyncJobRegistry jobRegistry,
         INodeRedService nodeRed,
-        ISingleTypeSpendLessStorage<AccountDto> accountStorage) : ITransactionImportService
+        ISingleTypeSpendLessStorage<AccountDto> accountStorage,
+        ISingleTypeSpendLessStorage<CategoryDto> categoryStorage,
+        ISingleTypeSpendLessStorage<TagDto> tagStorage) : ITransactionImportService
     {
 
         public Result<SendToNodeRedResultDto, (double, Optional<string>)> GetDryRunResult(string jobId)
@@ -39,7 +43,16 @@ namespace SpendLess.TransactionImport.Services
 
             _ = Task.Run(async () =>
             {
-                var result = new SendToNodeRedResultDto();
+                var result = new SendToNodeRedResultDto
+                {
+                    ImportAccount = new SendToNodeRedResultAccountDataDto
+                    {
+                        Id = accountId,
+                        Name = (await accountStorage.TryGet(accountId.SeedStorageKey<AccountDto>()))
+                            .As(a => a.Name)
+                            .Or(SpendLessConstants.FallbackAccountName)
+                    }
+                };
                 var results = new List<(SendToNodeRedRequestDto Request, SendToNodeRedResponseDto Response)>();
 
                 if (csvData.Count == 0)
@@ -48,9 +61,17 @@ namespace SpendLess.TransactionImport.Services
                     return;
                 }
 
+                var existingCategories = (await categoryStorage.GetAll())
+                    .Select(kvp => kvp.Key.SingleValue())
+                    .ToHashSet();
+                var existingTags = (await tagStorage.GetAll())
+                    .Select(kvp => kvp.Key.SingleValue())
+                    .ToHashSet();
+
+
                 try
                 {
-                    var batchSize = 100; // todo: appsettings
+                    var batchSize = 10; // todo: appsettings
                     //var header = csvData.First();
                     var batches = csvData.Chunk(batchSize);
 
@@ -196,6 +217,32 @@ namespace SpendLess.TransactionImport.Services
                         };
 
                         result.Transactions.Add(resultDto);
+
+                        if (resultDto.Transaction.Value.Source.Id == accountId)
+                            result.BalanceChange -= resultDto.Transaction.Value.Amount;
+                        else if (resultDto.Transaction.Value.Destination.Id == accountId)
+                            result.BalanceChange += resultDto.Transaction.Value.Amount;
+
+                        foreach (var tag in response.Transaction.Tags)
+                        {
+                            if (existingTags.Contains(tag))
+                                continue;
+                            if (result.NewTags.ContainsKey(tag))
+                                result.NewTags[tag] += 1;
+                            else
+                                result.NewTags[tag] = 1;
+                        }
+
+                        if (response.Transaction.Category == SpendLessConstants.DefaultCategory)
+                            resultDto.Warnings.Add(TransactionImportWarning.MissingCategory);
+                        else if (!existingCategories.Contains(response.Transaction.Category))
+                        {
+                            if (result.NewCategories.ContainsKey(response.Transaction.Category))
+                                result.NewCategories[response.Transaction.Category] += 1;
+                            else
+                                result.NewCategories[response.Transaction.Category] = 1;
+                        }
+
                     }
 
                     jobRegistry.CompleteJob(jobId, result);

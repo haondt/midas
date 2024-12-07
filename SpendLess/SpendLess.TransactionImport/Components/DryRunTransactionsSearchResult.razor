@@ -1,6 +1,7 @@
 @using SpendLess.Domain.Models
 @using SpendLess.NodeRed.Models
 @using System.Web
+@using SpendLess.Web.Domain.Services
 
 @code {
     [Parameter]
@@ -23,7 +24,7 @@
                 <td>@result.Transaction.Value.Source.Name</td>
                 <td>@result.Transaction.Value.Destination.Name</td>
                 <td>@result.Transaction.Value.Description</td>
-                <td>$@result.Transaction.Value.Amount.ToString("F")</td>
+                <td>@StringFormatter.FormatCurrency(result.Transaction.Value.Amount)</td>
             }
             else
             {
