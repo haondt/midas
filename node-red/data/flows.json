@@ -3457,8 +3457,8 @@
         "links": [
             "9c2a7410b0650875"
         ],
-        "x": 535,
-        "y": 200,
+        "x": 315,
+        "y": 360,
         "wires": []
     },
     {
@@ -3521,11 +3521,11 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 420,
-        "y": 200,
+        "x": 160,
+        "y": 240,
         "wires": [
             [
-                "d5a019dabd4fc640"
+                "bcfc5ba302f4fed7"
             ]
         ]
     },
@@ -3584,6 +3584,122 @@
         "wires": [
             [
                 "8a3a8485453cd804"
+            ]
+        ]
+    },
+    {
+        "id": "c819bc8d8e12aae8",
+        "type": "change",
+        "z": "b86a301c9c586c6c",
+        "name": "set category",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.response.transaction.category",
+                "pt": "msg",
+                "to": "spendless.context.category",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 370,
+        "y": 280,
+        "wires": [
+            [
+                "8ef96c46933041c9"
+            ]
+        ]
+    },
+    {
+        "id": "bcfc5ba302f4fed7",
+        "type": "switch",
+        "z": "b86a301c9c586c6c",
+        "name": "has category ?",
+        "property": "spendless.context",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "hask",
+                "v": "category",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 180,
+        "y": 280,
+        "wires": [
+            [
+                "c819bc8d8e12aae8"
+            ],
+            [
+                "8ef96c46933041c9"
+            ]
+        ]
+    },
+    {
+        "id": "4ab264c172eaff5c",
+        "type": "change",
+        "z": "b86a301c9c586c6c",
+        "name": "set tags",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.response.transaction.tags",
+                "pt": "msg",
+                "to": "spendless.context.tags",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 360,
+        "y": 320,
+        "wires": [
+            [
+                "d5a019dabd4fc640"
+            ]
+        ]
+    },
+    {
+        "id": "8ef96c46933041c9",
+        "type": "switch",
+        "z": "b86a301c9c586c6c",
+        "name": "has tags ?",
+        "property": "spendless.context",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "hask",
+                "v": "tags",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 170,
+        "y": 320,
+        "wires": [
+            [
+                "4ab264c172eaff5c"
+            ],
+            [
+                "d5a019dabd4fc640"
             ]
         ]
     },
@@ -3749,8 +3865,8 @@
         "type": "subflow:b2028b08979e589d",
         "z": "f6f2187d.f17ca8",
         "name": "",
-        "x": 420,
-        "y": 700,
+        "x": 440,
+        "y": 1040,
         "wires": []
     },
     {
@@ -3894,8 +4010,8 @@
         "type": "subflow:b86a301c9c586c6c",
         "z": "f6f2187d.f17ca8",
         "name": "",
-        "x": 230,
-        "y": 700,
+        "x": 250,
+        "y": 1040,
         "wires": [
             [
                 "10e382e0334a13a3",
@@ -3942,8 +4058,8 @@
                 "type": "str"
             }
         ],
-        "x": 740,
-        "y": 520,
+        "x": 480,
+        "y": 660,
         "wires": []
     },
     {
@@ -4008,11 +4124,11 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 770,
-        "y": 440,
+        "x": 510,
+        "y": 580,
         "wires": [
             [
-                "7386451bd5ce1272"
+                "7c0bdd0e154617bb"
             ]
         ]
     },
@@ -4028,8 +4144,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 520,
-        "y": 440,
+        "x": 260,
+        "y": 580,
         "wires": [
             [
                 "fd88824b2e16b798"
@@ -4066,11 +4182,11 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 780,
-        "y": 480,
+        "x": 520,
+        "y": 620,
         "wires": [
             [
-                "7386451bd5ce1272"
+                "7c0bdd0e154617bb"
             ]
         ]
     },
@@ -4084,8 +4200,8 @@
             "7196f52d6089bf22",
             "26a58a4805459d96"
         ],
-        "x": 75,
-        "y": 700,
+        "x": 95,
+        "y": 1040,
         "wires": [
             [
                 "ac5c1b947fa68cbe"
@@ -4101,8 +4217,8 @@
         "links": [
             "6ab4de770590f69f"
         ],
-        "x": 935,
-        "y": 440,
+        "x": 875,
+        "y": 660,
         "wires": []
     },
     {
@@ -4117,8 +4233,7 @@
         "y": 260,
         "wires": [
             [
-                "1dd0844ec4b005bc",
-                "9db28cc162565c8d"
+                "1dd0844ec4b005bc"
             ]
         ]
     },
@@ -4233,8 +4348,8 @@
             "bc3dba53cbcc9e03",
             "911a513fcded1124"
         ],
-        "x": 335,
-        "y": 440,
+        "x": 75,
+        "y": 580,
         "wires": [
             [
                 "2dec95fb57fd1b6b"
@@ -4341,23 +4456,6 @@
         "wires": []
     },
     {
-        "id": "9db28cc162565c8d",
-        "type": "debug",
-        "z": "f6f2187d.f17ca8",
-        "name": "debug 4",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 200,
-        "y": 200,
-        "wires": []
-    },
-    {
         "id": "6d7fb619ad0f7f05",
         "type": "debug",
         "z": "f6f2187d.f17ca8",
@@ -4370,8 +4468,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 420,
-        "y": 740,
+        "x": 440,
+        "y": 1080,
         "wires": []
     },
     {
@@ -4387,7 +4485,7 @@
         "finalize": "",
         "libs": [],
         "x": 520,
-        "y": 560,
+        "y": 400,
         "wires": [
             [
                 "c8a92e5b5d0cba2f"
@@ -4425,7 +4523,7 @@
         "to": "",
         "reg": false,
         "x": 810,
-        "y": 560,
+        "y": 400,
         "wires": [
             [
                 "26a58a4805459d96"
@@ -4452,7 +4550,7 @@
         "to": "",
         "reg": false,
         "x": 820,
-        "y": 600,
+        "y": 440,
         "wires": [
             [
                 "26a58a4805459d96"
@@ -4472,7 +4570,7 @@
             }
         ],
         "x": 750,
-        "y": 640,
+        "y": 480,
         "wires": []
     },
     {
@@ -4485,7 +4583,123 @@
             "6ab4de770590f69f"
         ],
         "x": 1015,
-        "y": 560,
+        "y": 400,
         "wires": []
+    },
+    {
+        "id": "7c0bdd0e154617bb",
+        "type": "switch",
+        "z": "f6f2187d.f17ca8",
+        "name": "has category?",
+        "property": "spendless.kvs.value",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "hask",
+                "v": "category",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 740,
+        "y": 580,
+        "wires": [
+            [
+                "7987e726bb418ad3"
+            ],
+            [
+                "d2261f9abae686a4"
+            ]
+        ]
+    },
+    {
+        "id": "7987e726bb418ad3",
+        "type": "change",
+        "z": "f6f2187d.f17ca8",
+        "name": "set category",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.category",
+                "pt": "msg",
+                "to": "spendless.kvs.value.category",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 930,
+        "y": 580,
+        "wires": [
+            [
+                "d2261f9abae686a4"
+            ]
+        ]
+    },
+    {
+        "id": "d2261f9abae686a4",
+        "type": "switch",
+        "z": "f6f2187d.f17ca8",
+        "name": "has tags?",
+        "property": "spendless.kvs.value",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "hask",
+                "v": "tags",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 720,
+        "y": 620,
+        "wires": [
+            [
+                "b762ae11694e5c77"
+            ],
+            [
+                "7386451bd5ce1272"
+            ]
+        ]
+    },
+    {
+        "id": "b762ae11694e5c77",
+        "type": "change",
+        "z": "f6f2187d.f17ca8",
+        "name": "set tags",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.tags",
+                "pt": "msg",
+                "to": "spendless.kvs.value.tags",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 920,
+        "y": 620,
+        "wires": [
+            [
+                "7386451bd5ce1272"
+            ]
+        ]
     }
 ]
