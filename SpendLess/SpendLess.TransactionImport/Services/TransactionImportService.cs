@@ -40,6 +40,7 @@ namespace SpendLess.TransactionImport.Services
         {
 
             var (jobId, cancellationToken) = jobRegistry.RegisterJob("parsing csv...");
+            var importTag = $"import-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
 
             _ = Task.Run(async () =>
             {
@@ -216,6 +217,9 @@ namespace SpendLess.TransactionImport.Services
                             Description = response.Transaction.Description
                         };
 
+                        if (configuration.AddImportTag)
+                            resultDto.Transaction.Value.Tags.Add(importTag);
+
                         result.Transactions.Add(resultDto);
 
                         if (resultDto.Transaction.Value.Source.Id == accountId)
@@ -223,7 +227,7 @@ namespace SpendLess.TransactionImport.Services
                         else if (resultDto.Transaction.Value.Destination.Id == accountId)
                             result.BalanceChange += resultDto.Transaction.Value.Amount;
 
-                        foreach (var tag in response.Transaction.Tags)
+                        foreach (var tag in resultDto.Transaction.Value.Tags)
                         {
                             if (existingTags.Contains(tag))
                                 continue;
@@ -233,14 +237,14 @@ namespace SpendLess.TransactionImport.Services
                                 result.NewTags[tag] = 1;
                         }
 
-                        if (response.Transaction.Category == SpendLessConstants.DefaultCategory)
+                        if (resultDto.Transaction.Value.Category == SpendLessConstants.DefaultCategory)
                             resultDto.Warnings.Add(TransactionImportWarning.MissingCategory);
-                        else if (!existingCategories.Contains(response.Transaction.Category))
+                        else if (!existingCategories.Contains(resultDto.Transaction.Value.Category))
                         {
-                            if (result.NewCategories.ContainsKey(response.Transaction.Category))
-                                result.NewCategories[response.Transaction.Category] += 1;
+                            if (result.NewCategories.ContainsKey(resultDto.Transaction.Value.Category))
+                                result.NewCategories[resultDto.Transaction.Value.Category] += 1;
                             else
-                                result.NewCategories[response.Transaction.Category] = 1;
+                                result.NewCategories[resultDto.Transaction.Value.Category] = 1;
                         }
 
                     }
