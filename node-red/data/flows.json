@@ -1,8 +1,16 @@
 [
     {
+        "id": "e4616b5d8579dbd3",
+        "type": "tab",
+        "label": "Configuration",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "f6f2187d.f17ca8",
         "type": "tab",
-        "label": "Flow 1",
+        "label": "Apply",
         "disabled": false,
         "info": ""
     },
@@ -226,7 +234,8 @@
         "color": "#DDAA99",
         "outputLabels": [
             "success",
-            "failure"
+            "failure",
+            ""
         ]
     },
     {
@@ -294,14 +303,49 @@
     {
         "id": "1ce79c5fce6b8fe5",
         "type": "subflow",
-        "name": "Try parse account using regex",
+        "name": "Try parse account locally",
         "info": "",
         "category": "",
-        "in": [],
-        "out": [],
+        "in": [
+            {
+                "x": 60,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "f8ecc7e667299526"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 1200,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "78f0f6e82dde2f0b",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 1190,
+                "y": 100,
+                "wires": [
+                    {
+                        "id": "fd1ac414dfb6e342",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
         "env": [],
         "meta": {},
-        "color": "#DDAA99"
+        "color": "#DDAA99",
+        "outputLabels": [
+            "success",
+            "failure"
+        ]
     },
     {
         "id": "b86a301c9c586c6c",
@@ -417,6 +461,53 @@
         },
         "color": "#00ebc7",
         "icon": "font-awesome/fa-dollar"
+    },
+    {
+        "id": "90f2319c72a33bae",
+        "type": "subflow",
+        "name": "determine opposing account",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 40,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "486e62b9a069ea0a"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 430,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "486e62b9a069ea0a",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 450,
+                "y": 100,
+                "wires": [
+                    {
+                        "id": "486e62b9a069ea0a",
+                        "port": 1
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#DDAA99",
+        "outputLabels": [
+            "source",
+            "destination"
+        ]
     },
     {
         "id": "c1a42afb431f2ac2",
@@ -1910,7 +2001,7 @@
         "name": "try trimming trailing store number",
         "links": [],
         "x": 2615,
-        "y": 180,
+        "y": 260,
         "wires": [
             [
                 "2096e11973e43d04"
@@ -1939,7 +2030,7 @@
         "repair": false,
         "outputs": 2,
         "x": 2780,
-        "y": 180,
+        "y": 260,
         "wires": [
             [
                 "fec5b7523c6d1649"
@@ -1962,7 +2053,7 @@
         "finalize": "",
         "libs": [],
         "x": 3020,
-        "y": 180,
+        "y": 260,
         "wires": [
             [
                 "a9265eac5457cd5e"
@@ -1977,7 +2068,7 @@
         "mode": "return",
         "links": [],
         "x": 3155,
-        "y": 180,
+        "y": 260,
         "wires": []
     },
     {
@@ -2059,7 +2150,7 @@
         "name": "try trimming trailing non-seperated location data",
         "links": [],
         "x": 2615,
-        "y": 300,
+        "y": 380,
         "wires": [
             [
                 "2e78edd97ea22b22"
@@ -2088,7 +2179,7 @@
         "repair": false,
         "outputs": 2,
         "x": 2770,
-        "y": 300,
+        "y": 380,
         "wires": [
             [
                 "8ad7d21da08598c4"
@@ -2111,7 +2202,7 @@
         "finalize": "",
         "libs": [],
         "x": 3000,
-        "y": 300,
+        "y": 380,
         "wires": [
             [
                 "a606094d9693e414"
@@ -2126,7 +2217,7 @@
         "mode": "return",
         "links": [],
         "x": 3135,
-        "y": 300,
+        "y": 380,
         "wires": []
     },
     {
@@ -2200,7 +2291,7 @@
         "repair": false,
         "outputs": 2,
         "x": 2770,
-        "y": 340,
+        "y": 420,
         "wires": [
             [
                 "a3d3912029f98265"
@@ -2223,7 +2314,7 @@
         "finalize": "",
         "libs": [],
         "x": 3000,
-        "y": 340,
+        "y": 420,
         "wires": [
             [
                 "a606094d9693e414"
@@ -2237,7 +2328,7 @@
         "name": "try trimming location data with whitespace",
         "links": [],
         "x": 2615,
-        "y": 540,
+        "y": 620,
         "wires": [
             [
                 "6fc08e44a30f008e"
@@ -2266,7 +2357,7 @@
         "repair": false,
         "outputs": 2,
         "x": 2770,
-        "y": 540,
+        "y": 620,
         "wires": [
             [
                 "856012413ba1ceaf"
@@ -2289,7 +2380,7 @@
         "finalize": "",
         "libs": [],
         "x": 3040,
-        "y": 540,
+        "y": 620,
         "wires": [
             [
                 "7997aefdaa6c2abf"
@@ -2304,7 +2395,7 @@
         "mode": "return",
         "links": [],
         "x": 3175,
-        "y": 540,
+        "y": 620,
         "wires": []
     },
     {
@@ -2347,7 +2438,7 @@
         "repair": false,
         "outputs": 2,
         "x": 2780,
-        "y": 580,
+        "y": 660,
         "wires": [
             [
                 "eee9a409e54a2907"
@@ -2370,7 +2461,7 @@
         "finalize": "",
         "libs": [],
         "x": 3040,
-        "y": 580,
+        "y": 660,
         "wires": [
             [
                 "7997aefdaa6c2abf"
@@ -2399,7 +2490,7 @@
         "repair": false,
         "outputs": 2,
         "x": 2770,
-        "y": 380,
+        "y": 460,
         "wires": [
             [
                 "4cbe49ff9b2bceb5"
@@ -2422,7 +2513,7 @@
         "finalize": "",
         "libs": [],
         "x": 3000,
-        "y": 380,
+        "y": 460,
         "wires": [
             [
                 "a606094d9693e414"
@@ -2451,7 +2542,7 @@
         "repair": false,
         "outputs": 2,
         "x": 2780,
-        "y": 620,
+        "y": 700,
         "wires": [
             [
                 "0833c8a149d8165f"
@@ -2474,7 +2565,7 @@
         "finalize": "",
         "libs": [],
         "x": 3040,
-        "y": 620,
+        "y": 700,
         "wires": [
             [
                 "7997aefdaa6c2abf"
@@ -2503,7 +2594,7 @@
         "repair": false,
         "outputs": 2,
         "x": 2790,
-        "y": 660,
+        "y": 740,
         "wires": [
             [
                 "b453c6e25f38b515"
@@ -2526,7 +2617,7 @@
         "finalize": "",
         "libs": [],
         "x": 3040,
-        "y": 660,
+        "y": 740,
         "wires": [
             [
                 "7997aefdaa6c2abf"
@@ -2541,7 +2632,7 @@
         "mode": "return",
         "links": [],
         "x": 2975,
-        "y": 700,
+        "y": 780,
         "wires": []
     },
     {
@@ -2945,7 +3036,7 @@
         "mode": "return",
         "links": [],
         "x": 2935,
-        "y": 460,
+        "y": 540,
         "wires": []
     },
     {
@@ -2956,7 +3047,7 @@
         "mode": "return",
         "links": [],
         "x": 2955,
-        "y": 220,
+        "y": 300,
         "wires": []
     },
     {
@@ -2981,7 +3072,7 @@
         "repair": false,
         "outputs": 2,
         "x": 2760,
-        "y": 420,
+        "y": 500,
         "wires": [
             [
                 "4d2d703477d7e18e"
@@ -3004,7 +3095,7 @@
         "finalize": "",
         "libs": [],
         "x": 3000,
-        "y": 420,
+        "y": 500,
         "wires": [
             [
                 "a606094d9693e414"
@@ -3066,7 +3157,7 @@
                 "t": "set",
                 "p": "url",
                 "pt": "msg",
-                "to": "$env('SPEND_LESS_API_URL')\t    & \"api/kvs/mapping\"",
+                "to": "$globalContext('spendless.configuration.spendLessApiUrl')\t    & \"api/kvs/mapping\"",
                 "tot": "jsonata"
             },
             {
@@ -3340,6 +3431,119 @@
             "98a045dfd8f165b5"
         ],
         "x": 715,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "f8ecc7e667299526",
+        "type": "switch",
+        "z": "1ce79c5fce6b8fe5",
+        "name": "Is Internet Banking INTERNET TRANSFER ?",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^Internet Banking INTERNET TRANSFER [0-9]+$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 290,
+        "y": 40,
+        "wires": [
+            [
+                "447cb9d790aea380"
+            ],
+            [
+                "f4ecb70a16ef02a5"
+            ]
+        ]
+    },
+    {
+        "id": "447cb9d790aea380",
+        "type": "change",
+        "z": "1ce79c5fce6b8fe5",
+        "name": "set result to default account",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.parsedAccount",
+                "pt": "msg",
+                "to": "{\t   \"id\": $globalContext('spendless.configuration.defaultAccountId')\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 620,
+        "y": 40,
+        "wires": [
+            [
+                "d4c012243fad690f"
+            ]
+        ]
+    },
+    {
+        "id": "fd1ac414dfb6e342",
+        "type": "link in",
+        "z": "1ce79c5fce6b8fe5",
+        "name": "link in 9",
+        "links": [
+            "f4ecb70a16ef02a5"
+        ],
+        "x": 1085,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "78f0f6e82dde2f0b",
+        "type": "link in",
+        "z": "1ce79c5fce6b8fe5",
+        "name": "link in 10",
+        "links": [
+            "d4c012243fad690f"
+        ],
+        "x": 1085,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d4c012243fad690f",
+        "type": "link out",
+        "z": "1ce79c5fce6b8fe5",
+        "name": "link out 28",
+        "mode": "link",
+        "links": [
+            "78f0f6e82dde2f0b"
+        ],
+        "x": 795,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "f4ecb70a16ef02a5",
+        "type": "link out",
+        "z": "1ce79c5fce6b8fe5",
+        "name": "link out 29",
+        "mode": "link",
+        "links": [
+            "fd1ac414dfb6e342"
+        ],
+        "x": 515,
         "y": 80,
         "wires": []
     },
@@ -3731,7 +3935,7 @@
                 "t": "set",
                 "p": "url",
                 "pt": "msg",
-                "to": "$env('SPEND_LESS_API_URL')\t    & \"api/kvs/value\"",
+                "to": "$globalContext('spendless.configuration.spendLessApiUrl')\t    & \"api/kvs/mapping\"",
                 "tot": "jsonata"
             },
             {
@@ -3848,6 +4052,156 @@
         "wires": []
     },
     {
+        "id": "486e62b9a069ea0a",
+        "type": "function",
+        "z": "90f2319c72a33bae",
+        "name": "determine opposing account",
+        "func": "const ctx = msg.spendless.context;\nif (!ctx.hasOwnProperty('source') && ctx.hasOwnProperty('destination'))\n    return [msg, null, null];\nif (ctx.hasOwnProperty('source') && !ctx.hasOwnProperty('destination'))\n    return [null, msg, null];\nreturn [null, null, msg];",
+        "outputs": 3,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 220,
+        "y": 40,
+        "wires": [
+            [],
+            [],
+            [
+                "cd21479bae126516"
+            ]
+        ],
+        "outputLabels": [
+            "source",
+            "destination",
+            "error"
+        ]
+    },
+    {
+        "id": "cd21479bae126516",
+        "type": "subflow:3b3449ca0b5f5b24",
+        "z": "90f2319c72a33bae",
+        "name": "",
+        "env": [
+            {
+                "name": "ERROR_MESSAGE",
+                "value": "unable to determine opposing account",
+                "type": "str"
+            }
+        ],
+        "x": 450,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "39d3e0623ca2f9fc",
+        "type": "inject",
+        "z": "e4616b5d8579dbd3",
+        "name": "On startup",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 170,
+        "y": 160,
+        "wires": [
+            [
+                "d4ff1b5dd8ae954e"
+            ]
+        ]
+    },
+    {
+        "id": "9063d96eb41941e3",
+        "type": "inject",
+        "z": "e4616b5d8579dbd3",
+        "name": "Log configuration",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 180,
+        "y": 80,
+        "wires": [
+            [
+                "9b42bdad7fb7d25d"
+            ]
+        ]
+    },
+    {
+        "id": "a046ef81a75748c0",
+        "type": "debug",
+        "z": "e4616b5d8579dbd3",
+        "name": "log configuration",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 580,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "9b42bdad7fb7d25d",
+        "type": "change",
+        "z": "e4616b5d8579dbd3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "spendless.configuration",
+                "tot": "global"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 380,
+        "y": 80,
+        "wires": [
+            [
+                "a046ef81a75748c0"
+            ]
+        ]
+    },
+    {
+        "id": "d4ff1b5dd8ae954e",
+        "type": "change",
+        "z": "e4616b5d8579dbd3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.configuration",
+                "pt": "global",
+                "to": "{    \t    \"spendLessApiUrl\": $env(\"SPEND_LESS_API_URL\"),\t    \"defaultAccountId\": \"00000000-0000-0000-0000-000000000000\"\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 420,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    },
+    {
         "id": "68b35bba8b3a7e1e",
         "type": "subflow:99f384cef6a769fb",
         "z": "f6f2187d.f17ca8",
@@ -3865,8 +4219,8 @@
         "type": "subflow:b2028b08979e589d",
         "z": "f6f2187d.f17ca8",
         "name": "",
-        "x": 440,
-        "y": 1040,
+        "x": 420,
+        "y": 800,
         "wires": []
     },
     {
@@ -3998,10 +4352,10 @@
         "y": 100,
         "wires": [
             [
-                "058beea6a267dfab"
+                "9d5780282d881f2e"
             ],
             [
-                "447805d7f58beb5b"
+                "7fdf889446c2a172"
             ]
         ]
     },
@@ -4010,8 +4364,8 @@
         "type": "subflow:b86a301c9c586c6c",
         "z": "f6f2187d.f17ca8",
         "name": "",
-        "x": 250,
-        "y": 1040,
+        "x": 230,
+        "y": 800,
         "wires": [
             [
                 "10e382e0334a13a3",
@@ -4020,88 +4374,18 @@
         ]
     },
     {
-        "id": "447805d7f58beb5b",
-        "type": "change",
-        "z": "f6f2187d.f17ca8",
-        "name": "set kvs from description",
-        "rules": [
-            {
-                "t": "set",
-                "p": "spendless.kvs",
-                "pt": "msg",
-                "to": "spendless.context.description",
-                "tot": "msg"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 970,
-        "y": 140,
-        "wires": [
-            [
-                "0685021a5680745d"
-            ]
-        ]
-    },
-    {
-        "id": "eafc861a6d66d463",
-        "type": "subflow:3b3449ca0b5f5b24",
-        "z": "f6f2187d.f17ca8",
-        "name": "",
-        "env": [
-            {
-                "name": "ERROR_MESSAGE",
-                "value": "unable to determine opposing account",
-                "type": "str"
-            }
-        ],
-        "x": 480,
-        "y": 660,
-        "wires": []
-    },
-    {
-        "id": "058beea6a267dfab",
-        "type": "change",
-        "z": "f6f2187d.f17ca8",
-        "name": "set kvs from parsedDescription",
-        "rules": [
-            {
-                "t": "set",
-                "p": "spendless.kvs",
-                "pt": "msg",
-                "to": "spendless.context.parsedDescription",
-                "tot": "msg"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 990,
-        "y": 100,
-        "wires": [
-            [
-                "0685021a5680745d"
-            ]
-        ]
-    },
-    {
         "id": "1dd0844ec4b005bc",
         "type": "subflow:463da193503067ee",
         "z": "f6f2187d.f17ca8",
         "name": "",
-        "x": 210,
-        "y": 260,
+        "x": 350,
+        "y": 380,
         "wires": [
             [
                 "04d21e9ade194598"
             ],
             [
-                "2f939823c2193579"
+                "4bd54e7c7dc7dd0a"
             ]
         ]
     },
@@ -4125,42 +4409,11 @@
         "to": "",
         "reg": false,
         "x": 510,
-        "y": 580,
+        "y": 680,
         "wires": [
             [
                 "7c0bdd0e154617bb"
             ]
-        ]
-    },
-    {
-        "id": "2dec95fb57fd1b6b",
-        "type": "function",
-        "z": "f6f2187d.f17ca8",
-        "name": "determine opposing account",
-        "func": "const ctx = msg.spendless.context;\nif (!ctx.hasOwnProperty('source') && ctx.hasOwnProperty('destination'))\n    return [msg, null, null];\nif (ctx.hasOwnProperty('source') && !ctx.hasOwnProperty('destination'))\n    return [null, msg, null];\nreturn [null, null, msg];",
-        "outputs": 3,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 260,
-        "y": 580,
-        "wires": [
-            [
-                "fd88824b2e16b798"
-            ],
-            [
-                "30888a188ff2c064"
-            ],
-            [
-                "eafc861a6d66d463"
-            ]
-        ],
-        "outputLabels": [
-            "source",
-            "destination",
-            "error"
         ]
     },
     {
@@ -4183,7 +4436,7 @@
         "to": "",
         "reg": false,
         "x": 520,
-        "y": 620,
+        "y": 720,
         "wires": [
             [
                 "7c0bdd0e154617bb"
@@ -4197,11 +4450,11 @@
         "name": "link in 4",
         "links": [
             "7386451bd5ce1272",
-            "7196f52d6089bf22",
-            "26a58a4805459d96"
+            "26a58a4805459d96",
+            "53a6a325fbc19bad"
         ],
-        "x": 95,
-        "y": 1040,
+        "x": 75,
+        "y": 800,
         "wires": [
             [
                 "ac5c1b947fa68cbe"
@@ -4217,8 +4470,8 @@
         "links": [
             "6ab4de770590f69f"
         ],
-        "x": 875,
-        "y": 660,
+        "x": 1075,
+        "y": 760,
         "wires": []
     },
     {
@@ -4230,10 +4483,10 @@
             "0685021a5680745d"
         ],
         "x": 75,
-        "y": 260,
+        "y": 380,
         "wires": [
             [
-                "1dd0844ec4b005bc"
+                "6daf4ab211c7f2cd"
             ]
         ]
     },
@@ -4246,7 +4499,7 @@
         "links": [
             "be400be83c4f1323"
         ],
-        "x": 1175,
+        "x": 1235,
         "y": 140,
         "wires": []
     },
@@ -4270,8 +4523,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 2,
-        "x": 470,
-        "y": 300,
+        "x": 730,
+        "y": 420,
         "wires": [
             [
                 "bc3dba53cbcc9e03"
@@ -4301,8 +4554,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 2,
-        "x": 480,
-        "y": 260,
+        "x": 540,
+        "y": 380,
         "wires": [
             [
                 "b77b39a4eafcc4bf"
@@ -4331,8 +4584,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 690,
-        "y": 260,
+        "x": 750,
+        "y": 380,
         "wires": [
             [
                 "9e2b8b64bd0c76d7"
@@ -4349,10 +4602,10 @@
             "911a513fcded1124"
         ],
         "x": 75,
-        "y": 580,
+        "y": 680,
         "wires": [
             [
-                "2dec95fb57fd1b6b"
+                "2e54d199492a1826"
             ]
         ]
     },
@@ -4363,11 +4616,10 @@
         "name": "link out 23",
         "mode": "link",
         "links": [
-            "8ebcea41c9ebf31e",
-            "455b15f142f47f0e"
+            "8ebcea41c9ebf31e"
         ],
-        "x": 615,
-        "y": 300,
+        "x": 855,
+        "y": 420,
         "wires": []
     },
     {
@@ -4382,8 +4634,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 690,
-        "y": 340,
+        "x": 950,
+        "y": 460,
         "wires": [
             [
                 "820ae71df6d380af"
@@ -4401,8 +4653,8 @@
         "name": "generate an id",
         "field": "spendless.kvs.value.id",
         "fieldType": "msg",
-        "x": 480,
-        "y": 340,
+        "x": 740,
+        "y": 460,
         "wires": [
             [
                 "9e2d909ca1b8a78e"
@@ -4421,8 +4673,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1100,
-        "y": 340,
+        "x": 760,
+        "y": 500,
         "wires": [
             [
                 "911a513fcded1124"
@@ -4434,8 +4686,8 @@
         "type": "subflow:1fd0f49415234d19",
         "z": "f6f2187d.f17ca8",
         "name": "",
-        "x": 890,
-        "y": 340,
+        "x": 1150,
+        "y": 460,
         "wires": [
             [
                 "ba25a72769404fe9"
@@ -4451,8 +4703,8 @@
         "links": [
             "8ebcea41c9ebf31e"
         ],
-        "x": 1255,
-        "y": 340,
+        "x": 915,
+        "y": 500,
         "wires": []
     },
     {
@@ -4468,40 +4720,9 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 440,
-        "y": 1080,
+        "x": 420,
+        "y": 840,
         "wires": []
-    },
-    {
-        "id": "2f939823c2193579",
-        "type": "function",
-        "z": "f6f2187d.f17ca8",
-        "name": "determine opposing account",
-        "func": "const ctx = msg.spendless.context;\nif (!ctx.hasOwnProperty('source') && ctx.hasOwnProperty('destination'))\n    return [msg, null, null];\nif (ctx.hasOwnProperty('source') && !ctx.hasOwnProperty('destination'))\n    return [null, msg, null];\nreturn [null, null, msg];",
-        "outputs": 3,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 520,
-        "y": 400,
-        "wires": [
-            [
-                "c8a92e5b5d0cba2f"
-            ],
-            [
-                "cd44e4746c87240d"
-            ],
-            [
-                "ab147de7047d3973"
-            ]
-        ],
-        "outputLabels": [
-            "source",
-            "destination",
-            "error"
-        ]
     },
     {
         "id": "c8a92e5b5d0cba2f",
@@ -4522,8 +4743,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 810,
-        "y": 400,
+        "x": 870,
+        "y": 560,
         "wires": [
             [
                 "26a58a4805459d96"
@@ -4549,29 +4770,13 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 820,
-        "y": 440,
+        "x": 880,
+        "y": 600,
         "wires": [
             [
                 "26a58a4805459d96"
             ]
         ]
-    },
-    {
-        "id": "ab147de7047d3973",
-        "type": "subflow:3b3449ca0b5f5b24",
-        "z": "f6f2187d.f17ca8",
-        "name": "",
-        "env": [
-            {
-                "name": "ERROR_MESSAGE",
-                "value": "unable to determine opposing account",
-                "type": "str"
-            }
-        ],
-        "x": 750,
-        "y": 480,
-        "wires": []
     },
     {
         "id": "26a58a4805459d96",
@@ -4582,8 +4787,8 @@
         "links": [
             "6ab4de770590f69f"
         ],
-        "x": 1015,
-        "y": 400,
+        "x": 1075,
+        "y": 560,
         "wires": []
     },
     {
@@ -4607,7 +4812,7 @@
         "repair": false,
         "outputs": 2,
         "x": 740,
-        "y": 580,
+        "y": 680,
         "wires": [
             [
                 "7987e726bb418ad3"
@@ -4637,7 +4842,7 @@
         "to": "",
         "reg": false,
         "x": 930,
-        "y": 580,
+        "y": 680,
         "wires": [
             [
                 "d2261f9abae686a4"
@@ -4664,8 +4869,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 2,
-        "x": 720,
-        "y": 620,
+        "x": 920,
+        "y": 720,
         "wires": [
             [
                 "b762ae11694e5c77"
@@ -4694,11 +4899,225 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 920,
-        "y": 620,
+        "x": 1120,
+        "y": 720,
         "wires": [
             [
                 "7386451bd5ce1272"
+            ]
+        ]
+    },
+    {
+        "id": "2e54d199492a1826",
+        "type": "subflow:90f2319c72a33bae",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "x": 240,
+        "y": 680,
+        "wires": [
+            [
+                "fd88824b2e16b798"
+            ],
+            [
+                "30888a188ff2c064"
+            ]
+        ]
+    },
+    {
+        "id": "4bd54e7c7dc7dd0a",
+        "type": "subflow:90f2319c72a33bae",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "x": 580,
+        "y": 560,
+        "wires": [
+            [
+                "c8a92e5b5d0cba2f"
+            ],
+            [
+                "cd44e4746c87240d"
+            ]
+        ]
+    },
+    {
+        "id": "c020d93bcd8e6228",
+        "type": "subflow:90f2319c72a33bae",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "x": 240,
+        "y": 260,
+        "wires": [
+            [
+                "5be4aaaa04883666"
+            ],
+            [
+                "686a9b168267c9bc"
+            ]
+        ]
+    },
+    {
+        "id": "7b02348ad94c4e7d",
+        "type": "link in",
+        "z": "f6f2187d.f17ca8",
+        "name": "link in 8",
+        "links": [
+            "3306a716ee02987e"
+        ],
+        "x": 75,
+        "y": 260,
+        "wires": [
+            [
+                "c020d93bcd8e6228"
+            ]
+        ]
+    },
+    {
+        "id": "3306a716ee02987e",
+        "type": "link out",
+        "z": "f6f2187d.f17ca8",
+        "name": "link out 26",
+        "mode": "link",
+        "links": [
+            "7b02348ad94c4e7d"
+        ],
+        "x": 1235,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "5be4aaaa04883666",
+        "type": "change",
+        "z": "f6f2187d.f17ca8",
+        "name": "set source account",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.source",
+                "pt": "msg",
+                "to": "spendless.context.parsedAccount",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 490,
+        "y": 260,
+        "wires": [
+            [
+                "53a6a325fbc19bad"
+            ]
+        ]
+    },
+    {
+        "id": "686a9b168267c9bc",
+        "type": "change",
+        "z": "f6f2187d.f17ca8",
+        "name": "set destination account",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.destination",
+                "pt": "msg",
+                "to": "spendless.context.parsedAccount",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 500,
+        "y": 300,
+        "wires": [
+            [
+                "53a6a325fbc19bad"
+            ]
+        ]
+    },
+    {
+        "id": "53a6a325fbc19bad",
+        "type": "link out",
+        "z": "f6f2187d.f17ca8",
+        "name": "link out 27",
+        "mode": "link",
+        "links": [
+            "6ab4de770590f69f"
+        ],
+        "x": 655,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "7fdf889446c2a172",
+        "type": "change",
+        "z": "f6f2187d.f17ca8",
+        "name": "set parsedDescription from description",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.parsedDescription",
+                "pt": "msg",
+                "to": "spendless.context.description",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 770,
+        "y": 140,
+        "wires": [
+            [
+                "9d5780282d881f2e"
+            ]
+        ]
+    },
+    {
+        "id": "9d5780282d881f2e",
+        "type": "subflow:1ce79c5fce6b8fe5",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "x": 1070,
+        "y": 100,
+        "wires": [
+            [
+                "3306a716ee02987e"
+            ],
+            [
+                "0685021a5680745d"
+            ]
+        ]
+    },
+    {
+        "id": "6daf4ab211c7f2cd",
+        "type": "change",
+        "z": "f6f2187d.f17ca8",
+        "name": "set up kvs",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.kvs",
+                "pt": "msg",
+                "to": "spendless.context.parsedDescription",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 180,
+        "y": 380,
+        "wires": [
+            [
+                "1dd0844ec4b005bc"
             ]
         ]
     }
