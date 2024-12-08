@@ -19,8 +19,45 @@
     public required decimal BalanceChange { get; set; }
     [Parameter, EditorRequired]
     public required string ImportAccountName { get; set; }
+
+    private RenderFragment<(string Title, RenderFragment Inner)> CreateResultItem = (args) =>
+        @<details open class="block">
+            <summary class="is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between">
+                <p class="subtitle mb-2">@args.Title</p>
+                <span class="indicator icon">
+                    <i class="fas fa-chevron-left"/>
+                </span>
+            </summary>
+            <div class="message mb-2">
+                <div class="message-body">
+                @args.Inner
+                </div>
+            </div>
+        </details>;
+
 }
+
+
 <div class="box">
+    <style>
+        @@scope {
+            .indicator {
+                transition: transform 0.3s ease;
+            }
+            details[open] .indicator {
+                transform: rotate(-90deg);
+            }
+            summary::marker {
+                display: none;
+            }
+            summary:hover {
+                cursor: pointer;
+                .subtitle {
+                    font-weight: 600;
+                }
+            }
+        }
+    </style>
     <div class="is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between">
         <p class="title is-4">Dry Run Summary</p>
         <button 
@@ -31,97 +68,81 @@
         </button>
     </div>
 
-    <p class="subtitle mb-2">Changed Account Balance</p>
-    <div class="message">
-        <div class="message-body">
-            <table class="table is-hoverable  is-fullwidth" >
-                <tbody>
-                    <tr>
-                        <td>
-                            @ImportAccountName
-                        </td>
-                        @if(BalanceChange < 0)
-                        {
-                            <td class="has-text-danger">@StringFormatter.FormatCurrency(BalanceChange)</td>
-                        }
-                        else
-                        {
-                            <td class="has-text-success">@StringFormatter.FormatCurrency(BalanceChange)</td>
-                        }
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    @CreateResultItem(("Changed Account Balance", 
+    @<table class="table is-hoverable  is-fullwidth" >
+        <tbody>
+            <tr>
+                <td>
+                    @ImportAccountName
+                </td>
+                @if(BalanceChange < 0)
+                {
+                    <td class="has-text-danger">@StringFormatter.FormatCurrency(BalanceChange)</td>
+                }
+                else
+                {
+                    <td class="has-text-success">@StringFormatter.FormatCurrency(BalanceChange)</td>
+                }
+            </tr>
+        </tbody>
+    </table>))
 
     @if(NewCategories.Count > 0)
     {
-        <p class="subtitle mb-2">New Categories</p>
-        <div class="message">
-            <div class="message-body">
-                <table class="table is-hoverable  is-fullwidth" >
-                    <thead>
-                        <tr>
-                            <th>Category</th>
-                            <th>Transactions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach(var (name, transactions) in NewCategories)
-                        {
-                            <tr>
-                                <td>@name</td>
-                                <td>@transactions</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        @CreateResultItem(("New Categories", 
+        @<table class="table is-hoverable  is-fullwidth" >
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Transactions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var (name, transactions) in NewCategories)
+                {
+                    <tr>
+                        <td>@name</td>
+                        <td>@transactions</td>
+                    </tr>
+                }
+            </tbody>
+        </table>))
     }
 
         
     @if(NewTags.Count > 0)
     {
-        <p class="subtitle mb-2">New Tags</p>
-        <div class="message">
-            <div class="message-body">
-                <table class="table is-hoverable  is-fullwidth" >
-                    <thead>
-                        <tr>
-                            <th>New Tags</th>
-                            <th>Transactions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach(var (name, transactions) in NewTags)
-                        {
-                            <tr>
-                                <td>@name</td>
-                                <td>@transactions</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        @CreateResultItem(("New Tags", 
+        @<table class="table is-hoverable  is-fullwidth" >
+            <thead>
+                <tr>
+                    <th>New Tags</th>
+                    <th>Transactions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var (name, transactions) in NewTags)
+                {
+                    <tr>
+                        <td>@name</td>
+                        <td>@transactions</td>
+                    </tr>
+                }
+            </tbody>
+        </table>))
     }
 
     @if (NewAccounts.Count > 0)
     {
-        <p class="subtitle mb-2">New Accounts</p>
-        <div class="message">
-            <div class="message-body">
-                <table class="table is-hoverable  is-fullwidth" >
-                    <tbody>
-                        @foreach(var name in NewAccounts)
-                        {
-                            <tr><td>@name</td></tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        @CreateResultItem(("New Accounts", 
+        @<table class="table is-hoverable  is-fullwidth" >
+            <tbody>
+                @foreach(var name in NewAccounts)
+                {
+                    <tr><td>@name</td></tr>
+                }
+            </tbody>
+        </table>))
     }
 
     @if (Warnings.Count > 0)
@@ -202,4 +223,14 @@
             </div>
         </div>
     }
+
+    <hr/>
+    <div class="field">
+        <div class="control">
+            <button 
+                class="button is-primary">
+                Import Transactions
+            </button>
+        </div>
+    </div>
 </div>
