@@ -7,6 +7,7 @@
     private Dictionary<string, (string Type, Optional<List<string>> Options)> _targets = new()
     {
         { TransactionFilterTargets.Amount, ("number", new()) },
+        { TransactionFilterTargets.Category, ("string", new()) },
         { TransactionFilterTargets.Description, ("text", new()) },
         { TransactionFilterTargets.Status, ("select", new([
             TransactionImportStatus.Success,

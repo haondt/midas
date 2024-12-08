@@ -137,15 +137,13 @@ namespace SpendLess.TransactionImport.Controllers
                     .GroupBy(t => t.e)
                     .Select(grp => (grp.Key, grp.Count(), grp.First().r.SourceRequestPayload))
                     .ToList(),
-                //Errors = result.Value.Transactions.SelectMany(r => r.Errors)
-                //    .GroupBy(e => e)
-                //    .Select(grp => (grp.Key, grp.Count()))
-                //    .ToList(),
                 Warnings = result.Value.Transactions.SelectMany(r => r.Warnings)
                     .GroupBy(w => w)
                     .Select(grp => (TransactionImportWarning.GetDescription(grp.Key), grp.Count()))
                     .ToList(),
-                NewAccounts = result.Value.NewAccounts.Select(kvp => kvp.Value).ToList(),
+                NewAccounts = result.Value.NewAccounts.Select(kvp => kvp.Value)
+                    .OrderBy(s => s)
+                    .ToList(),
                 NewCategories = result.Value.NewCategories,
                 NewTags = result.Value.NewTags,
                 JobId = id
@@ -191,6 +189,7 @@ namespace SpendLess.TransactionImport.Controllers
                 TransactionFilterTargets.Status => value.Value,
                 TransactionFilterTargets.Warning => value.Value,
                 TransactionFilterTargets.Description => value.Or(""),
+                TransactionFilterTargets.Category => value.Or(""),
                 _ => new()
             };
 
@@ -294,6 +293,25 @@ namespace SpendLess.TransactionImport.Controllers
                                 break;
                             case TransactionFilterOperators.StartsWith:
                                 filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Description.StartsWith(value)).Or(false));
+                                break;
+                            default:
+                                throw new InvalidOperationException($"unknown operator {op}");
+                        }
+                        break;
+                    case TransactionFilterTargets.Category:
+                        switch (op)
+                        {
+                            case TransactionFilterOperators.IsEqualTo:
+                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Category == value).Or(false));
+                                break;
+                            case TransactionFilterOperators.IsNotEqualTo:
+                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Category != value).Or(false));
+                                break;
+                            case TransactionFilterOperators.Contains:
+                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Category.Contains(value)).Or(false));
+                                break;
+                            case TransactionFilterOperators.StartsWith:
+                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Category.StartsWith(value)).Or(false));
                                 break;
                             default:
                                 throw new InvalidOperationException($"unknown operator {op}");
