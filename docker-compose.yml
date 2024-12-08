@@ -3,10 +3,7 @@ services:
     build:
       context: node-red
     volumes:
-      - ./node-red/settings.js:/data/settings.js
-      - spend-less-node-red-data:/data
+      - ./node-red/data:/data
     ports:
       - 1880:1880
 
-volumes:
-  spend-less-node-red-data:
