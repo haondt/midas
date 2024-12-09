@@ -47,8 +47,8 @@ namespace SpendLess.Web.Domain.Services
         {
             // TODO: appsettings the symbol
             if (amount < 0)
-                return $"(${(amount * -1).ToString("F2")})";
-            return $"${amount.ToString("F2")}";
+                return $"(${(amount * -1).ToString("N2")})";
+            return $"${amount.ToString("N2")}";
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Haondt.Core.Extensions;
 using Haondt.Core.Models;
 using Haondt.Identity.StorageKey;
+using Haondt.Persistence.Services;
 using SpendLess.Core.Extensions;
 using SpendLess.Domain.Constants;
 using SpendLess.Domain.Models;
@@ -11,17 +12,19 @@ using SpendLess.Persistence.Extensions;
 using SpendLess.Persistence.Services;
 using SpendLess.TransactionImport.Exceptions;
 using SpendLess.TransactionImport.Models;
+using SpendLess.Transactions.Services;
 
 namespace SpendLess.TransactionImport.Services
 {
     public class TransactionImportService(IAsyncJobRegistry jobRegistry,
         INodeRedService nodeRed,
         ISingleTypeSpendLessStorage<AccountDto> accountStorage,
-        ISingleTypeSpendLessStorage<CategoryDto> categoryStorage,
-        ISingleTypeSpendLessStorage<TagDto> tagStorage) : ITransactionImportService
+        IStorage storage,
+        ITransactionService transactionService) : ITransactionImportService
     {
 
-        public Result<SendToNodeRedResultDto, (double, Optional<string>)> GetDryRunResult(string jobId)
+
+        public Result<T, (double, Optional<string>)> GetAsyncJobResult<T>(string jobId)
         {
             var (status, progress, message) = jobRegistry.GetJobProgress(jobId);
             if (status < AsyncJobStatus.Complete)
@@ -29,10 +32,75 @@ namespace SpendLess.TransactionImport.Services
             var result = jobRegistry.GetJobResult(jobId);
             if (!result.HasValue)
                 throw new InvalidOperationException($"Job {jobId} has status {status} and no result.");
-            if (result.Value is not SendToNodeRedResultDto castedResult)
+            if (result.Value is not T castedResult)
                 throw new InvalidOperationException($"Job {jobId} has status {status} and a result of type {result.Value.GetType()} instead of {typeof(SendToNodeRedResultDto)}.");
             return new(castedResult);
         }
+
+        public Result<SendToNodeRedResultDto, (double, Optional<string>)> GetDryRunResult(string jobId)
+        {
+            return GetAsyncJobResult<SendToNodeRedResultDto>(jobId);
+        }
+
+        public Result<TransactionImportResultDto, (double, Optional<string>)> GetImportResult(string jobId)
+        {
+            return GetAsyncJobResult<TransactionImportResultDto>(jobId);
+        }
+
+        public string StartImport(string dryRunId)
+        {
+            var result = jobRegistry.GetJobResult(dryRunId);
+            if (!result.HasValue || result.Value is not SendToNodeRedResultDto dryRunResult)
+                throw new InvalidOperationException($"Job {dryRunId} has a result of type {result.Value.GetType()} instead of {typeof(SendToNodeRedResultDto)}.");
+
+            var (jobId, cancellationToken) = jobRegistry.RegisterJob();
+            _ = Task.Run(async () =>
+            {
+                var result = new TransactionImportResultDto
+                {
+                    TotalTransactions = dryRunResult.Transactions.Count,
+                    ImportTag = dryRunResult.ImportTag
+                };
+                try
+                {
+                    var batchSize = 50; // todo: appsettings
+                    var batches = dryRunResult.Transactions.Chunk(batchSize);
+                    foreach (var batch in batches)
+                    {
+                        var transactions = batch
+                            .Where(t => t.Transaction.HasValue)
+                            .Select(t => new TransactionDto
+                            {
+                                Amount = t.Transaction.Value.Amount,
+                                Tags = t.Transaction.Value.Tags,
+                                Category = t.Transaction.Value.Category,
+                                SourceAccount = t.Transaction.Value.Source.Id,
+                                DestinationAccount = t.Transaction.Value.Destination.Id,
+                                Description = t.Transaction.Value.Description,
+                                TimeStamp = t.Transaction.Value.TimeStamp,
+                                ImportAccount = dryRunResult.ImportAccount.Id,
+                                SourceData = t.SourceData
+                            })
+                            .ToList();
+
+                        await transactionService.CreateTransactions(transactions);
+                        result.TotalTransactions += batch.Length;
+                        jobRegistry.UpdateJobProgress(jobId, result.TotalTransactions / dryRunResult.Transactions.Count);
+                    }
+
+                    jobRegistry.CompleteJob(jobId, result);
+                }
+                catch (Exception ex)
+                {
+                    result.Errors = [ex.ToString()];
+                    result.IsSuccessful = false;
+                    jobRegistry.FailJob(jobId, result);
+                }
+            });
+
+            return jobId;
+        }
+
         public string StartDryRun(
             TransactionImportConfigurationDto configuration,
             string accountId,
@@ -40,7 +108,8 @@ namespace SpendLess.TransactionImport.Services
         {
 
             var (jobId, cancellationToken) = jobRegistry.RegisterJob("parsing csv...");
-            var importTag = $"import-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
+            var currentTimeStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            var importTag = $"import-{currentTimeStamp}";
 
             _ = Task.Run(async () =>
             {
@@ -52,8 +121,12 @@ namespace SpendLess.TransactionImport.Services
                         Name = (await accountStorage.TryGet(accountId.SeedStorageKey<AccountDto>()))
                             .As(a => a.Name)
                             .Or(SpendLessConstants.FallbackAccountName)
-                    }
+                    },
                 };
+
+                if (configuration.AddImportTag)
+                    result.ImportTag = importTag;
+
                 var results = new List<(SendToNodeRedRequestDto Request, SendToNodeRedResponseDto Response)>();
 
                 if (csvData.Count == 0)
@@ -62,17 +135,13 @@ namespace SpendLess.TransactionImport.Services
                     return;
                 }
 
-                var existingCategories = (await categoryStorage.GetAll())
-                    .Select(kvp => kvp.Key.SingleValue())
-                    .ToHashSet();
-                var existingTags = (await tagStorage.GetAll())
-                    .Select(kvp => kvp.Key.SingleValue())
-                    .ToHashSet();
-
+                var applicationState = await storage.GetDefault<SpendLessStateDto>(SpendLessStateDto.StorageKey);
+                var existingCategories = applicationState.Categories;
+                var existingTags = applicationState.Tags;
 
                 try
                 {
-                    var batchSize = 10; // todo: appsettings
+                    var batchSize = 50; // todo: appsettings
                     //var header = csvData.First();
                     var batches = csvData.Chunk(batchSize);
 
@@ -95,7 +164,9 @@ namespace SpendLess.TransactionImport.Services
                             {
                                 throw new SendToNodeRedException($"{ex.GetType()}: {ex.Message}", ex)
                                 {
-                                    SourceRequestPayload = p.ToString()
+                                    SourceRequestPayload = p.ToString(),
+                                    SourceData = p.Data
+
                                 };
                             }
                         }));
@@ -110,6 +181,7 @@ namespace SpendLess.TransactionImport.Services
                         var resultDto = new SendToNodeRedSingleResultDto
                         {
                             SourceRequestPayload = request.ToString(),
+                            SourceData = request.Data
                         };
 
                         // given an existing id, fetch the name
@@ -202,6 +274,7 @@ namespace SpendLess.TransactionImport.Services
                         resultDto.Transaction = new SendToNodeRedTransactionResultDto
                         {
                             Amount = response.Transaction.Amount,
+                            TimeStamp = response.Transaction.TimeStamp.HasValue ? response.Transaction.TimeStamp.Value : currentTimeStamp,
                             Category = response.Transaction.Category,
                             Tags = response.Transaction.Tags,
                             Source = new SendToNodeRedResultAccountDataDto
@@ -246,7 +319,17 @@ namespace SpendLess.TransactionImport.Services
                             else
                                 result.NewCategories[resultDto.Transaction.Value.Category] = 1;
                         }
+                    }
 
+                    // todo: appsettings the chunk size
+                    foreach (var batch in result.Transactions.Chunk(50))
+                    {
+                        var hasBeenImported = await transactionService.CheckIfTransactionsHaveBeenImported(batch.Select(r => r.SourceData).ToList());
+                        foreach (var resultDto in batch
+                            .Zip(hasBeenImported)
+                            .Where(zipped => zipped.Second)
+                            .Select(zipped => zipped.First))
+                            resultDto.Warnings.Add(TransactionImportWarning.SourceDataHashExists);
                     }
 
                     jobRegistry.CompleteJob(jobId, result);
@@ -258,6 +341,7 @@ namespace SpendLess.TransactionImport.Services
                         new SendToNodeRedSingleResultDto
                         {
                             SourceRequestPayload = ex.SourceRequestPayload,
+                            SourceData = ex.SourceData,
                             Errors = new HashSet<string>
                             {
                                 ex.Message

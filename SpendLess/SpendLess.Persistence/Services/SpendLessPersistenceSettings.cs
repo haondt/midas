@@ -7,5 +7,7 @@
         public string ForeignKeyTableName { get; set; } = "foreignKeys";
         public string KvsTableName { get; set; } = "kvs";
         public int MaxKvsSearchHits { get; set; } = 5;
+        public string TransactionsTableName { get; set; } = "transactions";
+        public string TransactionsTagsTableName { get; set; } = "transactionsTags";
     }
 }

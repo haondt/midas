@@ -9,6 +9,7 @@ using SpendLess.Kvs.Extensions;
 using SpendLess.NodeRed.Extensions;
 using SpendLess.Persistence.Extensions;
 using SpendLess.TransactionImport.Extensions;
+using SpendLess.Transactions.Extensions;
 using SpendLess.Web.Domain.Extensions;
 
 const string CORS_POLICY = "_fireflyIIIPPPolicy";
@@ -41,7 +42,8 @@ builder.Services
     .AddAdmin(builder.Configuration)
     .AddSpendLessWebDomainServices(builder.Configuration)
     .AddNodeRedServices(builder.Configuration)
-    .AddTransactionImport();
+    .AddTransactionImport()
+    .AddTransactions(builder.Configuration);
 //.AddNodeRedServices(builder.Configuration)
 //.AddLookupServices(builder.Configuration);
 //.AddFireflyIIIPPWebServices(builder.Configuration)

@@ -11,12 +11,14 @@ namespace SpendLess.Domain.Models
         public Dictionary<string, int> NewCategories { get; set; } = [];
         public Dictionary<string, int> NewTags { get; set; } = [];
         public decimal BalanceChange { get; set; } = 0;
+        public Optional<string> ImportTag { get; set; } = new();
         public required SendToNodeRedResultAccountDataDto ImportAccount { get; set; }
     }
 
     public class SendToNodeRedSingleResultDto
     {
         public required string SourceRequestPayload { get; set; }
+        public required List<string> SourceData { get; set; }
         public HashSet<string> Warnings { get; set; } = [];
         public HashSet<string> Errors { get; set; } = [];
         public string Status => Errors.Count > 0 ? TransactionImportStatus.Error
@@ -30,6 +32,7 @@ namespace SpendLess.Domain.Models
         public required decimal Amount { get; set; }
         public HashSet<string> Tags { get; set; } = [];
         public string Category { get; set; } = SpendLessConstants.DefaultCategory;
+        public required long TimeStamp { get; set; }
         public required SendToNodeRedResultAccountDataDto Source { get; set; }
         public required SendToNodeRedResultAccountDataDto Destination { get; set; }
         public string Description { get; set; } = "";

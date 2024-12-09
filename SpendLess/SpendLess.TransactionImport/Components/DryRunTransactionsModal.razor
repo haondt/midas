@@ -6,28 +6,29 @@
 
     private Dictionary<string, (string Type, Optional<List<string>> Options)> _targets = new()
     {
-        { TransactionFilterTargets.Amount, ("number", new()) },
-        { TransactionFilterTargets.Category, ("string", new()) },
-        { TransactionFilterTargets.Description, ("text", new()) },
-        { TransactionFilterTargets.Status, ("select", new([
+        { TransactionImportFilterTargets.Amount, ("number", new()) },
+        { TransactionImportFilterTargets.Category, ("string", new()) },
+        { TransactionImportFilterTargets.Description, ("text", new()) },
+        { TransactionImportFilterTargets.Status, ("select", new([
             TransactionImportStatus.Success,
             TransactionImportStatus.Warning,
             TransactionImportStatus.Error,
         ]))},
-        { TransactionFilterTargets.Warning, ("select", new([
+        { TransactionImportFilterTargets.Warning, ("select", new([
             TransactionImportWarning.MissingSourceAccount,
             TransactionImportWarning.MissingDestinationAccount,
             TransactionImportWarning.CreatingAccountWithSameNameAsExisting,
-            TransactionImportWarning.MissingCategory
+            TransactionImportWarning.MissingCategory,
+            TransactionImportWarning.SourceDataHashExists
         ]))}
     };
 
     private List<string> _operators = new()
     {
-        TransactionFilterOperators.IsEqualTo,
-        TransactionFilterOperators.IsNotEqualTo,
-        TransactionFilterOperators.Contains,
-        TransactionFilterOperators.StartsWith,
+        TransactionImportFilterOperators.IsEqualTo,
+        TransactionImportFilterOperators.IsNotEqualTo,
+        TransactionImportFilterOperators.Contains,
+        TransactionImportFilterOperators.StartsWith,
     };
 }
 

@@ -1,6 +1,6 @@
 ﻿namespace SpendLess.TransactionImport.Models
 {
-    public static class TransactionFilterOperators
+    public static class TransactionImportFilterOperators
     {
         public const string IsEqualTo = "is";
         public const string IsNotEqualTo = "is_not";

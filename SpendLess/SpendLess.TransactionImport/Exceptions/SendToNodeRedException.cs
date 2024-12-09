@@ -3,6 +3,7 @@
     public class SendToNodeRedException : Exception
     {
         public required string SourceRequestPayload { get; set; }
+        public required List<string> SourceData { get; set; }
 
         public SendToNodeRedException()
         {

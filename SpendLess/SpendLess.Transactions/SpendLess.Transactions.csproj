@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Haondt.Identity" Version="0.0.15-alpha-20241208135516" />
+    <ProjectReference Include="..\SpendLess.Domain\SpendLess.Domain.csproj" />
   </ItemGroup>
 
 </Project>

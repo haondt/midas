@@ -16,8 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Haondt.Web.BulmaCSS" Version="0.0.15-alpha-20241126172427" />
-    <PackageReference Include="Haondt.Web" Version="0.0.15-alpha-20241126172427" />
+    <PackageReference Include="Haondt.Web.BulmaCSS" Version="0.0.15-alpha-20241208135516" />
+    <PackageReference Include="Haondt.Web" Version="0.0.15-alpha-20241208135516" />
   </ItemGroup>
 
   <ItemGroup>

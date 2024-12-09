@@ -229,9 +229,14 @@
     <div class="field">
         <div class="control">
             <button 
-                class="button is-primary">
+                class="button is-primary"
+                hx-post="/transaction-import/import/@JobId/start"
+                hx-swap="innerHTML"
+                hx-target="#import-result">
                 Import Transactions
             </button>
         </div>
     </div>
 </div>
+
+<div id="import-result"></div>

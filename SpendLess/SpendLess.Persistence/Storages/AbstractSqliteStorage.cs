@@ -87,13 +87,13 @@ namespace SpendLess.Persistence.Storages
                 throw;
             }
         }
-        protected T WithTransaction<T>(Func<SqliteConnection, T> action)
+        protected T WithTransaction<T>(Func<SqliteConnection, SqliteTransaction, T> action)
         {
             using var connection = GetConnection();
             using var transaction = connection.BeginTransaction();
             try
             {
-                var result = action(connection);
+                var result = action(connection, transaction);
                 transaction.Commit();
                 return result;
             }

@@ -1,6 +1,6 @@
 ﻿namespace SpendLess.TransactionImport.Models
 {
-    public static class TransactionFilterTargets
+    public static class TransactionImportFilterTargets
     {
         public const string Amount = "amount";
         public const string Description = "description";
