@@ -1019,7 +1019,7 @@
         "type": "function",
         "z": "9e3bf19c5e1acd5e",
         "name": "set date",
-        "func": "msg.spendless.context.date = new Date(msg.spendless.request.data[0]).toISOString();\nreturn msg;",
+        "func": "msg.spendless.context.date = Math.floor(new Date(msg.spendless.request.data[0]).getTime() / 1000);\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -3748,33 +3748,6 @@
         ]
     },
     {
-        "id": "b4e33874c8b6e410",
-        "type": "change",
-        "z": "b86a301c9c586c6c",
-        "name": "set date",
-        "rules": [
-            {
-                "t": "set",
-                "p": "spendless.response.transaction.date",
-                "pt": "msg",
-                "to": "spendless.context.date",
-                "tot": "msg"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 160,
-        "y": 240,
-        "wires": [
-            [
-                "bcfc5ba302f4fed7"
-            ]
-        ]
-    },
-    {
         "id": "6d99e44eb15240a5",
         "type": "switch",
         "z": "b86a301c9c586c6c",
@@ -3945,6 +3918,33 @@
             ],
             [
                 "d5a019dabd4fc640"
+            ]
+        ]
+    },
+    {
+        "id": "b4e33874c8b6e410",
+        "type": "change",
+        "z": "b86a301c9c586c6c",
+        "name": "set date",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.response.transaction.timeStamp",
+                "pt": "msg",
+                "to": "spendless.context.date",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 160,
+        "y": 240,
+        "wires": [
+            [
+                "bcfc5ba302f4fed7"
             ]
         ]
     },
@@ -5421,7 +5421,7 @@
         "type": "debug",
         "z": "f6f2187d.f17ca8",
         "name": "debug 2",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
