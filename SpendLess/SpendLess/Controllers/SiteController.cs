@@ -7,7 +7,7 @@ namespace SpendLess.Controllers
         [HttpGet("/")]
         public IActionResult Get()
         {
-            return Redirect("accounts");
+            return Redirect("dashboard");
         }
     }
 }

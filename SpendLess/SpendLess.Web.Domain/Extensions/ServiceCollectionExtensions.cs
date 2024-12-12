@@ -60,6 +60,10 @@ namespace SpendLess.Web.Domain.Extensions
             {
                 Uri = "https://unpkg.com/htmx-ext-include-vals@2.0.0/include-vals.js"
             });
+            services.AddScoped<IHeadEntryDescriptor>(_ => new ScriptDescriptor
+            {
+                Uri = "https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"
+            });
             return services;
         }
 

@@ -3,6 +3,7 @@ using Haondt.Web.Core.Middleware;
 using Haondt.Web.Extensions;
 using SpendLess.Accounts.Extensions;
 using SpendLess.Admin.Extensions;
+using SpendLess.Dashboard.Extensions;
 using SpendLess.Domain.Extensions;
 using SpendLess.Extensions;
 using SpendLess.Kvs.Extensions;
@@ -40,6 +41,7 @@ builder.Services
     .AddAccounts(builder.Configuration)
     .AddKvs(builder.Configuration)
     .AddAdmin(builder.Configuration)
+    .AddDashboard(builder.Configuration)
     .AddSpendLessWebDomainServices(builder.Configuration)
     .AddNodeRedServices(builder.Configuration)
     .AddTransactionImport()

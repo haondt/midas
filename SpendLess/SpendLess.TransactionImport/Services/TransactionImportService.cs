@@ -181,7 +181,7 @@ namespace SpendLess.TransactionImport.Services
                         var resultDto = new SendToNodeRedSingleResultDto
                         {
                             SourceRequestPayload = request.ToString(),
-                            SourceData = request.Data
+                            SourceData = request.Data,
                         };
 
                         // given an existing id, fetch the name

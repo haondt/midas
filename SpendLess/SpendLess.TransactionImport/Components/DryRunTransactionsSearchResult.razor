@@ -24,12 +24,17 @@
                 <td>@result.Transaction.Value.Source.Name</td>
                 <td>@result.Transaction.Value.Destination.Name</td>
                 <td>@result.Transaction.Value.Description</td>
-                <td>@StringFormatter.FormatCurrency(result.Transaction.Value.Amount)</td>
+                <td style="text-align:end;">@StringFormatter.FormatCurrency(result.Transaction.Value.Amount)</td>
             }
             else
             {
                 <td colspan="4"></td>
             }
+            <td>
+                <span class="tag">
+                    @TransactionDto.HashSourceData(result.SourceData)
+                </span>
+            </td>
             <td style="text-align:center;"><button 
                 class="button"
                 _="
@@ -47,7 +52,7 @@
         </tr>
     }
     <tr>
-        <td colspan="5">
+        <td colspan="6">
             <Paginator Page="@Page" TotalPages="@TotalPages" />
         </td>
     </tr>

@@ -1,0 +1,134 @@
+﻿@using SpendLess.Charts.Components
+@code {
+    public List<string> Ranges = [];
+
+    protected override void OnInitialized ()
+    {
+        Ranges = [
+            "December 2024",
+            "November 2024",
+            "September 2024",
+            "Year to date",
+            "Everything",
+            "Custom Range"
+        ];
+    }
+
+}
+
+
+
+
+<div class="panel is-link">
+    <p class="panel-heading">Dashboard</p>
+
+    <div class="panel-block">
+        <form>
+            <style>
+                @@scope {
+                    :scope {
+                        align-items: center;
+                        flex-direction: row;
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: .75rem;
+                        justify-content: flex-end;
+                        width: 100%;
+                    }
+                }
+            </style>
+            <div class="control">
+                <div class="select">
+                    <select>
+                        @foreach(var range in Ranges)
+                        {
+                            <option value="@range">@range</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="control">
+                <div class="field">
+                    <input class="input" type="date"/>
+                </div>
+            </div>
+
+            <label class="label is-normal mb-0">To</label>
+
+            <div class="control">
+                <div class="field">
+                    <input class="input" type="date"/>
+                </div>
+            </div>
+
+            <div class="control">
+                <button class="button is-primary">Apply</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<div class="block">
+    <div class="columns is-desktop">
+        <div class="column">
+            <div class="message is-primary">
+                <div class="message-header">
+                    <p>Net Worth</p>
+                </div>
+                <div class="message-body">
+                    <p class="title">$1,000,000.00</p>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="message is-info">
+                <div class="message-header">
+                    <p>Cash flow</p>
+                </div>
+                <div class="message-body">
+                    <p class="title has-text-success">+$1,000,000.00</p>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="message is-success">
+                <div class="message-header">
+                    <p>Income</p>
+                </div>
+                <div class="message-body">
+                    <p class="title">$1,000,000.00</p>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="message is-danger">
+                <div class="message-header">
+                    <p>Spending</p>
+                </div>
+                <div class="message-body">
+                    <p class="title">$1,000,000.00</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="block">
+    <div class="columns">
+        <div class="column">
+            <div class="box">
+                <BarChart />
+            </div>
+
+        </div>
+        <div class="column">
+            <div class="box">
+
+            </div>
+        </div>
+    </div>
+
+</div>

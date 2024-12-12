@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	  <OutputType>Library</OutputType>
+      <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\SpendLess.Charts\SpendLess.Charts.csproj" />
+    <ProjectReference Include="..\SpendLess.Domain\SpendLess.Domain.csproj" />
+    <ProjectReference Include="..\SpendLess.Persistence\SpendLess.Persistence.csproj" />
+    <ProjectReference Include="..\SpendLess.Web.Domain\SpendLess.Web.Domain.csproj" />
+  </ItemGroup>
+
+
+</Project>
