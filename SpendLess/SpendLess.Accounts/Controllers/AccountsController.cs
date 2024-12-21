@@ -4,9 +4,8 @@ using Haondt.Web.Core.Services;
 using Haondt.Web.Middleware;
 using Microsoft.AspNetCore.Mvc;
 using SpendLess.Accounts.Components;
+using SpendLess.Accounts.Services;
 using SpendLess.Domain.Models;
-using SpendLess.Persistence.Extensions;
-using SpendLess.Persistence.Services;
 using SpendLess.Web.Domain.Components;
 using SpendLess.Web.Domain.Controllers;
 using System.ComponentModel.DataAnnotations;
@@ -15,7 +14,7 @@ namespace SpendLess.Accounts.Controllers
 {
     [Route("accounts")]
     public class AccountsController(IComponentFactory componentFactory,
-        ISingleTypeSpendLessStorage<AccountDto> storage) : SpendLessUIController
+        IAccountsService accountsService) : SpendLessUIController
     {
         [ServiceFilter(typeof(RenderPageFilter))]
         public Task<IResult> Get()
@@ -36,12 +35,10 @@ namespace SpendLess.Accounts.Controllers
         {
             name = name.Trim();
             var accountId = Guid.NewGuid().ToString();
-            var accountKey = accountId.SeedStorageKey<AccountDto>();
-            await storage.Set(accountKey, new AccountDto
+            await accountsService.UpsertOwnedAccount(accountId, new AccountDto
             {
-                Balance = 0,
                 Name = name
-            }, [AccountDto.GetNameForeignKey(name)]);
+            });
 
 
             Response.AsResponseData()

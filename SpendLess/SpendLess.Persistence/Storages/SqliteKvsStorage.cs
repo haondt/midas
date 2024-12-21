@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Options;
+using SpendLess.Persistence.Extensions;
 using SpendLess.Persistence.Services;
 
 namespace SpendLess.Persistence.Storages
@@ -70,12 +71,6 @@ namespace SpendLess.Persistence.Storages
 
         public Task<List<string>> SearchKey(string partialKey)
         {
-            partialKey = partialKey
-                .Replace("[", "\\[")
-                .Replace("]", "\\]")
-                .Replace("\\", "[\\]")
-                .Replace("%", "[%]")
-                .Replace("_", "[_]");
             var result = WithConnection(connection =>
             {
                 List<string> matchingKeys = [];
@@ -86,7 +81,7 @@ namespace SpendLess.Persistence.Storages
                         WHERE key LIKE @partialKey
                         LIMIT {_settings.MaxKvsSearchHits};", connection);
 
-                searchCommand.Parameters.AddWithValue("@partialKey", $"%{partialKey}%");
+                searchCommand.Parameters.AddLikeTermWithValue("@partialKey", partialKey);
 
                 using var reader = searchCommand.ExecuteReader();
                 while (reader.Read())

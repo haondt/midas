@@ -1,20 +1,22 @@
 ﻿@using Haondt.Web.Core.Components
 @using Haondt.Identity.StorageKey
+@using SpendLess.Accounts.Models
+@using SpendLess.Accounts.Services
 @using SpendLess.Domain.Models
 @using SpendLess.Persistence.Services
-@inject ISingleTypeSpendLessStorage<AccountDto> Storage
+@using SpendLess.Web.Domain.Services
+@inject IAccountsService AccountsService
 
 @code {
 
     [Parameter]
-    public Dictionary<string, AccountDto> AccountDtos { get; set; } = [];
+    public Dictionary<string, OwnedAccountDetails> AccountDtos { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
-        var accounts = await Storage.GetAll();
-        AccountDtos = accounts.ToDictionary(
-            kvp => kvp.Key.SingleValue(),
-            kvp => kvp.Value);
+        AccountDtos = (await Task.WhenAll((await AccountsService.GetOwned())
+            .Select(async a => (a, await AccountsService.GetDetails(a.Key)))))
+            .ToDictionary(t => t.a.Key, t => t.Item2);
     }
 }
 
@@ -48,7 +50,20 @@
                             hx-target="#content">
                             @account.Value.Name</a>
                         </td>
-                        <td>$@account.Value.Balance</td>
+                        <td>
+                                @if(account.Value.Balance < 0)
+                                {
+                                    <p class="has-text-danger">@StringFormatter.FormatCurrency(account.Value.Balance)</p>
+                                }
+                                else if (account.Value.Balance > 0)
+                                {
+                                    <p class="has-text-success">@StringFormatter.FormatCurrency(account.Value.Balance)</p>
+                                }
+                                else
+                                {
+                                    <p>@StringFormatter.FormatCurrency(account.Value.Balance)</p>
+                                }
+                            </td>
                         <td>
                             <div class="is-flex is-flex-direction-column is-align-items-flex-end">
                                 <div>

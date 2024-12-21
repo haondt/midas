@@ -13,5 +13,6 @@ namespace SpendLess.Persistence.Services
         Task<Dictionary<StorageKey<T>, T>> GetAll();
         Task<Optional<T>> TryGet(StorageKey<T> primaryKey);
         Task<bool> ContainsForeignKey(StorageKey<T> foreignKey);
+        Task<List<Optional<T>>> TryGetMany(List<StorageKey<T>> primaryKeys);
     }
 }

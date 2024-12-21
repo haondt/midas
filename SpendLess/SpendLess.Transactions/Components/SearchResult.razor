@@ -1,0 +1,272 @@
+﻿@using SpendLess.Domain.Models
+@using SpendLess.Transactions.Models
+@using SpendLess.Web.Domain.Components
+@using SpendLess.Web.Domain.Services
+
+@code {
+    [Parameter]
+    public Dictionary<int, ExtendedTransactionDto> Results { get; set; } = [];
+    [Parameter, EditorRequired]
+    public required int Page { get; set; }
+    [Parameter, EditorRequired]
+    public required int TotalPages { get; set; }
+}
+
+<form style="width:100%">
+    <table class="table is-fullwidth is-hoverable">
+        <style>
+            @@scope {
+                tr.summary:hover,
+                tr.summary:hover + tr,
+                tr.summary:has(+ tr:hover)
+                {
+                    cursor: pointer;
+                    background-color: var(--bulma-table-row-hover-background-color);
+
+                }
+
+                tr.expanded td {
+                    border: none;
+                }
+
+                tr.details table {
+                    --bulma-table-cell-border-color: hsl(0, 0%, 14%);
+                }
+            }
+        </style>
+        <thead>
+            <tr>
+                <th>
+                    <input id="select-all" 
+                        _="on click
+                            set hasUnchecked to ((<input.select-checkbox:not(:checked)/>).length > 0)
+                            set hasChecked to ((<input.select-checkbox:checked/>).length > 0)
+
+                            if hasUnchecked then
+                                if hasChecked then
+                                    set my indeteriminate to false
+                                    set my checked to false
+                                    repeat in <input.select-checkbox/>
+                                        set it.checked to false
+                                    end
+                                else
+                                    set my indeteriminate to false
+                                    set my checked to true
+                                    repeat in <input.select-checkbox/>
+                                        set it.checked to true
+                                    end
+                                end
+                            else
+                                if hasChecked then
+                                    set my indeteriminate to false
+                                    set my checked to false
+                                    repeat in <input.select-checkbox/>
+                                        set it.checked to false
+                                    end
+                                else
+                                    set my indeteriminate to false
+                                    set my checked to true
+                                    repeat in <input.select-checkbox/>
+                                        set it.checked to true
+                                    end
+                                end
+                            end
+                        end
+                        on updateState
+                            set hasUnchecked to ((<input.select-checkbox:not(:checked)/>).length > 0)
+                            set hasChecked to ((<input.select-checkbox:checked/>).length > 0)
+                            if hasUnchecked then
+                                if hasChecked then
+                                    set my indeterminate to true
+                                else
+                                    set my indeterminate to false
+                                    set my checked to false
+                                end
+                            else
+                                if hasChecked then
+                                    set my indeterminate to false
+                                    set my checked to true
+                                else
+                                    set my indeterminate to false
+                                    set my checked to false
+                                end
+                            end
+                        end
+                        "
+                        name="select-all" type="checkbox"/>
+                </th>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>
+                    <div class="is-flex is-flex-direction-column is-align-items-flex-end">
+                        <div>
+                            <button class="button is-small"
+                                _="
+                                    set :dd to the next .dropdown
+                                    on click toggle .is-active on :dd then halt the event
+                                    on click from elsewhere
+                                        if the event's target is not in :dd
+                                            remove .is-active from :dd">
+                                <span>actions</span>
+                                <span class="icon">
+                                    <i class="fa-solid fa-caret-down"></i>
+                                </span>
+                            </button>
+                        </div>
+                        <div class="dropdown is-right">
+                            <div class="dropdown-menu">
+                                <div class="dropdown-content">
+                                    <button 
+                                        class="dropdown-item"
+                                        hx-swap="none"
+                                        hx-confirm="are you sure?"
+                                        hx-include="the closest <form/>"
+                                        hx-delete="/transactions">
+                                        <span class="icon has-text-danger">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </span>
+                                        <span>delete selected</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </th>
+            </tr>
+        </thead>
+        <tbody id="transactions-list">
+
+            @foreach(var (id, transaction)  in Results)
+            {
+                <tr class="summary" 
+                    _="on click
+                        if (the event's target is not the first <input/> in me
+                            and the event's target is not in the first .actions in me)
+                            toggle .is-hidden on the next <tr/> toggle .expanded on me
+                ">
+                    <td>
+                        <input
+                            _="on click send updateState to #select-all"
+                            class="select-checkbox" name="selected-id" type="checkbox"/>
+                    </td>
+                    <td>
+                        @transaction.Description
+                    </td>
+                    <td>
+                        @StringFormatter.FormatCurrency(transaction.Amount)
+                    </td>
+                    <td>
+                        @StringFormatter.FormatDate(transaction.TimeStamp)
+                    </td>
+                    <td class="actions">
+                        <div class="is-flex is-flex-direction-column is-align-items-flex-end">
+                            <div>
+                                <button class="button is-small"
+                                    _="
+                                        set :dd to the next .dropdown
+                                        on click toggle .is-active on :dd then halt the event
+                                        on click from elsewhere
+                                            if the event's target is not in :dd
+                                                remove .is-active from :dd">
+                                    <span>actions</span>
+                                    <span class="icon">
+                                        <i class="fa-solid fa-caret-down"></i>
+                                    </span>
+                                </button>
+                            </div>
+                            <div class="dropdown is-right">
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-content">
+                                        <button 
+                                            class="dropdown-item"
+                                            hx-swap="none"
+                                            _="on htmx:afterOnLoad
+                                                if event.detail.xhr.status == 204
+                                                    then remove the closest <tr/>"
+                                            hx-confirm="are you sure?"
+                                            hx-delete="/transaction/@id">
+                                            <span class="icon has-text-danger">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </span>
+                                            <span>delete</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="details is-hidden">
+                    <td colspan="5">
+                        <table style="width:100%;">
+                            <tbody>
+                                <tr>
+                                    <th>Source account name</th>
+                                    <td>@transaction.SourceAccountName</td>
+                                </tr>
+                                <tr>
+                                    <th>Source account ID</th>
+                                    <td>@transaction.SourceAccount</td>
+                                </tr>
+                                <tr>
+                                    <th>Destination account name</th>
+                                    <td>@transaction.DestinationAccountName</td>
+                                </tr>
+                                <tr>
+                                    <th>Destination account ID</th>
+                                    <td>@transaction.DestinationAccount</td>
+                                </tr>
+                                <tr>
+                                    <th>Category</th>
+                                    <td>@transaction.Category</td>
+                                </tr>
+                                <tr>
+                                    <th>Tags</th>
+                                    <td>
+                                        <div class="tags">
+
+                                        @foreach(var tag in transaction.Tags)
+                                        {
+                                            <span class="tag is-info">@tag</span>
+                                        }
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Import Account</th>
+                                    <td>@transaction.ImportAccount</td>
+                                </tr>
+                                <tr>
+                                    <td><button 
+                                        class="button"
+                                        _="
+                                            on click
+                                                halt the event
+                                                writeText('@transaction.SourceDataString.Replace("'", "\\'")') into the navigator's clipboard
+                                                set target to the first .copy-button-text in me
+                                                set the target's innerHTML to 'Copied!'
+                                                    then wait 1.3s
+                                                    then set the target's innerHTML to 'Copy Request'
+                                        ">
+                                        <span class="icon is-small">
+                                            <i class="fas fa-copy"></i>
+                                        </span>
+                                        <span class="copy-button-text">TODO</span>
+                                    </button></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            }
+            <tr id="paginator">
+                <td colspan="5">
+                    <Paginator Page="@Page" TotalPages="@TotalPages" OnChange="@("send submit to #filters")"/>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</form>

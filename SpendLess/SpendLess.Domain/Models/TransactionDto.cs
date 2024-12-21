@@ -41,6 +41,11 @@ namespace SpendLess.Domain.Models
             return JsonConvert.SerializeObject(sourceData);
         }
 
+        public static List<string> DestringifySourceData(string sourceData)
+        {
+            return JsonConvert.DeserializeObject<List<string>>(sourceData) ?? throw new InvalidOperationException($"Unable to destringify source data {sourceData}");
+        }
+
         public static long HashSourceData(string sourceDataString)
         {
             using var sha256 = System.Security.Cryptography.SHA256.Create();

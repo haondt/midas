@@ -1,11 +1,12 @@
 ﻿@using Haondt.Core.Extensions
 @using Haondt.Core.Models
 @using Haondt.Identity.StorageKey
+@using SpendLess.Accounts.Services
 @using global::SpendLess.Domain.Models
 @using global::SpendLess.Persistence.Services
 @using global::SpendLess.TransactionImport.Models
 
-@inject ISingleTypeSpendLessStorage<AccountDto> accountStorage
+@inject IAccountsService AccountsService
 @inject ISingleTypeSpendLessStorage<TransactionImportConfigurationDto> configStorage
 @inject ISingleTypeSpendLessStorage<TransactionImportAccountMetadataDto> accountMetadataStorage
 
@@ -23,9 +24,9 @@
     {
         if (IsSwap)
             _attributes["hx-swap-oob"] = "outerHTML";
-        var accounts = await accountStorage.GetAll();
+        var accounts = await AccountsService.GetOwned();
         _accounts = accounts.ToDictionary(
-            kvp => kvp.Key.SingleValue(),
+            kvp => kvp.Key,
             kvp => kvp.Value.Name);
 
         var importConfigs = await configStorage.GetAll();

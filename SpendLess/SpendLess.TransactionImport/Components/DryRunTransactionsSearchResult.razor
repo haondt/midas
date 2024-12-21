@@ -1,6 +1,7 @@
 @using SpendLess.Domain.Models
 @using SpendLess.NodeRed.Models
 @using System.Web
+@using SpendLess.Web.Domain.Components
 @using SpendLess.Web.Domain.Services
 
 @code {
@@ -53,7 +54,7 @@
     }
     <tr>
         <td colspan="6">
-            <Paginator Page="@Page" TotalPages="@TotalPages" />
+            <Paginator Page="@Page" TotalPages="@TotalPages" OnChange="@("send submit to #filters")"/>
         </td>
     </tr>
 </tbody>

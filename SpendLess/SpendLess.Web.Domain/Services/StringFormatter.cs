@@ -43,12 +43,22 @@ namespace SpendLess.Web.Domain.Services
             return Encoding.UTF8.GetString(decoded);
         }
 
-        public static string FormatCurrency(decimal amount)
+        public static string FormatCurrency(decimal amount, bool? useAccountingFormat = null)
         {
             // TODO: appsettings the symbol
             if (amount < 0)
-                return $"(${(amount * -1).ToString("N2")})";
+            {
+                if (useAccountingFormat ?? true)
+                    return $"(${(amount * -1).ToString("N2")})";
+                else
+                    return $"-${(amount * -1).ToString("N2")}";
+            }
             return $"${amount.ToString("N2")}";
+        }
+        public static string FormatDate(long unixSeconds)
+        {
+            var dateTime = DateTimeOffset.FromUnixTimeSeconds(unixSeconds).DateTime;
+            return dateTime.ToString("yyyy-MM-dd");
         }
     }
 }

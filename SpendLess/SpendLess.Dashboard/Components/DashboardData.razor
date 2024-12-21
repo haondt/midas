@@ -1,0 +1,86 @@
+﻿@using SpendLess.Charts.BarChart
+@using SpendLess.Charts.Components
+@using SpendLess.Web.Domain.Services
+@code {
+    [Parameter, EditorRequired]
+    public required decimal CashFlow { get; set; }
+}
+
+
+<div class="block">
+    <div class="columns is-desktop">
+        <div class="column">
+            <div class="notification">
+                @if (CashFlow == 0)
+                {
+                    <p class="is-size-4">@StringFormatter.FormatCurrency(CashFlow)</p>
+                }
+                else if(CashFlow > 0)
+                {
+                    <p class="is-size-4 has-text-success">+@StringFormatter.FormatCurrency(CashFlow)</p>
+                }
+                else
+                {
+                    <p class="is-size-4 has-text-danger">@StringFormatter.FormatCurrency(CashFlow, false)</p>
+                }
+                <p class="subtitle is-6">Cash flow</p>
+            </div>
+        </div>
+        <div class="column">
+            <div class="notification is-success">
+                <p class="is-size-4">$1,000,000.00</p>
+                <p class="subtitle is-6">Income</p>
+            </div>
+        </div>
+        <div class="column">
+            <div class="notification is-danger">
+                <p class="is-size-4">$1,000,000.00</p>
+                <p class="subtitle is-6">Spending</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="block">
+    <div class="columns is-desktop">
+        <div class="column">
+            <div class="box">
+                @{
+                    var chartConfiguration = new BarConfiguration
+                    {
+                        Data = new()
+                        {
+                            Labels = ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+                            Datasets = [new(){
+                                        Label = "# of Votes",
+                                        Data = [12,19,3,5,2,3],
+                                        BorderWidth = 1
+                                    }]
+                        },
+                        Options = new()
+                        {
+                            Scales = new()
+                            {
+                                Y = new()
+                                {
+                                    BeginAtZero = true
+                                }
+                            }
+                        }
+                    };
+
+                    <Chart Configuration="chartConfiguration"/>
+
+                }
+            </div>
+
+        </div>
+        <div class="column">
+            <div class="box">
+
+            </div>
+        </div>
+    </div>
+
+</div>

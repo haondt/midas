@@ -3,10 +3,9 @@ using Haondt.Web.Middleware;
 using Microsoft.AspNetCore.Mvc;
 using SpendLess.Accounts.Components;
 using SpendLess.Accounts.Models;
+using SpendLess.Accounts.Services;
 using SpendLess.Core.Exceptions;
 using SpendLess.Domain.Models;
-using SpendLess.Persistence.Extensions;
-using SpendLess.Persistence.Services;
 using SpendLess.Web.Core.Exceptions;
 using SpendLess.Web.Domain.Components;
 using SpendLess.Web.Domain.Controllers;
@@ -15,13 +14,13 @@ namespace SpendLess.Accounts.Controllers
 {
     [Route("account")]
     public class AccountController(IComponentFactory componentFactory,
-        ISingleTypeSpendLessStorage<AccountDto> storage) : SpendLessUIController
+        IAccountsService accountsService) : SpendLessUIController
     {
         [HttpGet("{id}")]
         [ServiceFilter(typeof(RenderPageFilter))]
         public async Task<IResult> GetAccount(string id)
         {
-            var account = await storage.TryGet(id.SeedStorageKey<AccountDto>());
+            var account = await accountsService.TryGetOwnedAccount(id);
             if (!account.HasValue)
                 throw new NotFoundPageException($"Account {id} not found.");
 
@@ -35,8 +34,7 @@ namespace SpendLess.Accounts.Controllers
         [HttpDelete("{id}")]
         public async Task<IResult> DeleteAccount(string id)
         {
-            var accountKey = id.SeedStorageKey<AccountDto>();
-            await storage.Delete(accountKey);
+            await accountsService.Disown(id);
             return Results.NoContent();
         }
 
@@ -50,10 +48,8 @@ namespace SpendLess.Accounts.Controllers
             if (string.IsNullOrWhiteSpace(request.Name))
                 throw new UserException("Account name cannot be empty");
 
-            var accountKey = id.SeedStorageKey<AccountDto>();
-            await storage.Set(accountKey, new AccountDto
+            await accountsService.UpsertOwnedAccount(id, new AccountDto
             {
-                Balance = 0,
                 Name = request.Name
             });
 

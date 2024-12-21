@@ -1,4 +1,5 @@
-﻿using SpendLess.Web.Domain.Models;
+﻿using SpendLess.Accounts.Services;
+using SpendLess.Web.Domain.Models;
 
 namespace SpendLess.Accounts.Extensions
 {
@@ -11,6 +12,8 @@ namespace SpendLess.Accounts.Extensions
                 Title = "Accounts",
                 Slug = "accounts",
             });
+
+            services.AddSingleton<IAccountsService, AccountsService>();
 
             return services;
         }

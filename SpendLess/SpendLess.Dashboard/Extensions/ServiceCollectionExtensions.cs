@@ -1,4 +1,5 @@
-﻿using SpendLess.Web.Domain.Models;
+﻿using SpendLess.Dashboard.Services;
+using SpendLess.Web.Domain.Models;
 
 namespace SpendLess.Dashboard.Extensions
 {
@@ -11,6 +12,8 @@ namespace SpendLess.Dashboard.Extensions
                 Title = "Dashboard",
                 Slug = "dashboard",
             });
+
+            services.AddSingleton<IDashboardService, DashboardService>();
 
             return services;
         }

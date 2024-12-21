@@ -1,0 +1,26 @@
+@namespace SpendLess.Charts.Components
+@using SpendLess.Charts.Models
+
+@code{
+    [Parameter, EditorRequired]
+    public required ChartConfiguration Configuration { get; set; }
+}
+
+<div>
+  <canvas
+      _="
+        on load
+            js(me)
+                return new Chart(me, @Configuration.ToString());
+            end
+            set :chart to it
+        end
+        
+        on htmx:beforeCleanupElement
+            set chart to :chart
+            js(chart)
+                chart.destroy();
+            end
+        end
+        "></canvas>
+</div>

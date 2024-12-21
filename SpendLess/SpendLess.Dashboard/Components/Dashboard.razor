@@ -1,16 +1,32 @@
-﻿@using SpendLess.Charts.Components
+﻿@using SpendLess.Charts.BarChart
+@using SpendLess.Charts.Components
+@using SpendLess.Dashboard.Models
+@using SpendLess.Web.Domain.Services
 @code {
-    public List<string> Ranges = [];
+    [Parameter, EditorRequired]
+    public required decimal NetWorth { get; set; }
 
+    [Parameter, EditorRequired]
+    public required DashboardData DashboardData { get; set; }
+
+    public List<(string, string)> Ranges = [];
+
+    private static (string, string) ConvertDateTime(DateTime dt) => (dt.ToString("MMMM yyyy"), ((DateTimeOffset)dt).ToUnixTimeSeconds().ToString());
     protected override void OnInitialized ()
     {
+        var localTime = DateTime.Now;
+        var currentMonth = new DateTime(localTime.Year, localTime.Month, 1);
+        var previousMonth = currentMonth.AddMonths(-1);
+        var previousPreviousMonth = currentMonth.AddMonths(-2);
+
+
         Ranges = [
-            "December 2024",
-            "November 2024",
-            "September 2024",
-            "Year to date",
-            "Everything",
-            "Custom Range"
+            ConvertDateTime(currentMonth),
+            ConvertDateTime(previousMonth),
+            ConvertDateTime(previousPreviousMonth),
+            ("Year to date", DashboardRange.YearToDate),
+            ("Everthing", DashboardRange.Everything),
+            ("Custom Range", "")
         ];
     }
 
@@ -23,7 +39,7 @@
     <p class="panel-heading">Dashboard</p>
 
     <div class="panel-block">
-        <form>
+        <form class="hide-date-range-picker" hx-get="/dashboard/data" hx-swap="innerHTML" hx-target="#dashboard-data">
             <style>
                 @@scope {
                     :scope {
@@ -32,103 +48,61 @@
                         display: flex;
                         flex-wrap: wrap;
                         gap: .75rem;
-                        justify-content: flex-end;
+                        justify-content: flex-start;
                         width: 100%;
+                    }
+
+                    :scope.hide-date-range-picker .date-range-picker {
+                        display: none;
                     }
                 }
             </style>
             <div class="control">
                 <div class="select">
-                    <select>
-                        @foreach(var range in Ranges)
+                    <select name="r" _="on input
+                        if my value is ''
+                            remove .hide-date-range-picker from the closest <form/>
+                        else
+                            add .hide-date-range-picker to the closest <form/>
+                        end
+
+                        send submit to the closest <form/>
+                    ">
+                        @foreach(var (label, value) in Ranges)
                         {
-                            <option value="@range">@range</option>
+                            <option value="@value">@label</option>
                         }
                     </select>
                 </div>
             </div>
 
-            <div class="control">
+            <div class="control date-range-picker">
                 <div class="field">
-                    <input class="input" type="date"/>
+                    <input _="on input send submit to the closest <form/>" name="f" class="input" type="date"/>
                 </div>
             </div>
 
-            <label class="label is-normal mb-0">To</label>
+            <label class="label is-normal mb-0 date-range-picker">To</label>
 
-            <div class="control">
+            <div class="control date-range-picker">
                 <div class="field">
-                    <input class="input" type="date"/>
+                    <input _="on input send submit to the closest <form/>" name="t" class="input" type="date"/>
                 </div>
             </div>
-
-            <div class="control">
-                <button class="button is-primary">Apply</button>
-            </div>
-
         </form>
     </div>
 </div>
 
 <div class="block">
-    <div class="columns is-desktop">
-        <div class="column">
-            <div class="message is-primary">
-                <div class="message-header">
-                    <p>Net Worth</p>
-                </div>
-                <div class="message-body">
-                    <p class="title">$1,000,000.00</p>
-                </div>
-            </div>
-        </div>
-        <div class="column">
-            <div class="message is-info">
-                <div class="message-header">
-                    <p>Cash flow</p>
-                </div>
-                <div class="message-body">
-                    <p class="title has-text-success">+$1,000,000.00</p>
-                </div>
-            </div>
-        </div>
-        <div class="column">
-            <div class="message is-success">
-                <div class="message-header">
-                    <p>Income</p>
-                </div>
-                <div class="message-body">
-                    <p class="title">$1,000,000.00</p>
-                </div>
-            </div>
-        </div>
-        <div class="column">
-            <div class="message is-danger">
-                <div class="message-header">
-                    <p>Spending</p>
-                </div>
-                <div class="message-body">
-                    <p class="title">$1,000,000.00</p>
-                </div>
-            </div>
+    <div class="hero is-primary is-small" style="border-radius:var(--bulma-radius-large);">
+        <div class="hero-body">
+            <p class="title">@StringFormatter.FormatCurrency(NetWorth)</p>
+            <p class="subtitle">Net Worth</p>
         </div>
 
     </div>
 </div>
 
-<div class="block">
-    <div class="columns">
-        <div class="column">
-            <div class="box">
-                <BarChart />
-            </div>
-
-        </div>
-        <div class="column">
-            <div class="box">
-
-            </div>
-        </div>
-    </div>
-
+<div id="dashboard-data">
+    <Haondt.Web.Components.ObjectComponentT  Component="DashboardData" />
 </div>

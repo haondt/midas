@@ -11,9 +11,11 @@
 
 
   <ItemGroup>
+    <ProjectReference Include="..\SpendLess.Accounts\SpendLess.Accounts.csproj" />
     <ProjectReference Include="..\SpendLess.Charts\SpendLess.Charts.csproj" />
     <ProjectReference Include="..\SpendLess.Domain\SpendLess.Domain.csproj" />
     <ProjectReference Include="..\SpendLess.Persistence\SpendLess.Persistence.csproj" />
+    <ProjectReference Include="..\SpendLess.Transactions\SpendLess.Transactions.csproj" />
     <ProjectReference Include="..\SpendLess.Web.Domain\SpendLess.Web.Domain.csproj" />
   </ItemGroup>
 

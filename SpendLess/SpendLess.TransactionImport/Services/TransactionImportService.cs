@@ -63,6 +63,21 @@ namespace SpendLess.TransactionImport.Services
                 };
                 try
                 {
+                    foreach (var newAccount in dryRunResult.NewAccounts)
+                        await accountStorage.Set(newAccount.Key.SeedStorageKey<AccountDto>(), new AccountDto
+                        {
+                            Name = newAccount.Value
+                        });
+
+                    if (dryRunResult.NewTags.Count > 0 || dryRunResult.NewCategories.Count > 0)
+                    {
+                        // todo: remove this, just run a query to get a list of all tags and categories as needed.
+                        var applicationState = await storage.GetDefault<SpendLessStateDto>(SpendLessStateDto.StorageKey);
+                        applicationState.Categories.UnionWith(dryRunResult.NewCategories.Keys);
+                        applicationState.Tags.UnionWith(dryRunResult.NewTags.Keys);
+                        await storage.Set(SpendLessStateDto.StorageKey, applicationState);
+                    }
+
                     var batchSize = 50; // todo: appsettings
                     var batches = dryRunResult.Transactions.Chunk(batchSize);
                     foreach (var batch in batches)

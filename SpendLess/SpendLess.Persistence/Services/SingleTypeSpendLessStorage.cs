@@ -25,6 +25,12 @@ namespace SpendLess.Persistence.Services
             return result.Value;
         }
 
+        public async Task<List<Optional<T>>> TryGetMany(List<StorageKey<T>> primaryKeys)
+        {
+            var result = await storage.GetMany<T>(primaryKeys);
+            return result.Select(x => x.IsSuccessful ? new Optional<T>(x.Value) : new()).ToList();
+        }
+
         public async Task<Dictionary<StorageKey<T>, T>> GetAll()
         {
             var results = await storage.GetManyByForeignKey(TypeForeignKey);
