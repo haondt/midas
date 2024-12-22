@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Haondt.Core" Version="0.0.15-alpha-20241208135516" />
+    <PackageReference Include="Haondt.Core" Version="0.0.16-alpha-20241222083522" />
   </ItemGroup>
 
 

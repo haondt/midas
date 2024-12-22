@@ -217,6 +217,94 @@ namespace SpendLess.Transactions.Storages
             throw new NotImplementedException();
         }
 
+        public async Task<bool> DeleteTransaction(int key) => (await DeleteTransactions([key])) > 0;
+
+        public Task<int> DeleteTransactions(List<int> keys)
+        {
+            var result = WithTransaction((conn, trns) =>
+            {
+                var command = new SqliteCommand($"DELETE FROM {_tableName} WHERE id = @key",
+                    conn, trns);
+                var parameter = command.Parameters.Add("@key", SqliteType.Integer);
+
+                var deleted = 0;
+                foreach (var key in keys)
+                {
+                    parameter.Value = key;
+                    deleted += command.ExecuteNonQuery();
+                }
+
+                return deleted;
+            });
+
+            return Task.FromResult(result);
+        }
+
+        public Task<int> DeleteTransactions(List<TransactionFilter> filters)
+        {
+            var baseQuery = new StringBuilder($@"
+                SELECT t.id
+                FROM {_tableName} t
+            ");
+
+            // Handle tag filters with INTERSECT
+            var hasTagFilters = filters.OfType<HasTagTransactionFilter>().ToList();
+            if (hasTagFilters.Count > 0)
+            {
+                var tagQueries = hasTagFilters.Select((filter, index) =>
+                    $@"
+                        SELECT tid 
+                        FROM {_tagsTableName} 
+                        WHERE name = @Tag{index}
+                    ");
+
+                baseQuery.AppendLine("WHERE t.id IN (")
+                         .AppendLine(string.Join("\nINTERSECT\n", tagQueries))
+                         .AppendLine(")");
+            }
+
+            // Add WHERE clause for other filters
+            var (whereClauses, parameters) = GenerateWhereClauses(filters);
+
+            if (whereClauses.Count > 0)
+            {
+                var conjunction = hasTagFilters.Any() ? "AND" : "WHERE";
+                baseQuery.AppendLine($"{conjunction} {string.Join(" AND ", whereClauses)}");
+            }
+
+            // Execute query
+            var result = WithTransaction((conn, trns) =>
+            {
+                using var command = new SqliteCommand(baseQuery.ToString(), conn, trns);
+                foreach (var parameter in parameters)
+                    command.Parameters.Add(parameter);
+
+                for (int i = 0; i < hasTagFilters.Count; i++)
+                    command.Parameters.Add(new SqliteParameter($"@Tag{i}", hasTagFilters[i].Value));
+
+                var idList = new List<int>();
+                var reader = command.ExecuteReader();
+                while (reader.Read())
+                    idList.Add(Convert.ToInt32(reader["id"]));
+
+                var deleteCommand = new SqliteCommand($"DELETE FROM {_tableName} WHERE id = @key",
+                    conn, trns);
+                var deleteParameter = deleteCommand.Parameters.Add("@key", SqliteType.Integer);
+
+                var deleted = 0;
+                foreach (var key in idList)
+                {
+                    deleteParameter.Value = key;
+                    deleted += deleteCommand.ExecuteNonQuery();
+                }
+
+                return Convert.ToInt32(deleted);
+            });
+
+            return Task.FromResult(result);
+
+        }
+
         public Task<(Dictionary<string, decimal> BySource, Dictionary<string, decimal> ByDestination)> GetAmounts(List<TransactionFilter> filters)
         {
             var result = WithConnection(conn => (
@@ -249,38 +337,7 @@ namespace SpendLess.Transactions.Storages
             }
 
             // Add WHERE clause for other filters
-            var whereClauses = new List<string>();
-            var parameters = new List<SqliteParameter>();
-
-            for (int i = 0; i < filters.Count; i++)
-            {
-                var filter = filters[i];
-                switch (filter)
-                {
-                    case MinDateTransactionFilter minDateFilter:
-                        whereClauses.Add("t.timeStamp >= @MinDate");
-                        parameters.Add(new SqliteParameter("@MinDate", minDateFilter.UnixSeconds));
-                        break;
-                    case MaxDateTransactionFilter maxDateFilter:
-                        whereClauses.Add("t.timeStamp <= @MaxDate");
-                        parameters.Add(new SqliteParameter("@MaxDate", maxDateFilter.UnixSeconds));
-                        break;
-                    case MinAmountTransactionFilter minAmountFilter:
-                        whereClauses.Add("t.amountCents >= @MinAmountCents");
-                        parameters.Add(new SqliteParameter("@MinAmountCents", minAmountFilter.AmountCents));
-                        break;
-                    case HasCategoryTransactionFilter hasCategoryFilter:
-                        whereClauses.Add("t.category = @Category");
-                        parameters.Add(new SqliteParameter("@Category", hasCategoryFilter.Value));
-                        break;
-                    case EitherAccountIsTransactionFilter eitherAccountFilter:
-                        whereClauses.Add($"(t.sourceAccount = @EitherAccountId{i} OR t.destinationAccount = @EitherAccountId{i})");
-                        parameters.Add(new SqliteParameter($"@EitherAccountId{i}", eitherAccountFilter.Id));
-                        break;
-                    default:
-                        throw new NotSupportedException($"Transaction filter of type {filter.GetType()} is not supported.");
-                }
-            }
+            var (whereClauses, parameters) = GenerateWhereClauses(filters);
 
             if (whereClauses.Count > 0)
             {
@@ -291,9 +348,6 @@ namespace SpendLess.Transactions.Storages
             baseQuery.AppendLine($"GROUP BY {groupBy}");
 
             // Execute query
-            var getGetTags = GetGetTransactionTagsCommand(conn);
-            using var getTagsCommand = getGetTags.Command;
-
             using var command = new SqliteCommand(baseQuery.ToString(), conn);
             foreach (var parameter in parameters)
                 command.Parameters.Add(parameter);
@@ -343,42 +397,7 @@ namespace SpendLess.Transactions.Storages
             }
 
             // Add WHERE clause for other filters
-            var whereClauses = new List<string>();
-            var parameters = new List<SqliteParameter>();
-
-            for (int i = 0; i < filters.Count; i++)
-            {
-                var filter = filters[i];
-                switch (filter)
-                {
-                    case MinDateTransactionFilter minDateFilter:
-                        whereClauses.Add("t.timeStamp >= @MinDate");
-                        parameters.Add(new SqliteParameter("@MinDate", minDateFilter.UnixSeconds));
-                        break;
-                    case MaxDateTransactionFilter maxDateFilter:
-                        whereClauses.Add("t.timeStamp <= @MaxDate");
-                        parameters.Add(new SqliteParameter("@MaxDate", maxDateFilter.UnixSeconds));
-                        break;
-                    case MinAmountTransactionFilter minAmountFilter:
-                        whereClauses.Add("t.amountCents >= @MinAmountCents");
-                        parameters.Add(new SqliteParameter("@MinAmountCents", minAmountFilter.AmountCents));
-                        break;
-                    case HasCategoryTransactionFilter hasCategoryFilter:
-                        whereClauses.Add("t.category = @Category");
-                        parameters.Add(new SqliteParameter("@Category", hasCategoryFilter.Value));
-                        break;
-                    case EitherAccountIsTransactionFilter eitherAccountFilter:
-                        whereClauses.Add($"(t.sourceAccount = @EitherAccountId{i} OR t.destinationAccount = @EitherAccountId{i})");
-                        parameters.Add(new SqliteParameter($"@EitherAccountId{i}", eitherAccountFilter.Id));
-                        break;
-                    case DescriptionContainsTransactionFilter descriptionContainsFilter:
-                        whereClauses.Add($"t.description LIKE @DescriptionContains{i}");
-                        parameters.Add(new SqliteParameter($"@DescriptionContains{i}", SqliteParameterCollectionExtensions.PrepareSqliteLikeTerm(descriptionContainsFilter.Value)));
-                        break;
-                    default:
-                        throw new NotSupportedException($"Transaction filter of type {filter.GetType()} is not supported.");
-                }
-            }
+            var (whereClauses, parameters) = GenerateWhereClauses(filters);
 
             if (whereClauses.Count > 0)
             {
@@ -454,42 +473,7 @@ namespace SpendLess.Transactions.Storages
             }
 
             // Add WHERE clause for other filters
-            var whereClauses = new List<string>();
-            var parameters = new List<SqliteParameter>();
-
-            for (int i = 0; i < filters.Count; i++)
-            {
-                var filter = filters[i];
-                switch (filter)
-                {
-                    case MinDateTransactionFilter minDateFilter:
-                        whereClauses.Add("t.timeStamp >= @MinDate");
-                        parameters.Add(new SqliteParameter("@MinDate", minDateFilter.UnixSeconds));
-                        break;
-                    case MaxDateTransactionFilter maxDateFilter:
-                        whereClauses.Add("t.timeStamp <= @MaxDate");
-                        parameters.Add(new SqliteParameter("@MaxDate", maxDateFilter.UnixSeconds));
-                        break;
-                    case MinAmountTransactionFilter minAmountFilter:
-                        whereClauses.Add("t.amountCents >= @MinAmountCents");
-                        parameters.Add(new SqliteParameter("@MinAmountCents", minAmountFilter.AmountCents));
-                        break;
-                    case HasCategoryTransactionFilter hasCategoryFilter:
-                        whereClauses.Add("t.category = @Category");
-                        parameters.Add(new SqliteParameter("@Category", hasCategoryFilter.Value));
-                        break;
-                    case EitherAccountIsTransactionFilter eitherAccountFilter:
-                        whereClauses.Add($"(t.sourceAccount = @EitherAccountId{i} OR t.destinationAccount = @EitherAccountId{i})");
-                        parameters.Add(new SqliteParameter($"@EitherAccountId{i}", eitherAccountFilter.Id));
-                        break;
-                    case DescriptionContainsTransactionFilter descriptionContainsFilter:
-                        whereClauses.Add($"t.description LIKE @DescriptionContains{i}");
-                        parameters.Add(new SqliteParameter($"@DescriptionContains{i}", SqliteParameterCollectionExtensions.PrepareSqliteLikeTerm(descriptionContainsFilter.Value)));
-                        break;
-                    default:
-                        throw new NotSupportedException($"Transaction filter of type {filter.GetType()} is not supported.");
-                }
-            }
+            var (whereClauses, parameters) = GenerateWhereClauses(filters);
 
             if (whereClauses.Count > 0)
             {
@@ -500,9 +484,6 @@ namespace SpendLess.Transactions.Storages
             // Execute query
             var result = WithConnection(conn =>
             {
-                var getGetTags = GetGetTransactionTagsCommand(conn);
-                using var getTagsCommand = getGetTags.Command;
-
                 using var command = new SqliteCommand(baseQuery.ToString(), conn);
                 foreach (var parameter in parameters)
                     command.Parameters.Add(parameter);
@@ -513,6 +494,110 @@ namespace SpendLess.Transactions.Storages
                 var transactions = new Dictionary<int, TransactionDto>();
                 var result = command.ExecuteScalar();
                 return Convert.ToInt32(result);
+            });
+
+            return Task.FromResult(result);
+        }
+
+        private (List<string> WhereClauses, List<SqliteParameter> Parameters) GenerateWhereClauses(List<TransactionFilter> filters)
+        {
+            var whereClauses = new List<string>();
+            var parameters = new List<SqliteParameter>();
+
+            for (int i = 0; i < filters.Count; i++)
+            {
+                var filter = filters[i];
+                switch (filter)
+                {
+                    case MinDateTransactionFilter minDateFilter:
+                        whereClauses.Add($"t.timeStamp >= @MinDate{i}");
+                        parameters.Add(new SqliteParameter($"@MinDate{i}", minDateFilter.UnixSeconds));
+                        break;
+                    case MaxDateTransactionFilter maxDateFilter:
+                        whereClauses.Add($"t.timeStamp <= @MaxDate{i}");
+                        parameters.Add(new SqliteParameter($"@MaxDate{i}", maxDateFilter.UnixSeconds));
+                        break;
+                    case MinAmountTransactionFilter minAmountFilter:
+                        whereClauses.Add($"t.amountCents >= @MinAmountCents{i}");
+                        parameters.Add(new SqliteParameter($"@MinAmountCents{i}", minAmountFilter.AmountCents));
+                        break;
+                    case MaxAmountTransactionFilter maxAmountFilter:
+                        whereClauses.Add($"t.amountCents <= @MaxAmountCents{i}");
+                        parameters.Add(new SqliteParameter($"@MaxAmountCents{i}", maxAmountFilter.AmountCents));
+                        break;
+                    case HasAmountTransactionFilter hasAmountFilter:
+                        whereClauses.Add($"t.amountCents = @HasAmountCents{i}");
+                        parameters.Add(new SqliteParameter($"@HasAmountCents{i}", hasAmountFilter.AmountCents));
+                        break;
+                    case HasCategoryTransactionFilter hasCategoryFilter:
+                        whereClauses.Add($"t.category = @Category{i}");
+                        parameters.Add(new SqliteParameter($"@Category{i}", hasCategoryFilter.Value));
+                        break;
+                    case EitherAccountIsTransactionFilter eitherAccountFilter:
+                        whereClauses.Add($"(t.sourceAccount = @EitherAccountId{i} OR t.destinationAccount = @EitherAccountId{i})");
+                        parameters.Add(new SqliteParameter($"@EitherAccountId{i}", eitherAccountFilter.Id));
+                        break;
+                    case DescriptionContainsTransactionFilter descriptionContainsFilter:
+                        whereClauses.Add($"t.description LIKE @DescriptionContains{i}");
+                        parameters.Add(new SqliteParameter($"@DescriptionContains{i}", SqliteParameterCollectionExtensions.PrepareSqliteLikeTerm(descriptionContainsFilter.Value)));
+                        break;
+                    case HasTagTransactionFilter:
+                        break; // handled seperately
+                    default:
+                        throw new NotSupportedException($"Transaction filter of type {filter.GetType()} is not supported.");
+                }
+            }
+
+            return (whereClauses, parameters);
+        }
+
+        public Task<List<string>> GetCategories()
+        {
+            var result = WithConnection(conn =>
+            {
+                using var command = new SqliteCommand(
+                    $@"
+                        SELECT DISTINCT category
+                        FROM {_tableName}
+                        ORDER BY category ASC;
+                    ", conn);
+
+                var categories = new List<string>();
+                using var reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    var category = reader["category"].ToString();
+                    if (!string.IsNullOrEmpty(category))
+                        categories.Add(category);
+                }
+                return categories;
+            });
+
+            return Task.FromResult(result);
+        }
+
+        public Task<List<string>> GetTags()
+        {
+            var result = WithConnection(conn =>
+            {
+                using var command = new SqliteCommand(
+                    $@"
+                        SELECT DISTINCT name as tag
+                        FROM {_tagsTableName}
+                        ORDER BY tag ASC;
+                    ", conn);
+
+                var tags = new List<string>();
+                using var reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    var tag = reader["tag"].ToString();
+                    if (!string.IsNullOrEmpty(tag))
+                        tags.Add(tag);
+                }
+                return tags;
             });
 
             return Task.FromResult(result);

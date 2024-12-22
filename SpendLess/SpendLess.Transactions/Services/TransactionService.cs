@@ -109,5 +109,28 @@ namespace SpendLess.Transactions.Services
         {
             return transactionStorage.CheckIfHasSourceDataHash(sourceDatas.Select(TransactionDto.HashSourceData));
         }
+
+        public Task<List<string>> GetCategories()
+        {
+            return transactionStorage.GetCategories();
+        }
+        public Task<List<string>> GetTags()
+        {
+            return transactionStorage.GetTags();
+        }
+
+        public Task<int> DeleteTransactions(List<int> keys)
+        {
+            return transactionStorage.DeleteTransactions(keys);
+        }
+
+        public Task<bool> DeleteTransaction(int key)
+        {
+            return transactionStorage.DeleteTransaction(key);
+        }
+        public Task<int> DeleteTransactions(List<TransactionFilter> filters)
+        {
+            return transactionStorage.DeleteTransactions(filters);
+        }
     }
 }

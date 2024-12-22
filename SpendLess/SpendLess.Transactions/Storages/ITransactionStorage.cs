@@ -13,5 +13,10 @@ namespace SpendLess.Transactions.Storages
         Task<Dictionary<int, TransactionDto>> GetTransactions(List<TransactionFilter> filters, int? limit = null, int? offset = null);
         Task<int> GetTransactionsCount(List<TransactionFilter> filters);
         Task<(Dictionary<string, decimal> BySource, Dictionary<string, decimal> ByDestination)> GetAmounts(List<TransactionFilter> filters);
+        Task<List<string>> GetTags();
+        Task<List<string>> GetCategories();
+        Task<int> DeleteTransactions(List<int> keys);
+        Task<bool> DeleteTransaction(int key);
+        Task<int> DeleteTransactions(List<TransactionFilter> filters);
     }
 }

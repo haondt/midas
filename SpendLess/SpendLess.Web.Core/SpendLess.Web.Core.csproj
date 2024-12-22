@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="33.0.1" />
-    <PackageReference Include="Haondt.Web.Core" Version="0.0.15-alpha-20241208135516" />
+    <PackageReference Include="Haondt.Web.Core" Version="0.0.16-alpha-20241222083522" />
   </ItemGroup>
 
   <ItemGroup>

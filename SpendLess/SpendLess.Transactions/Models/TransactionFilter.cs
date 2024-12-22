@@ -20,6 +20,15 @@
             return new MinAmountTransactionFilter { AmountCents = (long)(amount * 100) };
         }
 
+        public static TransactionFilter MaxAmount(decimal amount)
+        {
+            return new MaxAmountTransactionFilter { AmountCents = (long)(amount * 100) };
+        }
+        public static TransactionFilter HasAmount(decimal amount)
+        {
+            return new HasAmountTransactionFilter { AmountCents = (long)(amount * 100) };
+        }
+
         public static TransactionFilter HasCategory(string category)
         {
             return new HasCategoryTransactionFilter { Value = category };
@@ -59,6 +68,15 @@
     }
 
     public class MinAmountTransactionFilter : TransactionFilter
+    {
+        public required long AmountCents { get; set; }
+    }
+    public class MaxAmountTransactionFilter : TransactionFilter
+    {
+        public required long AmountCents { get; set; }
+    }
+
+    public class HasAmountTransactionFilter : TransactionFilter
     {
         public required long AmountCents { get; set; }
     }

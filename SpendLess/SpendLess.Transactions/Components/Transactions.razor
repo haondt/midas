@@ -2,12 +2,24 @@
 @using SpendLess.Transactions.Models.ViewModels
 
 @code {
-    private Dictionary<string, (string Type, Optional<List<string>> Options)> _targets = new()
+    [Parameter, EditorRequired]
+    public required List<string> Categories { get; set; }
+
+    [Parameter, EditorRequired]
+    public required List<string> Tags { get; set; }
+
+    private Dictionary<string, (string Type, Optional<List<string>> Options)> _targets = default!;
+
+    protected override void OnInitialized()
     {
-        { TransactionFilterTargets.Amount, ("number", new()) },
-        { TransactionFilterTargets.Category, ("string", new()) },
-        { TransactionFilterTargets.Description, ("text", new()) }
-    };
+        _targets = new()
+        {
+            { TransactionFilterTargets.Amount, ("number", new()) },
+            { TransactionFilterTargets.Category, ("select", Categories) },
+            { TransactionFilterTargets.Tags, ("select", Tags) },
+            { TransactionFilterTargets.Description, ("text", new()) }
+        };
+    }
 
     private List<string> _operators = new()
     {
@@ -28,8 +40,9 @@
                 hx-post="/transactions/search/filter"
                 hx-swap="none"
                 _="on htmx:afterSwap
-                    if event.detail.xhr.status == 200
-                        then send submit to #filters">
+                    if event.detail.xhr.status == 200 then
+                        set #paginator-total-pages's value to '' then
+                        send submit to #filters">
                 <div class="select ">
                     <select id="filter-target" name="target"
                         _="on change

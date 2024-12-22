@@ -22,7 +22,6 @@
                 {
                     cursor: pointer;
                     background-color: var(--bulma-table-row-hover-background-color);
-
                 }
 
                 tr.expanded td {
@@ -39,58 +38,18 @@
                 <th>
                     <input id="select-all" 
                         _="on click
-                            set hasUnchecked to ((<input.select-checkbox:not(:checked)/>).length > 0)
-                            set hasChecked to ((<input.select-checkbox:checked/>).length > 0)
-
-                            if hasUnchecked then
-                                if hasChecked then
-                                    set my indeteriminate to false
-                                    set my checked to false
-                                    repeat in <input.select-checkbox/>
-                                        set it.checked to false
-                                    end
-                                else
-                                    set my indeteriminate to false
-                                    set my checked to true
-                                    repeat in <input.select-checkbox/>
-                                        set it.checked to true
-                                    end
-                                end
+                            if my checked is true then
+								repeat in <input.select-checkbox/>
+									set it.checked to true
+								end
                             else
-                                if hasChecked then
-                                    set my indeteriminate to false
-                                    set my checked to false
-                                    repeat in <input.select-checkbox/>
-                                        set it.checked to false
-                                    end
-                                else
-                                    set my indeteriminate to false
-                                    set my checked to true
-                                    repeat in <input.select-checkbox/>
-                                        set it.checked to true
-                                    end
-                                end
+								repeat in <input.select-checkbox/>
+									set it.checked to false
+								end
                             end
                         end
                         on updateState
-                            set hasUnchecked to ((<input.select-checkbox:not(:checked)/>).length > 0)
-                            set hasChecked to ((<input.select-checkbox:checked/>).length > 0)
-                            if hasUnchecked then
-                                if hasChecked then
-                                    set my indeterminate to true
-                                else
-                                    set my indeterminate to false
-                                    set my checked to false
-                                end
-                            else
-                                if hasChecked then
-                                    set my indeterminate to false
-                                    set my checked to true
-                                else
-                                    set my indeterminate to false
-                                    set my checked to false
-                                end
-                            end
+							set my checked to false
                         end
                         "
                         name="select-all" type="checkbox"/>
@@ -121,7 +80,7 @@
                                         class="dropdown-item"
                                         hx-swap="none"
                                         hx-confirm="are you sure?"
-                                        hx-include="the closest <form/>"
+                                        hx-include="closest <form/>, #filters"
                                         hx-delete="/transactions">
                                         <span class="icon has-text-danger">
                                             <i class="fa-solid fa-trash"></i>
@@ -140,15 +99,22 @@
             @foreach(var (id, transaction)  in Results)
             {
                 <tr class="summary" 
-                    _="on click
+                    _="
+                    on click
                         if (the event's target is not the first <input/> in me
                             and the event's target is not in the first .actions in me)
                             toggle .is-hidden on the next <tr/> toggle .expanded on me
+                        end
+                    end
+                    on afterDeleted
+                        remove the next <tr/>
+                        then remove me
+                    end
                 ">
                     <td>
                         <input
                             _="on click send updateState to #select-all"
-                            class="select-checkbox" name="selected-id" type="checkbox"/>
+                            class="select-checkbox" name="t-@id" type="checkbox"/>
                     </td>
                     <td>
                         @transaction.Description
@@ -182,8 +148,8 @@
                                             class="dropdown-item"
                                             hx-swap="none"
                                             _="on htmx:afterOnLoad
-                                                if event.detail.xhr.status == 204
-                                                    then remove the closest <tr/>"
+                                                if event.detail.xhr.status == 204 then
+                                                    send afterDeleted to the closest <tr/>"
                                             hx-confirm="are you sure?"
                                             hx-delete="/transaction/@id">
                                             <span class="icon has-text-danger">
@@ -225,11 +191,10 @@
                                     <th>Tags</th>
                                     <td>
                                         <div class="tags">
-
-                                        @foreach(var tag in transaction.Tags)
-                                        {
-                                            <span class="tag is-info">@tag</span>
-                                        }
+                                            @foreach(var tag in transaction.Tags)
+                                            {
+                                                <span class="tag is-info">@tag</span>
+                                            }
                                         </div>
                                     </td>
                                 </tr>

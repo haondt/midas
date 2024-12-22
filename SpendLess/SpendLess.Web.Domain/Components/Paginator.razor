@@ -20,7 +20,7 @@
             if (args.IsCurrent)
                 attrs["class"] += " is-current";
             else
-                attrs["_"] = $"on click set (the previous <input/>)'s value to {args.Page} then {OnChange}";
+                attrs["_"] = $"on click set #paginator-page's value to {args.Page} then {OnChange}";
 
             return@<li>
                 <button @attributes="attrs">
@@ -40,8 +40,8 @@
                 <option value="100">100 rows per page</option>
             </select>
         </div>
-        <input type="hidden" name="page" value="1" />
-        <input type="hidden" name="total-pages" value="@TotalPages" />
+        <input id="paginator-page" type="hidden" name="page" value="1" />
+        <input id="paginator-total-pages" type="hidden" name="total-pages" value="@TotalPages" />
         <ul class="pagination-list">
             @if(Page > 2)
             {
