@@ -9,10 +9,17 @@ namespace SpendLess.TransactionImport.Extensions
 
         public static IServiceCollection AddTransactionImport(this IServiceCollection services)
         {
-            services.AddSingleton(new NavigationItem
+            services.AddSingleton(new NavigationSection
             {
-                Title = "Import Transactions",
-                Slug = "transaction-import",
+                Label = "Transactions",
+                Children = new List<NavigationItem>
+                {
+                    new NavigationLink
+                    {
+                        Title = "Import",
+                        Slug = "transaction-import",
+                    }
+                }
             });
 
             services.AddSingleton<ITransactionImportService, TransactionImportService>();

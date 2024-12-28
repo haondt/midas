@@ -17,10 +17,17 @@ namespace SpendLess.NodeRed.Extensions
                 var settings = sp.GetRequiredService<IOptions<NodeRedSettings>>().Value;
                 client.BaseAddress = new Uri(settings.BaseUrl);
             }).AddPolicyHandler(GetNodeRedPolicy());
-            services.AddSingleton(new NavigationItem
+            services.AddSingleton(new NavigationSection
             {
-                Title = "Node-Red",
-                Slug = "node-red",
+                Label = "Automation",
+                Children = new List<NavigationItem>
+                {
+                    new NavigationLink
+                    {
+                        Title = "Node-Red",
+                        Slug = "node-red",
+                    }
+                }
             });
 
             return services;

@@ -65,13 +65,13 @@ namespace SpendLess.Transactions.Storages
             });
         }
 
-        public Task<List<int>> AddTransactions(List<TransactionDto> transactions)
+        public Task<List<long>> AddTransactions(List<TransactionDto> transactions)
         {
             var result = WithTransaction((conn, trns) => AddTransactionsInternal(transactions, conn, trns));
             return Task.FromResult(result);
         }
 
-        private List<int> AddTransactionsInternal(List<TransactionDto> transactions, SqliteConnection conn, SqliteTransaction trns)
+        private List<long> AddTransactionsInternal(List<TransactionDto> transactions, SqliteConnection conn, SqliteTransaction trns)
         {
             using var insertCommand = new SqliteCommand(
                 $@"
@@ -116,7 +116,7 @@ namespace SpendLess.Transactions.Storages
             var tagNameParameter = insertTagCommand.Parameters.Add("@Name", SqliteType.Text);
             var tagTransactionParameter = insertTagCommand.Parameters.Add("@Transaction", SqliteType.Integer);
 
-            var result = new List<int>();
+            var result = new List<long>();
             foreach (var transaction in transactions)
             {
                 amountCentsParameter.Value = (int)(transaction.Amount * 100);
@@ -129,7 +129,7 @@ namespace SpendLess.Transactions.Storages
                 sourceDataParameter.Value = transaction.SourceDataString;
                 sourceDataHashParameter.Value = transaction.SourceDataHash;
 
-                var transactionId = (int)insertCommand.ExecuteScalar()!;
+                var transactionId = Convert.ToInt64(insertCommand.ExecuteScalar());
                 tagTransactionParameter.Value = transactionId;
                 foreach (var tag in transaction.Tags)
                 {
@@ -144,9 +144,9 @@ namespace SpendLess.Transactions.Storages
 
         }
 
-        public (StorageOperation Operation, Func<List<int>> GetResult) CreateAddTransactionsOperation(List<TransactionDto> transactions)
+        public (StorageOperation Operation, Func<List<long>> GetResult) CreateAddTransactionsOperation(List<TransactionDto> transactions)
         {
-            var result = new List<int>();
+            var result = new List<long>();
             var operation = new CustomSqliteStorageOperation
             {
                 Target = StorageKey<TransactionDto>.Empty,
@@ -188,7 +188,7 @@ namespace SpendLess.Transactions.Storages
             return Task.FromResult(hashes.Select(h => result[h]).ToList());
         }
 
-        private (SqliteCommand Command, Func<int, List<string>> Execute) GetGetTransactionTagsCommand(SqliteConnection conn)
+        private (SqliteCommand Command, Func<long, List<string>> Execute) GetGetTransactionTagsCommand(SqliteConnection conn)
         {
             var command = new SqliteCommand(
                  $@"
@@ -212,14 +212,14 @@ namespace SpendLess.Transactions.Storages
         }
 
 
-        public Task<TransactionDto> GetTransaction(int key)
+        public Task<TransactionDto> GetTransaction(long key)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<bool> DeleteTransaction(int key) => (await DeleteTransactions([key])) > 0;
+        public async Task<bool> DeleteTransaction(long key) => (await DeleteTransactions([key])) > 0;
 
-        public Task<int> DeleteTransactions(List<int> keys)
+        public Task<int> DeleteTransactions(List<long> keys)
         {
             var result = WithTransaction((conn, trns) =>
             {
@@ -363,7 +363,7 @@ namespace SpendLess.Transactions.Storages
             return results;
         }
 
-        public Task<Dictionary<int, TransactionDto>> GetTransactions(List<TransactionFilter> filters, int? limit = null, int? offset = null)
+        public Task<Dictionary<long, TransactionDto>> GetTransactions(List<TransactionFilter> filters, long? limit = null, long? offset = null)
         {
             var baseQuery = new StringBuilder($@"
                 SELECT 
@@ -424,7 +424,7 @@ namespace SpendLess.Transactions.Storages
                 for (int i = 0; i < hasTagFilters.Count; i++)
                     command.Parameters.Add(new SqliteParameter($"@Tag{i}", hasTagFilters[i].Value));
 
-                var transactions = new Dictionary<int, TransactionDto>();
+                var transactions = new Dictionary<long, TransactionDto>();
                 using var reader = command.ExecuteReader();
                 while (reader.Read())
                 {
@@ -440,7 +440,7 @@ namespace SpendLess.Transactions.Storages
                         SourceData = TransactionDto.DestringifySourceData(reader["sourceData"].ToString() ?? ""),
                         Tags = getGetTags.Execute(Convert.ToInt32(reader["id"])).ToHashSet()
                     };
-                    transactions.Add(Convert.ToInt32(reader["id"]), transaction);
+                    transactions.Add(Convert.ToInt64(reader["id"]), transaction);
                 }
 
                 return transactions;
@@ -449,7 +449,7 @@ namespace SpendLess.Transactions.Storages
             return Task.FromResult(result);
         }
 
-        public Task<int> GetTransactionsCount(List<TransactionFilter> filters)
+        public Task<long> GetTransactionsCount(List<TransactionFilter> filters)
         {
             var baseQuery = new StringBuilder($@"
                 SELECT COUNT(*) as totalRecords
@@ -493,7 +493,7 @@ namespace SpendLess.Transactions.Storages
 
                 var transactions = new Dictionary<int, TransactionDto>();
                 var result = command.ExecuteScalar();
-                return Convert.ToInt32(result);
+                return Convert.ToInt64(result);
             });
 
             return Task.FromResult(result);
@@ -537,6 +537,14 @@ namespace SpendLess.Transactions.Storages
                         whereClauses.Add($"(t.sourceAccount = @EitherAccountId{i} OR t.destinationAccount = @EitherAccountId{i})");
                         parameters.Add(new SqliteParameter($"@EitherAccountId{i}", eitherAccountFilter.Id));
                         break;
+                    case EitherAccountIsOneOfTransactionFilter eitherAccountOneOfFilter:
+                        var eitherAccountOneOfParameters = eitherAccountOneOfFilter.Ids
+                            .Select((v, j) => ($"@EitherAccountOneOf{i}_{j}", v));
+                        var eitherAccountOneOfInString = string.Join(", ", eitherAccountOneOfParameters.Select(q => q.Item1));
+                        whereClauses.Add($"(t.sourceAccount IN ({eitherAccountOneOfInString}) OR t.destinationAccount IN ({eitherAccountOneOfInString}))");
+                        parameters.AddRange(eitherAccountOneOfParameters.Select(q => new SqliteParameter(q.Item1, q.Item2)));
+                        break;
+
                     case DescriptionContainsTransactionFilter descriptionContainsFilter:
                         whereClauses.Add($"t.description LIKE @DescriptionContains{i}");
                         parameters.Add(new SqliteParameter($"@DescriptionContains{i}", SqliteParameterCollectionExtensions.PrepareSqliteLikeTerm(descriptionContainsFilter.Value)));

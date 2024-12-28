@@ -2,13 +2,13 @@
 using Haondt.Web.Middleware;
 using Microsoft.AspNetCore.Mvc;
 using SpendLess.Accounts.Components;
-using SpendLess.Accounts.Models;
 using SpendLess.Accounts.Services;
 using SpendLess.Core.Exceptions;
 using SpendLess.Domain.Models;
-using SpendLess.Web.Core.Exceptions;
+using SpendLess.Web.Core.ModelBinders;
 using SpendLess.Web.Domain.Components;
 using SpendLess.Web.Domain.Controllers;
+using System.ComponentModel.DataAnnotations;
 
 namespace SpendLess.Accounts.Controllers
 {
@@ -20,38 +20,41 @@ namespace SpendLess.Accounts.Controllers
         [ServiceFilter(typeof(RenderPageFilter))]
         public async Task<IResult> GetAccount(string id)
         {
-            var account = await accountsService.TryGetOwnedAccount(id);
-            if (!account.HasValue)
-                throw new NotFoundPageException($"Account {id} not found.");
+            var account = await accountsService.GetDetails(id);
 
             return await componentFactory.RenderComponentAsync(new Account
             {
                 Id = id,
-                Name = account.Value.Name
+                Name = account.Name,
+                Balance = account.Balance,
+                IsIncludedInNetWorth = account.IsIncludedInNetWorth,
             });
         }
 
         [HttpDelete("{id}")]
         public async Task<IResult> DeleteAccount(string id)
         {
-            await accountsService.Disown(id);
+            await accountsService.DeleteAccount(id);
             return Results.NoContent();
         }
+
+
 
         [HttpPost("{id}")]
         public async Task<IResult> UpdateAccount(
             string id,
-            [FromForm] UpsertAccountRequest request)
+            [FromForm, Required(AllowEmptyStrings = false)] string name,
+            [FromForm(Name = "include-in-net-worth"), ModelBinder(typeof(CheckboxModelBinder))] bool includeInNetWorth)
         {
-            request.Name = request.Name.Trim();
+            name = name.Trim();
 
-            if (string.IsNullOrWhiteSpace(request.Name))
+            if (string.IsNullOrWhiteSpace(name))
                 throw new UserException("Account name cannot be empty");
 
-            await accountsService.UpsertOwnedAccount(id, new AccountDto
+            await accountsService.UpsertAccount(id, new AccountDto
             {
-                Name = request.Name
-            });
+                Name = name
+            }, includeInNetWorth);
 
             return await componentFactory.RenderComponentAsync(new Toast
             {

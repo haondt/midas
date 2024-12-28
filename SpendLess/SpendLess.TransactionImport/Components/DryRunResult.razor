@@ -17,9 +17,7 @@
     public required string JobId { get; set; }
 
     [Parameter, EditorRequired]
-    public required decimal BalanceChange { get; set; }
-    [Parameter, EditorRequired]
-    public required string ImportAccountName { get; set; }
+    public required List<(string AccountName, decimal Change)> BalanceChanges { get; set; }
 
     private RenderFragment<(string Title, RenderFragment Inner)> CreateResultItem = (args) =>
         @<details open class="block">
@@ -72,21 +70,24 @@
     </div>
 
     @CreateResultItem(("Changed Account Balance", 
-    @<table class="table is-hoverable  is-fullwidth" >
+    @<table class="table is-hoverable  is-fullwidth">
         <tbody>
-            <tr>
-                <td>
-                    @ImportAccountName
-                </td>
-                @if(BalanceChange < 0)
-                {
-                    <td class="has-text-danger">@StringFormatter.FormatCurrency(BalanceChange)</td>
-                }
-                else
-                {
-                    <td class="has-text-success">@StringFormatter.FormatCurrency(BalanceChange)</td>
-                }
-            </tr>
+            @foreach(var (accountName, amount) in BalanceChanges)
+            {
+                <tr>
+                    <td>
+                        @accountName
+                    </td>
+                    @if(amount < 0)
+                    {
+                        <td class="has-text-danger">@StringFormatter.FormatCurrency(amount)</td>
+                    }
+                    else
+                    {
+                        <td class="has-text-success">@StringFormatter.FormatCurrency(amount)</td>
+                    }
+                </tr>
+            }
         </tbody>
     </table>))
 

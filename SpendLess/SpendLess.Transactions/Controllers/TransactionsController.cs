@@ -47,7 +47,7 @@ namespace SpendLess.Transactions.Controllers
                 var targets = requestData.Query
                     .Where(kvp => Regex.IsMatch(kvp.Key, "^t-[0-9]+$"))
                     .Select(kvp => kvp.Key.Substring(2))
-                    .Select(s => int.Parse(s));
+                    .Select(s => long.Parse(s));
                 await transactionService.DeleteTransactions(targets.ToList());
             }
 
@@ -158,9 +158,9 @@ namespace SpendLess.Transactions.Controllers
         }
 
         public async Task<SearchResult> GetSearchResultComponent([FromForm] IEnumerable<string> filters,
-            [FromForm(Name = "total-pages")] int? totalPages,
-            [FromForm(Name = "page-size")] int? pageSize,
-            [FromForm] int? page)
+            [FromForm(Name = "total-pages")] long? totalPages,
+            [FromForm(Name = "page-size")] long? pageSize,
+            [FromForm] long? page)
         {
             pageSize ??= 25;
             page ??= 1;

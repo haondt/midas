@@ -24,7 +24,7 @@
     {
         if (IsSwap)
             _attributes["hx-swap-oob"] = "outerHTML";
-        var accounts = await AccountsService.GetOwned();
+        var accounts = await AccountsService.GetAccountsIncludedInNetWorth();
         _accounts = accounts.ToDictionary(
             kvp => kvp.Key,
             kvp => kvp.Value.Name);

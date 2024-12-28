@@ -1,4 +1,8 @@
-﻿<div 
+﻿@code {
+    [Parameter]
+    public bool IncludeInNetWorth { get; set; } = false;
+}
+<div 
     id="modal-container"
     class="modal is-active is-justify-content-flex-start pt-6"
     hx-swap-oob="true">
@@ -28,6 +32,22 @@
                         <input name="name" class="input" type="text" />
                     </div>
                 </div>
+
+                <div class="field">
+                    <div class="control">
+                        <label class="checkbox">
+                            @if (IncludeInNetWorth)
+                            {
+                                <input type="checkbox" name="include-in-net-worth" checked>
+                            }
+                            else
+                            {
+                                <input type="checkbox" name="include-in-net-worth">
+                            }
+                            Include in Net Worth
+                        </label>
+                    </div>
+                </div>
             </form>
         </section>
         <footer class="modal-card-foot">
@@ -37,5 +57,4 @@
             </div>
         </footer>
     </div>
-
 </div>

@@ -8,10 +8,17 @@ namespace SpendLess.Transactions.Extensions
     {
         public static IServiceCollection AddTransactions(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton(new NavigationItem
+            services.AddSingleton(new NavigationSection
             {
-                Title = "Transactions",
-                Slug = "transactions",
+                Label = "Transactions",
+                Children = new List<NavigationItem>
+                {
+                    new NavigationLink
+                    {
+                        Title = "Search",
+                        Slug = "transactions",
+                    }
+                }
             });
 
             services.AddSingleton<ITransactionStorage, SqliteTransactionStorage>();

@@ -12,30 +12,12 @@ namespace SpendLess.Transactions.Services
         ISingleTypeSpendLessStorage<AccountDto> accountStorage,
         IStorage storage) : ITransactionService
     {
-        public async Task<List<int>> CreateTransactions(List<TransactionDto> transactions)
+        public async Task<List<long>> CreateTransactions(List<TransactionDto> transactions)
         {
             if (transactions.Count == 0)
                 return [];
 
-            var applicationState = await storage.GetDefault<SpendLessStateDto>(SpendLessStateDto.StorageKey);
-            var originalCategoryCount = applicationState.Categories.Count;
-            var originalTagCount = applicationState.Tags.Count;
-            foreach (var transaction in transactions)
-            {
-                applicationState.Categories.Add(transaction.Category);
-                foreach (var tag in transaction.Tags)
-                    applicationState.Tags.Add(tag);
-            }
-
             var operations = new List<StorageOperation>();
-
-            if (applicationState.Categories.Count > originalCategoryCount || applicationState.Tags.Count > originalTagCount)
-                operations.Add(new SetOperation
-                {
-                    Target = SpendLessStateDto.StorageKey,
-                    Value = applicationState
-                });
-
             var (addTransactionsOperation, getResult) = transactionStorage.CreateAddTransactionsOperation(transactions);
             operations.Add(addTransactionsOperation);
 
@@ -44,27 +26,27 @@ namespace SpendLess.Transactions.Services
             return getResult();
         }
 
-        public Task<Dictionary<int, TransactionDto>> GetTransactions(List<TransactionFilter> filters)
+        public Task<Dictionary<long, TransactionDto>> GetTransactions(List<TransactionFilter> filters)
         {
             return transactionStorage.GetTransactions(filters);
         }
-        public Task<int> GetTransactionsCount(List<TransactionFilter> filters)
+        public Task<long> GetTransactionsCount(List<TransactionFilter> filters)
         {
             return transactionStorage.GetTransactionsCount(filters);
         }
 
-        public Task<Dictionary<int, TransactionDto>> GetPagedTransactions(
+        public Task<Dictionary<long, TransactionDto>> GetPagedTransactions(
             List<TransactionFilter> filters,
-            int pageSize,
-            int page)
+            long pageSize,
+            long page)
         {
             return transactionStorage.GetTransactions(filters, pageSize, (page - 1) * pageSize);
         }
 
-        public async Task<Dictionary<int, ExtendedTransactionDto>> GetPagedExtendedTransactions(
+        public async Task<Dictionary<long, ExtendedTransactionDto>> GetPagedExtendedTransactions(
             List<TransactionFilter> filters,
-            int pageSize,
-            int page)
+            long pageSize,
+            long page)
         {
             var transactions = await GetPagedTransactions(filters, pageSize, page);
             var accountIds = transactions.Values.SelectMany(t => new List<string> { t.SourceAccount, t.DestinationAccount })
@@ -119,12 +101,12 @@ namespace SpendLess.Transactions.Services
             return transactionStorage.GetTags();
         }
 
-        public Task<int> DeleteTransactions(List<int> keys)
+        public Task<int> DeleteTransactions(List<long> keys)
         {
             return transactionStorage.DeleteTransactions(keys);
         }
 
-        public Task<bool> DeleteTransaction(int key)
+        public Task<bool> DeleteTransaction(long key)
         {
             return transactionStorage.DeleteTransaction(key);
         }

@@ -1,15 +1,13 @@
 ﻿using Haondt.Core.Extensions;
 using Haondt.Core.Models;
 using Haondt.Identity.StorageKey;
-using Haondt.Persistence.Services;
+using SpendLess.Accounts.Services;
 using SpendLess.Core.Extensions;
 using SpendLess.Domain.Constants;
 using SpendLess.Domain.Models;
 using SpendLess.Domain.Services;
 using SpendLess.NodeRed.Models;
 using SpendLess.NodeRed.Services;
-using SpendLess.Persistence.Extensions;
-using SpendLess.Persistence.Services;
 using SpendLess.TransactionImport.Exceptions;
 using SpendLess.TransactionImport.Models;
 using SpendLess.Transactions.Services;
@@ -18,8 +16,7 @@ namespace SpendLess.TransactionImport.Services
 {
     public class TransactionImportService(IAsyncJobRegistry jobRegistry,
         INodeRedService nodeRed,
-        ISingleTypeSpendLessStorage<AccountDto> accountStorage,
-        IStorage storage,
+        IAccountsService accountsService,
         ITransactionService transactionService) : ITransactionImportService
     {
 
@@ -64,19 +61,10 @@ namespace SpendLess.TransactionImport.Services
                 try
                 {
                     foreach (var newAccount in dryRunResult.NewAccounts)
-                        await accountStorage.Set(newAccount.Key.SeedStorageKey<AccountDto>(), new AccountDto
+                        await accountsService.CreateAccount(newAccount.Key, new AccountDto
                         {
                             Name = newAccount.Value
-                        });
-
-                    if (dryRunResult.NewTags.Count > 0 || dryRunResult.NewCategories.Count > 0)
-                    {
-                        // todo: remove this, just run a query to get a list of all tags and categories as needed.
-                        var applicationState = await storage.GetDefault<SpendLessStateDto>(SpendLessStateDto.StorageKey);
-                        applicationState.Categories.UnionWith(dryRunResult.NewCategories.Keys);
-                        applicationState.Tags.UnionWith(dryRunResult.NewTags.Keys);
-                        await storage.Set(SpendLessStateDto.StorageKey, applicationState);
-                    }
+                        }, false);
 
                     var batchSize = 50; // todo: appsettings
                     var batches = dryRunResult.Transactions.Chunk(batchSize);
@@ -133,7 +121,7 @@ namespace SpendLess.TransactionImport.Services
                     ImportAccount = new SendToNodeRedResultAccountDataDto
                     {
                         Id = accountId,
-                        Name = (await accountStorage.TryGet(accountId.SeedStorageKey<AccountDto>()))
+                        Name = (await accountsService.TryGetAccount(accountId))
                             .As(a => a.Name)
                             .Or(SpendLessConstants.FallbackAccountName)
                     },
@@ -150,9 +138,8 @@ namespace SpendLess.TransactionImport.Services
                     return;
                 }
 
-                var applicationState = await storage.GetDefault<SpendLessStateDto>(SpendLessStateDto.StorageKey);
-                var existingCategories = applicationState.Categories;
-                var existingTags = applicationState.Tags;
+                var existingCategories = (await transactionService.GetCategories()).ToHashSet();
+                var existingTags = (await transactionService.GetTags()).ToHashSet();
 
                 try
                 {
@@ -201,7 +188,7 @@ namespace SpendLess.TransactionImport.Services
 
                         // given an existing id, fetch the name
                         if (response.Transaction.Source.Id != null &&
-                            (await accountStorage.TryGet(response.Transaction.Source.Id.SeedStorageKey<AccountDto>())).Test(out var account))
+                            (await accountsService.TryGetAccount(response.Transaction.Source.Id)).Test(out var account))
                         {
                             response.Transaction.Source.Name = account.Name;
                         }
@@ -229,8 +216,7 @@ namespace SpendLess.TransactionImport.Services
                             {
                                 response.Transaction.Source.Id = Guid.NewGuid().ToString();
                                 result.NewAccounts[response.Transaction.Source.Id] = response.Transaction.Source.Name;
-                                if (await accountStorage.ContainsForeignKey(AccountDto.GetNameForeignKey(
-                                    response.Transaction.Source.Name)))
+                                if (await accountsService.HasAccountWithName(response.Transaction.Source.Name))
                                     resultDto.Warnings.Add($"{TransactionImportWarning.CreatingAccountWithSameNameAsExisting} Name: {response.Transaction.Source.Name}.");
                             }
                         }
@@ -244,7 +230,7 @@ namespace SpendLess.TransactionImport.Services
 
                         // given an existing id, fetch the name
                         if (response.Transaction.Destination.Id != null &&
-                            (await accountStorage.TryGet(response.Transaction.Destination.Id.SeedStorageKey<AccountDto>())).Test(out account))
+                            (await accountsService.TryGetAccount(response.Transaction.Destination.Id)).Test(out account))
                         {
                             response.Transaction.Destination.Name = account.Name;
                         }
@@ -272,8 +258,7 @@ namespace SpendLess.TransactionImport.Services
                             {
                                 response.Transaction.Destination.Id = Guid.NewGuid().ToString();
                                 result.NewAccounts[response.Transaction.Destination.Id] = response.Transaction.Destination.Name;
-                                if (await accountStorage.ContainsForeignKey(AccountDto.GetNameForeignKey(
-                                    response.Transaction.Destination.Name)))
+                                if (await accountsService.HasAccountWithName(response.Transaction.Destination.Name))
                                     resultDto.Warnings.Add($"{TransactionImportWarning.CreatingAccountWithSameNameAsExisting} Name: {response.Transaction.Destination.Name}.");
                             }
                         }

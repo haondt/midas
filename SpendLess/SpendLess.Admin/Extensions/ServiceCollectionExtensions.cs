@@ -8,7 +8,7 @@ namespace SpendLess.Admin.Extensions
     {
         public static IServiceCollection AddAdmin(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton(new NavigationItem
+            services.AddSingleton(new NavigationLink
             {
                 Title = "Administration",
                 Slug = "admin",

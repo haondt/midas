@@ -1,13 +1,23 @@
 @code {
     [Parameter, EditorRequired]
-    public required int TotalPages { get; set; } 
+    public required long TotalPages { get; set; } 
     [Parameter, EditorRequired]
-    public required int Page { get; set; }
+    public required long Page { get; set; }
+    [Parameter]
+    public long? PageSize { get; set; }
 
     [Parameter, EditorRequired]
     public required string OnChange { get; set; }
 
-    private RenderFragment<(int Page, bool IsCurrent)> CreateSelectPageListItem = default!;
+
+    private RenderFragment<(long Page, bool IsCurrent)> CreateSelectPageListItem = default!;
+    private RenderFragment<(long Size, bool IsSelected)> CreateSelectPageSizeSelectItem = (args) =>
+    {
+        if (args.IsSelected)
+            return@<option value="@args.Size" selected>@args.Size rows per page</option>;
+        return@<option value="@args.Size">@args.Size rows per page</option>;
+    };
+
 
     protected override void OnInitialized()
     {
@@ -34,10 +44,16 @@
 <div id="paginator">
     <nav class="pagination is-right">
         <div class="select">
-            <select name="page-size" _="on change @OnChange">
-                <option value="25">25 rows per page</option>
-                <option value="50">50 rows per page</option>
-                <option value="100">100 rows per page</option>
+            <select name="page-size" 
+                _="
+                    on change 
+                        set #paginator-total-pages's name to '' 
+                        then @OnChange
+                        then set #paginator-total-pages's name to 'total-pages'
+                ">
+                @CreateSelectPageSizeSelectItem((25, PageSize == 25))
+                @CreateSelectPageSizeSelectItem((50, PageSize == 50))
+                @CreateSelectPageSizeSelectItem((100, PageSize == 100))
             </select>
         </div>
         <input id="paginator-page" type="hidden" name="page" value="1" />

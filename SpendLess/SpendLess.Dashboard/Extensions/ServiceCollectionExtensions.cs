@@ -7,10 +7,17 @@ namespace SpendLess.Dashboard.Extensions
     {
         public static IServiceCollection AddDashboard(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton(new NavigationItem
+            services.AddSingleton(new NavigationSection
             {
-                Title = "Dashboard",
-                Slug = "dashboard",
+                Label = "Reports",
+                Children = new List<NavigationItem>
+                {
+                    new NavigationLink
+                    {
+                        Title = "Dashboard",
+                        Slug = "dashboard",
+                    }
+                }
             });
 
             services.AddSingleton<IDashboardService, DashboardService>();

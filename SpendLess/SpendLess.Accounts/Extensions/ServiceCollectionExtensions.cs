@@ -7,10 +7,22 @@ namespace SpendLess.Accounts.Extensions
     {
         public static IServiceCollection AddAccounts(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton(new NavigationItem
+            services.AddSingleton(new NavigationSection
             {
-                Title = "Accounts",
-                Slug = "accounts",
+                Label = "Accounts",
+                Children = new List<NavigationItem>
+                {
+                    new NavigationLink
+                    {
+                        Title = "My Accounts",
+                        Slug = "accounts/mine",
+                    },
+                    new NavigationLink
+                    {
+                        Title = "All Accounts",
+                        Slug = "accounts/all",
+                    }
+                }
             });
 
             services.AddSingleton<IAccountsService, AccountsService>();

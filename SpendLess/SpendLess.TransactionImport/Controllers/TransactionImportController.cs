@@ -7,6 +7,7 @@ using Haondt.Web.Core.Services;
 using Haondt.Web.Middleware;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SpendLess.Accounts.Services;
 using SpendLess.Domain.Models;
 using SpendLess.Persistence.Extensions;
 using SpendLess.Persistence.Services;
@@ -24,6 +25,7 @@ namespace SpendLess.TransactionImport.Controllers
     public class TransactionImportController(
         IComponentFactory componentFactory,
         ISingleTypeSpendLessStorage<TransactionImportConfigurationDto> configStorage,
+        IAccountsService accountsService,
         ISingleTypeSpendLessStorage<TransactionImportAccountMetadataDto> accountMetadataStorage,
         ITransactionImportService import) : SpendLessUIController
     {
@@ -127,12 +129,40 @@ namespace SpendLess.TransactionImport.Controllers
                     ProgressPercent = result.Reason.Progress
                 });
             }
+            var creditBalanceChanges = result.Value.Transactions
+                .Where(t => t.Transaction.HasValue)
+                .GroupBy(t => t.Transaction.Value.Destination.Id)
+                .ToDictionary(grp => grp.Key, grp => grp.Sum(t => t.Transaction.Value.Amount));
 
+
+            var debitBalanceChanges = result.Value.Transactions
+                .Where(t => t.Transaction.HasValue)
+                .GroupBy(t => t.Transaction.Value.Source.Id)
+                .ToDictionary(grp => grp.Key, grp => grp.Sum(t => t.Transaction.Value.Amount)); ;
+
+            var balanceChanges = creditBalanceChanges;
+            foreach (var (key, value) in debitBalanceChanges)
+            {
+                if (!balanceChanges.ContainsKey(key))
+                    balanceChanges[key] = 0;
+                balanceChanges[key] -= value;
+            }
+
+            var pulledAccounts = new Dictionary<string, string>();
+            var balanceChangesTasks = balanceChanges.Select(async kvp =>
+            {
+                if (result.Value.NewAccounts.TryGetValue(kvp.Key, out var accountName))
+                    return (accountName, kvp.Value);
+
+                if (!pulledAccounts.TryGetValue(kvp.Key, out accountName))
+                    pulledAccounts[kvp.Key] = (await accountsService.GetAccount(kvp.Key)).Name;
+                return (pulledAccounts[kvp.Key], kvp.Value);
+            });
+            var balanceChangesList = await Task.WhenAll(balanceChangesTasks);
 
             return await componentFactory.RenderComponentAsync(new DryRunResult
             {
-                BalanceChange = result.Value.BalanceChange,
-                ImportAccountName = result.Value.ImportAccount.Name,
+                BalanceChanges = balanceChangesList.ToList(),
                 Errors = result.Value.Transactions.SelectMany(r => r.Errors.Select(e => (e, r)))
                     .GroupBy(t => t.e)
                     .Select(grp => (grp.Key, grp.Count(), grp.First().r.SourceRequestPayload))

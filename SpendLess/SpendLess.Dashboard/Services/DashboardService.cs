@@ -16,16 +16,16 @@ namespace SpendLess.Dashboard.Services
                 TransactionFilter.MaxDate(end)
             });
 
-            var ownedAccounts = await accountsService.GetOwned();
+            var accounts = await accountsService.GetAccountsIncludedInNetWorth();
 
             var flow = 0m;
             foreach (var (_, transaction) in transactions)
             {
-                if (ownedAccounts.ContainsKey(transaction.SourceAccount)
-                    && !ownedAccounts.ContainsKey(transaction.DestinationAccount)) // exclude transfers
+                if (accounts.ContainsKey(transaction.SourceAccount)
+                    && !accounts.ContainsKey(transaction.DestinationAccount)) // exclude transfers
                     flow -= transaction.Amount;
-                if (ownedAccounts.ContainsKey(transaction.DestinationAccount)
-                    && !ownedAccounts.ContainsKey(transaction.SourceAccount))
+                if (accounts.ContainsKey(transaction.DestinationAccount)
+                    && !accounts.ContainsKey(transaction.SourceAccount))
                     flow += transaction.Amount;
             }
 

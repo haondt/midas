@@ -42,6 +42,10 @@
         {
             return new EitherAccountIsTransactionFilter { Id = id };
         }
+        public static TransactionFilter EitherAccountIsOneOf(List<string> ids)
+        {
+            return new EitherAccountIsOneOfTransactionFilter { Ids = ids };
+        }
     }
 
     public class MinDateTransactionFilter : TransactionFilter
@@ -84,6 +88,10 @@
     public class EitherAccountIsTransactionFilter : TransactionFilter
     {
         public required string Id { get; set; }
+    }
+    public class EitherAccountIsOneOfTransactionFilter : TransactionFilter
+    {
+        public required List<string> Ids { get; set; }
     }
 
 }

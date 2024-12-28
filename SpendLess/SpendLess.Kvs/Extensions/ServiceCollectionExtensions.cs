@@ -7,10 +7,17 @@ namespace SpendLess.Kvs.Extensions
     {
         public static IServiceCollection AddKvs(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton(new NavigationItem
+            services.AddSingleton(new NavigationSection
             {
-                Title = "Key-Value Store",
-                Slug = "kvs",
+                Label = "Automation",
+                Children = new List<NavigationItem>
+                {
+                    new NavigationLink
+                    {
+                        Title = "Key-Value Store",
+                        Slug = "kvs",
+                    }
+                }
             });
 
             services.AddSingleton<IKvsService, KvsService>();

@@ -6,7 +6,5 @@ namespace SpendLess.Domain.Models
     {
         public static StorageKey<SpendLessStateDto> StorageKey { get; } = StorageKey<SpendLessStateDto>.Create("");
 
-        public HashSet<string> Tags { get; set; } = [];
-        public HashSet<string> Categories { get; set; } = [];
     }
 }
