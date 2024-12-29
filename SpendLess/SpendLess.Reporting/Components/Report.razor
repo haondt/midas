@@ -274,6 +274,23 @@
                     },
                     Options = new()
                     {
+                        Plugins = new()
+                        {
+                            Tooltip = new()
+                            {
+                                Callbacks = new()
+                                {
+                                    Label = new()
+                                    {
+                                        Function = @"function(context) { 
+                                            const rawValue = context.raw;
+                                            const formattedValue = Math.abs(rawValue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                            return rawValue < 0 ? `${context.dataset.label}: -$${formattedValue}` : `${context.dataset.label}: $${formattedValue}`;
+                                        }"
+                                    }
+                                }
+                            }
+                        },
                         Scales = new()
                         {
                             X = new()
@@ -282,7 +299,17 @@
                             },
                             Y = new()
                             {
-                                Stacked = true
+                                Stacked = true,
+                                Ticks = new()
+                                {
+                                    Callback = new()
+                                    {
+                                        Function = @"function(value) { 
+                                            const formattedValue = Math.abs(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                            return value < 0 ? `-$${formattedValue}` : `$${formattedValue}`;
+                                        }"
+                                    }
+                                },
                             }
                         }
                     }
