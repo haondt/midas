@@ -4,9 +4,6 @@
 @using SpendLess.Web.Domain.Services
 @code {
     [Parameter, EditorRequired]
-    public required decimal NetWorth { get; set; }
-
-    [Parameter, EditorRequired]
     public required DashboardData DashboardData { get; set; }
 
     public List<(string, string)> Ranges = [];
@@ -93,15 +90,6 @@
     </div>
 </div>
 
-<div class="block">
-    <div class="hero is-primary is-small" style="border-radius:var(--bulma-radius-large);">
-        <div class="hero-body">
-            <p class="title">@StringFormatter.FormatCurrency(NetWorth)</p>
-            <p class="subtitle">Net Worth</p>
-        </div>
-
-    </div>
-</div>
 
 <div id="dashboard-data">
     <Haondt.Web.Components.ObjectComponentT  Component="DashboardData" />

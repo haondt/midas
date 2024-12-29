@@ -8,11 +8,26 @@
     [Parameter, EditorRequired]
     public required decimal CashFlow { get; set; }
     [Parameter, EditorRequired]
+    public required decimal NetWorth { get; set; }
+    [Parameter, EditorRequired]
+    public required decimal Income { get; set; }
+    [Parameter, EditorRequired]
+    public required decimal Spending { get; set; }
+    [Parameter, EditorRequired]
     public required DashboardBalanceChartDataDto BalanceChartData { get; set; }
     [Parameter, EditorRequired]
     public required DashboardCategoricalSpendingChartDataDto CategoricalSpendingChartData { get; set; }
 }
 
+<div class="block">
+    <div class="hero is-primary is-small" style="border-radius:var(--bulma-radius-large);">
+        <div class="hero-body">
+            <p class="title">@StringFormatter.FormatCurrency(NetWorth, false)</p>
+            <p class="subtitle">Net Worth</p>
+        </div>
+
+    </div>
+</div>
 
 <div class="block">
     <div class="columns is-desktop">
@@ -35,13 +50,13 @@
         </div>
         <div class="column">
             <div class="notification is-success">
-                <p class="is-size-4">$1,000,000.00</p>
+                <p class="is-size-4">@StringFormatter.FormatCurrency(Income)</p>
                 <p class="subtitle is-6">Income</p>
             </div>
         </div>
         <div class="column">
             <div class="notification is-danger">
-                <p class="is-size-4">$1,000,000.00</p>
+                <p class="is-size-4">@StringFormatter.FormatCurrency(Spending)</p>
                 <p class="subtitle is-6">Spending</p>
             </div>
         </div>

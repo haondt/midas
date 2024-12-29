@@ -22,7 +22,6 @@ namespace SpendLess.Dashboard.Controllers
             var data = await GetDashboardData(currentMonth, endOfMonth);
             return await componentFactory.RenderComponentAsync<Dashboard.Components.Dashboard>(new Dashboard.Components.Dashboard
             {
-                NetWorth = 1_000_000,
                 DashboardData = data
             });
         }
@@ -34,7 +33,10 @@ namespace SpendLess.Dashboard.Controllers
             {
                 CashFlow = dto.CashFlow,
                 BalanceChartData = dto.BalanceChartData,
-                CategoricalSpendingChartData = dto.CategoricalSpendingChartData
+                CategoricalSpendingChartData = dto.CategoricalSpendingChartData,
+                Income = dto.Income,
+                NetWorth = dto.NetWorth,
+                Spending = dto.Spending,
             };
         }
 

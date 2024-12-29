@@ -74,12 +74,15 @@ namespace SpendLess.Dashboard.Services
             var categoricalSpendingChartData = new Dictionary<string, decimal>();
 
             var flow = 0m;
+            var income = 0m;
+            var spending = 0m;
             foreach (var (_, transaction) in transactions)
             {
                 if (accounts.ContainsKey(transaction.SourceAccount))
                     if (!accounts.ContainsKey(transaction.DestinationAccount)) // exclude transfers
                     {
                         flow -= transaction.Amount;
+                        spending += transaction.Amount;
                         if (!categoricalSpendingChartData.TryGetValue(transaction.Category, out var amount))
                             amount = categoricalSpendingChartData[transaction.Category] = 0;
                         categoricalSpendingChartData[transaction.Category] = amount + transaction.Amount;
@@ -87,7 +90,10 @@ namespace SpendLess.Dashboard.Services
 
                 if (accounts.ContainsKey(transaction.DestinationAccount)
                     && !accounts.ContainsKey(transaction.SourceAccount))
+                {
                     flow += transaction.Amount;
+                    income += transaction.Amount;
+                }
             }
 
             var categorialSpendingChartKeys = categoricalSpendingChartData.Keys;
@@ -100,7 +106,10 @@ namespace SpendLess.Dashboard.Services
                 {
                     Categories = categorialSpendingChartKeys.ToList(),
                     Spending = categorialSpendingChartKeys.Select(k => categoricalSpendingChartData[k]).ToList()
-                }
+                },
+                Income = income,
+                Spending = spending,
+                NetWorth = currentBalances.Values.Sum()
             };
         }
     }
