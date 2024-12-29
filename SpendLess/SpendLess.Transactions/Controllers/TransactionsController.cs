@@ -177,7 +177,8 @@ namespace SpendLess.Transactions.Controllers
             {
                 Results = transactions,
                 Page = page.Value,
-                TotalPages = totalPages.Value
+                TotalPages = totalPages.Value,
+                PageSize = pageSize.Value,
             };
 
         }

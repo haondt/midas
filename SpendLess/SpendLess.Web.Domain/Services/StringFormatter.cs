@@ -45,7 +45,6 @@ namespace SpendLess.Web.Domain.Services
 
         public static string FormatCurrency(decimal amount, bool? useAccountingFormat = null)
         {
-            // TODO: appsettings the symbol
             if (amount < 0)
             {
                 if (useAccountingFormat ?? true)

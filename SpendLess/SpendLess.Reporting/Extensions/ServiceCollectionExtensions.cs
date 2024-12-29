@@ -1,4 +1,5 @@
-﻿using SpendLess.Reporting.Services;
+﻿using SpendLess.Reporting.Models;
+using SpendLess.Reporting.Services;
 using SpendLess.Web.Domain.Models;
 
 namespace SpendLess.Dashboard.Extensions
@@ -21,6 +22,7 @@ namespace SpendLess.Dashboard.Extensions
             });
 
             services.AddSingleton<IReportService, ReportService>();
+            services.Configure<ReportingSettings>(configuration.GetSection(nameof(ReportingSettings)));
 
             return services;
         }

@@ -1,6 +1,7 @@
 ﻿using Haondt.Core.Extensions;
 using Haondt.Core.Models;
 using Haondt.Identity.StorageKey;
+using Microsoft.Extensions.Options;
 using SpendLess.Accounts.Services;
 using SpendLess.Core.Extensions;
 using SpendLess.Domain.Constants;
@@ -16,6 +17,7 @@ namespace SpendLess.TransactionImport.Services
 {
     public class TransactionImportService(IAsyncJobRegistry jobRegistry,
         INodeRedService nodeRed,
+        IOptions<TransactionImportSettings> options,
         IAccountsService accountsService,
         ITransactionService transactionService) : ITransactionImportService
     {
@@ -66,7 +68,7 @@ namespace SpendLess.TransactionImport.Services
                             Name = newAccount.Value
                         }, false);
 
-                    var batchSize = 50; // todo: appsettings
+                    var batchSize = options.Value.StorageOperationBatchSize;
                     var batches = dryRunResult.Transactions.Chunk(batchSize);
                     foreach (var batch in batches)
                     {
@@ -143,7 +145,7 @@ namespace SpendLess.TransactionImport.Services
 
                 try
                 {
-                    var batchSize = 50; // todo: appsettings
+                    var batchSize = options.Value.NodeRedOperationBatchSize;
                     //var header = csvData.First();
                     var batches = csvData.Chunk(batchSize);
 
@@ -321,8 +323,7 @@ namespace SpendLess.TransactionImport.Services
                         }
                     }
 
-                    // todo: appsettings the chunk size
-                    foreach (var batch in result.Transactions.Chunk(50))
+                    foreach (var batch in result.Transactions.Chunk(options.Value.StorageOperationBatchSize))
                     {
                         var hasBeenImported = await transactionService.CheckIfTransactionsHaveBeenImported(batch.Select(r => r.SourceData).ToList());
                         foreach (var resultDto in batch

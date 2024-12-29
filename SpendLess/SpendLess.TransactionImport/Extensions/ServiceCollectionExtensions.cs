@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using SpendLess.TransactionImport.Models;
 using SpendLess.TransactionImport.Services;
 using SpendLess.Web.Domain.Models;
 
@@ -7,7 +9,7 @@ namespace SpendLess.TransactionImport.Extensions
     public static class ServiceCollectionExtensions
     {
 
-        public static IServiceCollection AddTransactionImport(this IServiceCollection services)
+        public static IServiceCollection AddTransactionImport(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddSingleton(new NavigationSection
             {
@@ -23,6 +25,7 @@ namespace SpendLess.TransactionImport.Extensions
             });
 
             services.AddSingleton<ITransactionImportService, TransactionImportService>();
+            services.Configure<TransactionImportSettings>(configuration.GetSection(nameof(TransactionImportSettings)));
 
             return services;
         }

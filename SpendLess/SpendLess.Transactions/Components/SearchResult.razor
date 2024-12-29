@@ -10,6 +10,8 @@
     public required long Page { get; set; }
     [Parameter, EditorRequired]
     public required long TotalPages { get; set; }
+    [Parameter]
+    public long? PageSize { get; set; }
 }
 
 <form style="width:100%">
@@ -228,7 +230,7 @@
             }
             <tr id="paginator">
                 <td colspan="5">
-                    <Paginator Page="@Page" TotalPages="@TotalPages" OnChange="@("send submit to #filters")"/>
+                    <Paginator Page="@Page" TotalPages="@TotalPages" PageSize="PageSize" OnChange="@("send submit to #filters")"/>
                 </td>
             </tr>
         </tbody>

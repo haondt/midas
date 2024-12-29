@@ -249,7 +249,6 @@ namespace SpendLess.TransactionImport.Controllers
                 var op = splitFilter[1];
                 var value = splitFilter[2];
 
-                // todo: case insensitive
                 switch (target)
                 {
                     case TransactionImportFilterTargets.Status:
@@ -275,16 +274,16 @@ namespace SpendLess.TransactionImport.Controllers
                         switch (op)
                         {
                             case TransactionImportFilterOperators.IsEqualTo:
-                                filteredTransactions = filteredTransactions.Where(t => t.Warnings.Contains(value));
+                                filteredTransactions = filteredTransactions.Where(t => t.Warnings.Contains(value, StringComparer.CurrentCultureIgnoreCase));
                                 break;
                             case TransactionImportFilterOperators.IsNotEqualTo:
-                                filteredTransactions = filteredTransactions.Where(t => !t.Warnings.Contains(value));
+                                filteredTransactions = filteredTransactions.Where(t => !t.Warnings.Contains(value, StringComparer.CurrentCultureIgnoreCase));
                                 break;
                             case TransactionImportFilterOperators.Contains:
-                                filteredTransactions = filteredTransactions.Where(t => t.Warnings.Any(w => w.Contains(value)));
+                                filteredTransactions = filteredTransactions.Where(t => t.Warnings.Any(w => w.Contains(value, StringComparison.CurrentCultureIgnoreCase)));
                                 break;
                             case TransactionImportFilterOperators.StartsWith:
-                                filteredTransactions = filteredTransactions.Where(t => t.Warnings.Any(w => w.StartsWith(value)));
+                                filteredTransactions = filteredTransactions.Where(t => t.Warnings.Any(w => w.StartsWith(value, StringComparison.CurrentCultureIgnoreCase)));
                                 break;
                             default:
                                 throw new InvalidOperationException($"unknown operator {op}");
@@ -294,16 +293,16 @@ namespace SpendLess.TransactionImport.Controllers
                         switch (op)
                         {
                             case TransactionImportFilterOperators.IsEqualTo:
-                                filteredTransactions = filteredTransactions.Where(t => t.Errors.Contains(value));
+                                filteredTransactions = filteredTransactions.Where(t => t.Errors.Contains(value, StringComparer.CurrentCultureIgnoreCase));
                                 break;
                             case TransactionImportFilterOperators.IsNotEqualTo:
-                                filteredTransactions = filteredTransactions.Where(t => !t.Errors.Contains(value));
+                                filteredTransactions = filteredTransactions.Where(t => !t.Errors.Contains(value, StringComparer.CurrentCultureIgnoreCase));
                                 break;
                             case TransactionImportFilterOperators.Contains:
-                                filteredTransactions = filteredTransactions.Where(t => t.Errors.Any(e => e.Contains(value)));
+                                filteredTransactions = filteredTransactions.Where(t => t.Errors.Any(e => e.Contains(value, StringComparison.CurrentCultureIgnoreCase)));
                                 break;
                             case TransactionImportFilterOperators.StartsWith:
-                                filteredTransactions = filteredTransactions.Where(t => t.Errors.Any(e => e.StartsWith(value)));
+                                filteredTransactions = filteredTransactions.Where(t => t.Errors.Any(e => e.StartsWith(value, StringComparison.CurrentCultureIgnoreCase)));
                                 break;
                             default:
                                 throw new InvalidOperationException($"unknown operator {op}");
@@ -313,16 +312,16 @@ namespace SpendLess.TransactionImport.Controllers
                         switch (op)
                         {
                             case TransactionImportFilterOperators.IsEqualTo:
-                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Description == value).Or(false));
+                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => string.Equals(t.Description, value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
                                 break;
                             case TransactionImportFilterOperators.IsNotEqualTo:
-                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Description != value).Or(false));
+                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => !string.Equals(t.Description, value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
                                 break;
                             case TransactionImportFilterOperators.Contains:
-                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Description.Contains(value)).Or(false));
+                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Description.Contains(value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
                                 break;
                             case TransactionImportFilterOperators.StartsWith:
-                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Description.StartsWith(value)).Or(false));
+                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Description.StartsWith(value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
                                 break;
                             default:
                                 throw new InvalidOperationException($"unknown operator {op}");
@@ -332,16 +331,16 @@ namespace SpendLess.TransactionImport.Controllers
                         switch (op)
                         {
                             case TransactionImportFilterOperators.IsEqualTo:
-                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Category == value).Or(false));
+                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => string.Equals(t.Category, value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
                                 break;
                             case TransactionImportFilterOperators.IsNotEqualTo:
-                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Category != value).Or(false));
+                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => !string.Equals(t.Category, value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
                                 break;
                             case TransactionImportFilterOperators.Contains:
-                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Category.Contains(value)).Or(false));
+                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Category.Contains(value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
                                 break;
                             case TransactionImportFilterOperators.StartsWith:
-                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Category.StartsWith(value)).Or(false));
+                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Category.StartsWith(value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
                                 break;
                             default:
                                 throw new InvalidOperationException($"unknown operator {op}");
@@ -378,7 +377,8 @@ namespace SpendLess.TransactionImport.Controllers
             {
                 Results = filteredTransactions.ToList(),
                 Page = page.Value,
-                TotalPages = totalPages
+                TotalPages = totalPages,
+                PageSize = pageSize.Value
             });
         }
 

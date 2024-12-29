@@ -12,6 +12,8 @@
     public required int Page { get; set; }
     [Parameter, EditorRequired]
     public required int TotalPages { get; set; }
+    [Parameter]
+    public long? PageSize { get; set; }
 
 
 
@@ -54,8 +56,7 @@
     }
     <tr>
         <td colspan="6">
-            <!--TODO: the page size selection is not propogated-->
-            <Paginator Page="@Page" TotalPages="@TotalPages" OnChange="@("send submit to #filters")"/>
+            <Paginator Page="@Page" PageSize="@PageSize" TotalPages="@TotalPages" OnChange="@("send submit to #filters")"/>
         </td>
     </tr>
 </tbody>

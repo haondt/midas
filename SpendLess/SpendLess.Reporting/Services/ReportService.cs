@@ -1,12 +1,15 @@
-﻿using SpendLess.Accounts.Services;
+﻿using Microsoft.Extensions.Options;
+using SpendLess.Accounts.Services;
 using SpendLess.Domain.Models;
+using SpendLess.Reporting.Models;
 using SpendLess.Transactions.Models;
 using SpendLess.Transactions.Services;
 
 namespace SpendLess.Reporting.Services
 {
     public class ReportService(ITransactionService transactionService,
-        IAccountsService accountsService) : IReportService
+        IAccountsService accountsService,
+        IOptions<ReportingSettings> options) : IReportService
     {
         public async Task<ReportDataDto> GenerateReportData(DateTime start, DateTime end)
         {
@@ -186,13 +189,13 @@ namespace SpendLess.Reporting.Services
 
             reportData.TopIncomeSources = amountPerIncomeSource
                 .OrderByDescending(kvp => kvp.Value.Amount)
-                .Take(5) // TODO: appsettings or settings page maybe, maybe report setup ? idk
+                .Take(options.Value.TopIncomeSourcesLimit)
                 .Select(kvp => (kvp.Value.Name, kvp.Value.Amount, kvp.Value.Count, kvp.Value.Amount / kvp.Value.Count))
                 .ToList();
 
             reportData.TopSpendingDestinations = amountPerSpendingDestination
                 .OrderByDescending(kvp => kvp.Value.Amount)
-                .Take(5) // TODO: appsettings or settings page maybe, maybe report setup ? idk
+                .Take(options.Value.TopSpendingDestinationsLimit)
                 .Select(kvp => (kvp.Value.Name, kvp.Value.Amount, kvp.Value.Count, kvp.Value.Amount / kvp.Value.Count))
                 .ToList();
 

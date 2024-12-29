@@ -45,17 +45,8 @@ builder.Services
     .AddReporting(builder.Configuration)
     .AddSpendLessWebDomainServices(builder.Configuration)
     .AddNodeRedServices(builder.Configuration)
-    .AddTransactionImport()
+    .AddTransactionImport(builder.Configuration)
     .AddTransactions(builder.Configuration);
-//.AddNodeRedServices(builder.Configuration)
-//.AddLookupServices(builder.Configuration);
-//.AddFireflyIIIPPWebServices(builder.Configuration)
-//.AddCoreServices(builder.Configuration)
-//.AddFireflyIIIServices(builder.Configuration)
-//.AddNodeRedServices(builder.Configuration)
-//.AddFireflyIIIPPRunnerServices(builder.Configuration)
-//.AddFilePersistenceServices();
-
 
 builder.Services.AddMvc();
 builder.Services.AddCors(o => o.AddPolicy(CORS_POLICY, p =>
