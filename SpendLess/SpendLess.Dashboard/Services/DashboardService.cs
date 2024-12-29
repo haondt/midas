@@ -39,7 +39,7 @@ namespace SpendLess.Dashboard.Services
                 .GroupBy(t => t.Date)
                 .ToDictionary(grp => grp.Key, grp => grp.Select(x => x.Transaction));
 
-            var chartData = new DashboardChartDataDto
+            var balancChartData = new DashboardBalanceChartDataDto
             {
                 AccountNames = accountsList.Select(a => accounts[a].Name).ToList(),
                 Balances = accountsList.Select(_ => new List<decimal>()).ToList(),
@@ -64,30 +64,43 @@ namespace SpendLess.Dashboard.Services
                             currentBalances[transaction.DestinationAccount] += transaction.Amount;
                     }
 
-                chartData.TimeStamps.Add(currentDay);
+                balancChartData.TimeStamps.Add(currentDay);
                 for (int i = 0; i < accountsList.Count; i++)
-                    chartData.Balances[i].Add(currentBalances[accountsList[i]]);
+                    balancChartData.Balances[i].Add(currentBalances[accountsList[i]]);
 
                 currentDay = currentDay.AddDays(1);
             }
 
+            var categoricalSpendingChartData = new Dictionary<string, decimal>();
 
             var flow = 0m;
             foreach (var (_, transaction) in transactions)
             {
                 if (accounts.ContainsKey(transaction.SourceAccount))
                     if (!accounts.ContainsKey(transaction.DestinationAccount)) // exclude transfers
+                    {
                         flow -= transaction.Amount;
+                        if (!categoricalSpendingChartData.TryGetValue(transaction.Category, out var amount))
+                            amount = categoricalSpendingChartData[transaction.Category] = 0;
+                        categoricalSpendingChartData[transaction.Category] = amount + transaction.Amount;
+                    }
 
                 if (accounts.ContainsKey(transaction.DestinationAccount)
                     && !accounts.ContainsKey(transaction.SourceAccount))
                     flow += transaction.Amount;
             }
 
+            var categorialSpendingChartKeys = categoricalSpendingChartData.Keys;
+
             return new()
             {
                 CashFlow = flow,
-                ChartData = chartData
+                BalanceChartData = balancChartData,
+                CategoricalSpendingChartData = new DashboardCategoricalSpendingChartDataDto
+                {
+                    Categories = categorialSpendingChartKeys.ToList(),
+                    Spending = categorialSpendingChartKeys.Select(k => categoricalSpendingChartData[k]).ToList()
+                }
             };
         }
     }

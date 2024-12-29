@@ -8,7 +8,9 @@
     [Parameter, EditorRequired]
     public required decimal CashFlow { get; set; }
     [Parameter, EditorRequired]
-    public required DashboardChartDataDto ChartData { get; set; }
+    public required DashboardBalanceChartDataDto BalanceChartData { get; set; }
+    [Parameter, EditorRequired]
+    public required DashboardCategoricalSpendingChartDataDto CategoricalSpendingChartData { get; set; }
 }
 
 
@@ -48,18 +50,33 @@
 </div>
 
 <div class="block">
+    <style>
+        @@scope {
+            .chart-wrapper {
+                position: absolute;
+                width: calc(100% - 3em); /* based on --bulma-message-body-padding */
+                height: calc(100% - 2.5em);
+            }
+        }
+
+    </style>
     <div class="columns is-desktop">
         <div class="column">
-            <div class="box" style="position:relative;height:350px;">
+            <div class="message">
+                <div class="message-header">
+                    <p>Account Balances</p>
+                </div>
+                <div class="message-body"  style="position:relative;height:350px;">
+
                 @{
                     var chartConfiguration = new LineConfiguration
                     {
                         Data = new()
                         {
-                            Labels = ChartData.TimeStamps.Select(t => StringFormatter.FormatDate(t)).ToList(),
-                            Datasets = ChartData.Balances.Select((b, i) => new ChartDataSet
+                            Labels = BalanceChartData.TimeStamps.Select(t => StringFormatter.FormatDate(t)).ToList(),
+                            Datasets = BalanceChartData.Balances.Select((b, i) => new ChartDataSet
                             {
-                                Label = ChartData.AccountNames[i],
+                                Label = BalanceChartData.AccountNames[i],
                                 Data = b.Cast<object>().ToList(),
                                 Fill = false,
                                 Tension = 0.5
@@ -80,7 +97,11 @@
                                     {
                                         Label = new()
                                         {
-                                            Function = "function(context) { return `$${context.raw.toFixed(2)}`; }"
+                                            Function = @"function(context) { 
+                                                const rawValue = context.raw;
+                                                const formattedValue = Math.abs(rawValue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                                return rawValue < 0 ? `-$${formattedValue}` : `$${formattedValue}`;
+                                            }"
                                         }
                                     }
                                 }
@@ -101,7 +122,10 @@
                                     {
                                         Callback = new()
                                         {
-                                            Function = "function(value) { return `$${value.toFixed(2)}`; }"
+                                            Function = @"function(value) { 
+                                                const formattedValue = Math.abs(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                                return value < 0 ? `-$${formattedValue}` : `$${formattedValue}`;
+                                            }"
                                         }
                                     },
                                     BeginAtZero = true
@@ -110,26 +134,83 @@
                         }
                     };
 
-                    <div>
-                        <style>
-                            @@scope {
-                                :scope {
-                                    position: absolute;
-                                    width: calc(100% - var(--bulma-box-padding)*2);
-                                    height: calc(100% - var(--bulma-box-padding)*2);
-                                }
-                            }
-                        </style>
+                    <div class="chart-wrapper">
                         <Chart Configuration="@chartConfiguration"/>
                     </div>
 
                 }
+                </div>
             </div>
 
         </div>
         <div class="column">
-            <div class="box">
+            <div class="message">
+                <div class="message-header">
+                    <p>Categorical Spending</p>
+                </div>
+                <div class="message-body"  style="position:relative;height:350px;">
+                @{
+                    var chartConfiguration2 = new BarConfiguration
+                    {
+                        Data = new()
+                        {
+                            Labels = CategoricalSpendingChartData.Categories,
+                            Datasets = new()
+                            {
+                                new ChartDataSet
+                                {
+                                    Data = CategoricalSpendingChartData.Spending.Cast<object>().ToList(),
+                                }
+                            }
+                        },
+                        Options = new()
+                        {
+                            Plugins = new()
+                            {
+                                Legend = new()
+                                {
+                                    Display = false,
+                                },
+                                Tooltip = new()
+                                {
+                                    Callbacks = new()
+                                    {
+                                        Label = new()
+                                        {
+                                            Function = @"function(context) { 
+                                                const rawValue = context.raw;
+                                                const formattedValue = Math.abs(rawValue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                                return rawValue < 0 ? `-$${formattedValue}` : `$${formattedValue}`;
+                                            }"
+                                        }
+                                    }
+                                }
+                            },
+                            Scales = new()
+                            {
+                                Y = new()
+                                {
+                                    Ticks = new()
+                                    {
+                                        Callback = new()
+                                        {
+                                            Function = @"function(value) { 
+                                                const formattedValue = Math.abs(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                                return value < 0 ? `-$${formattedValue}` : `$${formattedValue}`;
+                                            }"
+                                        }
+                                    },
+                                    BeginAtZero = true
+                                }
+                            }
+                        }
+                    };
 
+                    <div class="chart-wrapper">
+                        <Chart Configuration="@chartConfiguration2"/>
+                    </div>
+                }
+                </div>
             </div>
         </div>
     </div>

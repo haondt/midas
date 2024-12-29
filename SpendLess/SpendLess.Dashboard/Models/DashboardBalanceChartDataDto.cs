@@ -1,6 +1,6 @@
 ﻿namespace SpendLess.Dashboard.Models
 {
-    public class DashboardChartDataDto
+    public class DashboardBalanceChartDataDto
     {
         public required List<string> AccountNames { get; set; }
         public required List<DateTime> TimeStamps { get; set; }

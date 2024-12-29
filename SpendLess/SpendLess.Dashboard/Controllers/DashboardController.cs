@@ -33,8 +33,8 @@ namespace SpendLess.Dashboard.Controllers
             return new()
             {
                 CashFlow = dto.CashFlow,
-                ChartData = dto.ChartData
-
+                BalanceChartData = dto.BalanceChartData,
+                CategoricalSpendingChartData = dto.CategoricalSpendingChartData
             };
         }
 
