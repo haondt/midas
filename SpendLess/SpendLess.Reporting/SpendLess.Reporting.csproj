@@ -9,11 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Components\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\SpendLess.Accounts\SpendLess.Accounts.csproj" />
+    <ProjectReference Include="..\SpendLess.Charts\SpendLess.Charts.csproj" />
     <ProjectReference Include="..\SpendLess.Transactions\SpendLess.Transactions.csproj" />
   </ItemGroup>
 

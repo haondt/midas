@@ -36,7 +36,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendLess.Dashboard", "Spen
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendLess.Charts", "SpendLess.Charts\SpendLess.Charts.csproj", "{77820BEA-EC52-49DC-829A-E9643F1C7F20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpendLess.Reporting", "SpendLess.Reporting\SpendLess.Reporting.csproj", "{6BAAF331-51F9-47F0-961C-8828540E6E44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendLess.Reporting", "SpendLess.Reporting\SpendLess.Reporting.csproj", "{6BAAF331-51F9-47F0-961C-8828540E6E44}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

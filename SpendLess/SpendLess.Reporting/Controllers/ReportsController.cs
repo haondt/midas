@@ -1,6 +1,5 @@
 ﻿using Haondt.Web.Core.Services;
 using Haondt.Web.Middleware;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SpendLess.Reporting.Components;
 using SpendLess.Web.Domain.Controllers;

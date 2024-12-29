@@ -32,12 +32,12 @@
     }
 }
 
-<div class="panel is-link" style="max-width:var(--spendless-form-page-width);margin:auto;">
+<div id="generate-report-panel" class="panel is-link" style="max-width:var(--spendless-form-page-width);margin:auto;">
     <p class="panel-heading">Generate Report</p>
     <div>
         <div class="panel-block">
             <div class="control">
-                <form hx-post="/reports/generate">
+                <form hx-target="#generate-report-panel" hx-swap="outerHTML" hx-boost="true" action="/report">
                     <div class="field">
 
                     <label class="label is-normal mb-0">Date range</label>
@@ -86,11 +86,11 @@
                             }
                         </div>
                     </div>
+
+                    <div class="field">
+                        <button class="button is-primary">Generate</button>
+                    </div>
                 </form>
-                <br/>
-                <div class="field">
-                    <button class="button is-primary">Generate</button>
-                </div>
             </div>
         </div>
     </div>

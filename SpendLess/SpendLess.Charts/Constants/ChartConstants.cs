@@ -12,6 +12,7 @@ namespace SpendLess.Charts.Constants
         {
             SerializerSettings = SpendLessConstants.ApiSerializerSettings.Clone();
             SerializerSettings.Converters.Add(new ChartCallbackJsonConverter());
+            SerializerSettings.Converters.Add(new GenericUnionConverter());
         }
     }
 }
