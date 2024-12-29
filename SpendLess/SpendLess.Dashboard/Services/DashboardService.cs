@@ -39,10 +39,10 @@ namespace SpendLess.Dashboard.Services
                 .GroupBy(t => t.Date)
                 .ToDictionary(grp => grp.Key, grp => grp.Select(x => x.Transaction));
 
-            var balancChartData = new DashboardBalanceChartDataDto
+            var balanceChartData = new DashboardBalanceChartDataDto
             {
-                AccountNames = accountsList.Select(a => accounts[a].Name).ToList(),
-                Balances = accountsList.Select(_ => new List<decimal>()).ToList(),
+                AccountNames = accountsList.Select(a => accounts[a].Name).Prepend("Net Worth").ToList(),
+                Balances = accountsList.Select(_ => new List<decimal>()).Prepend(new List<decimal>()).ToList(),
                 TimeStamps = []
             };
 
@@ -64,10 +64,12 @@ namespace SpendLess.Dashboard.Services
                             currentBalances[transaction.DestinationAccount] += transaction.Amount;
                     }
 
-                balancChartData.TimeStamps.Add(currentDay);
+                balanceChartData.TimeStamps.Add(currentDay);
                 for (int i = 0; i < accountsList.Count; i++)
-                    balancChartData.Balances[i].Add(currentBalances[accountsList[i]]);
-
+                {
+                    balanceChartData.Balances[i + 1].Add(currentBalances[accountsList[i]]);
+                    balanceChartData.Balances[0].Add(currentBalances[accountsList[i]]);
+                }
                 currentDay = currentDay.AddDays(1);
             }
 
@@ -101,7 +103,7 @@ namespace SpendLess.Dashboard.Services
             return new()
             {
                 CashFlow = flow,
-                BalanceChartData = balancChartData,
+                BalanceChartData = balanceChartData,
                 CategoricalSpendingChartData = new DashboardCategoricalSpendingChartDataDto
                 {
                     Categories = categorialSpendingChartKeys.ToList(),

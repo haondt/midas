@@ -1,0 +1,97 @@
+@using SpendLess.Web.Domain.Services
+@code {
+    private List<List<(string Label, string StartValue, string EndValue)>> PresetRanges { get; set; } = [];
+
+    protected override void OnInitialized()
+    {
+        var currentDateTime = DateTime.Now;
+        var currentMonth = new DateTime(currentDateTime.Year, currentDateTime.Month, 1);
+        var currentYear = new DateTime(currentDateTime.Year, 1, 1);
+        var previousYear = currentYear.AddYears(-1);
+
+        PresetRanges = new()
+        {
+            new()
+            {
+                (currentYear.ToString("yyyy"), StringFormatter.FormatDate(currentYear), StringFormatter.FormatDate(currentYear.AddYears(1)))
+            },
+            Enumerable.Range(0, 12)
+                .Select(i => currentYear.AddMonths(i))
+                .Where(d => d <= currentDateTime)
+                .Select(i => (i.ToString("MMMM yyyy"), StringFormatter.FormatDate(i), StringFormatter.FormatDate(i.AddMonths(1))))
+                .ToList(),
+            new()
+            {
+                (previousYear.ToString("yyyy"), StringFormatter.FormatDate(previousYear), StringFormatter.FormatDate(currentYear))
+            },
+            Enumerable.Range(0, 12)
+                .Select(i => previousYear.AddMonths(i))
+                .Select(i => (i.ToString("MMMM yyyy"), StringFormatter.FormatDate(i), StringFormatter.FormatDate(i.AddMonths(1))))
+                .ToList(),
+        };
+    }
+}
+
+<div class="panel is-link" style="max-width:var(--spendless-form-page-width);margin:auto;">
+    <p class="panel-heading">Generate Report</p>
+    <div>
+        <div class="panel-block">
+            <div class="control">
+                <form hx-post="/reports/generate">
+                    <div class="field">
+
+                    <label class="label is-normal mb-0">Date range</label>
+                    <div>
+                        <style>
+                            @@scope {
+                                :scope {
+                                    align-items: center;
+                                    flex-direction: row;
+                                    display: flex;
+                                    flex-wrap: wrap;
+                                    gap: .75rem;
+                                    justify-content: flex-start;
+                                    width: 100%;
+                                }
+                            }
+                        </style>
+
+                        <div class="control">
+                            <div class="field">
+                                <input id="start-date" name="f" class="input" type="date"/>
+                            </div>
+                        </div>
+
+                        <label class="label is-normal mb-0">To</label>
+
+                        <div class="control">
+                            <div class="field">
+                                <input id="end-date" name="t" class="input" type="date"/>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Pre-set ranges</label>
+                        <div class="is-flex is-flex-direction-column">
+                            @foreach(var set in PresetRanges)
+                            {
+                                <div class="is-flex is-flex-wrap-wrap" style="gap:10px;">
+                                    @foreach(var (label, startValue, endValue) in set)
+                                    {
+                                        <a _="on click set #start-date's value to '@startValue' set #end-date's value to '@endValue'">@label</a>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </form>
+                <br/>
+                <div class="field">
+                    <button class="button is-primary">Generate</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

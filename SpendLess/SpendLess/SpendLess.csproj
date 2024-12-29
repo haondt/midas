@@ -26,6 +26,7 @@
     <ProjectReference Include="..\SpendLess.Kvs\SpendLess.Kvs.csproj" />
     <ProjectReference Include="..\SpendLess.NodeRed\SpendLess.NodeRed.csproj" />
     <ProjectReference Include="..\SpendLess.Persistence\SpendLess.Persistence.csproj" />
+    <ProjectReference Include="..\SpendLess.Reporting\SpendLess.Reporting.csproj" />
     <ProjectReference Include="..\SpendLess.TransactionImport\SpendLess.TransactionImport.csproj" />
     <ProjectReference Include="..\SpendLess.Transactions\SpendLess.Transactions.csproj" />
     <ProjectReference Include="..\SpendLess.Web.Domain\SpendLess.Web.Domain.csproj" />

@@ -1,11 +1,11 @@
-﻿using SpendLess.Dashboard.Services;
+﻿using SpendLess.Reporting.Services;
 using SpendLess.Web.Domain.Models;
 
 namespace SpendLess.Dashboard.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddDashboard(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddReporting(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddSingleton(new NavigationSection
             {
@@ -14,13 +14,13 @@ namespace SpendLess.Dashboard.Extensions
                 {
                     new NavigationLink
                     {
-                        Title = "Dashboard",
-                        Slug = "dashboard",
+                        Title = "Generate Report",
+                        Slug = "reports",
                     }
                 }
             });
 
-            services.AddSingleton<IDashboardService, DashboardService>();
+            services.AddSingleton<IReportService, ReportService>();
 
             return services;
         }

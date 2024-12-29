@@ -42,6 +42,7 @@ builder.Services
     .AddKvs(builder.Configuration)
     .AddAdmin(builder.Configuration)
     .AddDashboard(builder.Configuration)
+    .AddReporting(builder.Configuration)
     .AddSpendLessWebDomainServices(builder.Configuration)
     .AddNodeRedServices(builder.Configuration)
     .AddTransactionImport()
