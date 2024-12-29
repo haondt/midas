@@ -32,7 +32,9 @@ namespace SpendLess.Dashboard.Controllers
             var dto = await dashboardService.GatherData(start, end);
             return new()
             {
-                CashFlow = dto.CashFlow
+                CashFlow = dto.CashFlow,
+                ChartData = dto.ChartData
+
             };
         }
 

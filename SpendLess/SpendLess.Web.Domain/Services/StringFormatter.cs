@@ -60,5 +60,9 @@ namespace SpendLess.Web.Domain.Services
             var dateTime = DateTimeOffset.FromUnixTimeSeconds(unixSeconds).DateTime;
             return dateTime.ToString("yyyy-MM-dd");
         }
+        public static string FormatDate(DateTime dateTime)
+        {
+            return dateTime.ToString("yyyy-MM-dd");
+        }
     }
 }

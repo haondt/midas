@@ -1,9 +1,14 @@
 ﻿@using SpendLess.Charts.BarChart
 @using SpendLess.Charts.Components
+@using SpendLess.Charts.LineChart
+@using SpendLess.Charts.Models
+@using SpendLess.Dashboard.Models
 @using SpendLess.Web.Domain.Services
 @code {
     [Parameter, EditorRequired]
     public required decimal CashFlow { get; set; }
+    [Parameter, EditorRequired]
+    public required DashboardChartDataDto ChartData { get; set; }
 }
 
 
@@ -47,30 +52,65 @@
         <div class="column">
             <div class="box">
                 @{
-                    var chartConfiguration = new BarConfiguration
+                    var chartConfiguration = new LineConfiguration
                     {
                         Data = new()
                         {
-                            Labels = ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-                            Datasets = [new(){
-                                        Label = "# of Votes",
-                                        Data = [12,19,3,5,2,3],
-                                        BorderWidth = 1
-                                    }]
+                            Labels = ChartData.TimeStamps.Select(t => StringFormatter.FormatDate(t)).ToList(),
+                            Datasets = ChartData.Balances.Select((b, i) => new ChartDataSet
+                            {
+                                Label = ChartData.AccountNames[i],
+                                Data = b.Cast<object>().ToList(),
+                                Fill = false,
+                                Tension = 0.5
+                            }).ToList()
                         },
                         Options = new()
                         {
+                            Plugins = new()
+                            {
+                                Legend = new()
+                                {
+                                    Display = true,
+                                    Position = "top" 
+                                },
+                                Tooltip = new()
+                                {
+                                    Callbacks = new()
+                                    {
+                                        Label = new()
+                                        {
+                                            Function = "function(context) { return `$${context.raw.toFixed(2)}`; }"
+                                        }
+                                    }
+                                }
+                            },
                             Scales = new()
                             {
+                                X = new()
+                                {
+                                    Ticks = new()
+                                    {
+                                        MaxRotation = 45,
+                                        MinRotation = 45
+                                    }
+                                },
                                 Y = new()
                                 {
+                                    Ticks = new()
+                                    {
+                                        Callback = new()
+                                        {
+                                            Function = "function(value) { return `$${value.toFixed(2)}`; }"
+                                        }
+                                    },
                                     BeginAtZero = true
                                 }
                             }
                         }
                     };
 
-                    <Chart Configuration="chartConfiguration"/>
+                    <Chart Configuration="@chartConfiguration"/>
 
                 }
             </div>

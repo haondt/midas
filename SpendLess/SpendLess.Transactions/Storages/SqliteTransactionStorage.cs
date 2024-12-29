@@ -517,6 +517,10 @@ namespace SpendLess.Transactions.Storages
                         whereClauses.Add($"t.timeStamp <= @MaxDate{i}");
                         parameters.Add(new SqliteParameter($"@MaxDate{i}", maxDateFilter.UnixSeconds));
                         break;
+                    case ExclusiveMaxDateTransactionFilter maxDateFilter:
+                        whereClauses.Add($"t.timeStamp < @ExclusiveMaxDate{i}");
+                        parameters.Add(new SqliteParameter($"@ExclusiveMaxDate{i}", maxDateFilter.UnixSeconds));
+                        break;
                     case MinAmountTransactionFilter minAmountFilter:
                         whereClauses.Add($"t.amountCents >= @MinAmountCents{i}");
                         parameters.Add(new SqliteParameter($"@MinAmountCents{i}", minAmountFilter.AmountCents));

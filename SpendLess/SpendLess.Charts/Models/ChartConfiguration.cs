@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using SpendLess.Domain.Constants;
+using SpendLess.Charts.Constants;
 
 namespace SpendLess.Charts.Models
 {
@@ -13,7 +13,7 @@ namespace SpendLess.Charts.Models
 
         public override string ToString()
         {
-            return JsonConvert.SerializeObject(this, SpendLessConstants.ApiSerializerSettings);
+            return JsonConvert.SerializeObject(this, ChartConstants.SerializerSettings);
         }
 
     }

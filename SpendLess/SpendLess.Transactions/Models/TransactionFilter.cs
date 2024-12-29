@@ -10,6 +10,11 @@
         {
             return new MaxDateTransactionFilter { UnixSeconds = ((DateTimeOffset)value).ToUnixTimeSeconds() };
         }
+        public static TransactionFilter ExclusiveMaxDate(DateTime value)
+        {
+            return new ExclusiveMaxDateTransactionFilter { UnixSeconds = ((DateTimeOffset)value).ToUnixTimeSeconds() };
+        }
+
         public static TransactionFilter HasTag(string tag)
         {
             return new HasTagTransactionFilter { Value = tag };
@@ -53,6 +58,10 @@
         public required long UnixSeconds { get; set; }
     }
     public class MaxDateTransactionFilter : TransactionFilter
+    {
+        public required long UnixSeconds { get; set; }
+    }
+    public class ExclusiveMaxDateTransactionFilter : TransactionFilter
     {
         public required long UnixSeconds { get; set; }
     }
