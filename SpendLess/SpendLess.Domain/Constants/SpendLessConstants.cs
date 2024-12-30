@@ -18,11 +18,22 @@ namespace SpendLess.Domain.Constants
             ApiSerializerSettings = new JsonSerializerSettings();
             ApiSerializerSettings.TypeNameHandling = TypeNameHandling.None;
             ApiSerializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
-            ApiSerializerSettings.Formatting = Formatting.Indented;
+            ApiSerializerSettings.Formatting = Formatting.None;
             ApiSerializerSettings.NullValueHandling = NullValueHandling.Ignore;
             ApiSerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             ApiSerializerSettings.Converters.Add(new GenericStorageKeyJsonConverter());
             ApiSerializerSettings.Converters.Add(new GenericOptionalJsonConverter());
+
+            PrettySerializerSettings = new JsonSerializerSettings();
+            PrettySerializerSettings.TypeNameHandling = TypeNameHandling.None;
+            PrettySerializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
+            PrettySerializerSettings.Formatting = Formatting.Indented;
+            PrettySerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+            PrettySerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            PrettySerializerSettings.Converters.Add(new GenericStorageKeyJsonConverter());
+            PrettySerializerSettings.Converters.Add(new GenericOptionalJsonConverter());
         }
+
+        public static JsonSerializerSettings PrettySerializerSettings { get; }
     }
 }

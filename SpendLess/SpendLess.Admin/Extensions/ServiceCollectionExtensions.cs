@@ -15,7 +15,10 @@ namespace SpendLess.Admin.Extensions
             });
 
             services.AddSingleton<IAssetSource, ExportMappingsAssetSource>();
+            services.AddSingleton<IAssetSource, TakeoutAssetSource>();
             services.AddSingleton<IDataService, DataService>();
+            services.AddSingleton<IFileService, FileService>();
+            services.Configure<FileSettings>(configuration.GetSection(nameof(FileSettings)));
 
             return services;
         }

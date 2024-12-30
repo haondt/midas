@@ -1,0 +1,37 @@
+﻿using Microsoft.Extensions.Options;
+using System.IO.Compression;
+
+namespace SpendLess.Admin.Services
+{
+    public class FileService(IOptions<FileSettings> options) : IFileService
+    {
+        public string CreateTakeoutWorkDirectory(string jobId)
+        {
+            var workDirectory = options.Value.WorkDirectory;
+            if (!workDirectory.EndsWith(Path.DirectorySeparatorChar))
+                workDirectory += Path.DirectorySeparatorChar;
+            var path = Path.Join(workDirectory, $"takeouts/{jobId}/");
+            Directory.CreateDirectory(path);
+            Directory.CreateDirectory(Path.Join(path, "files"));
+            return path;
+        }
+
+        public Task CreateTakeoutFile(string takeoutDir, string fileName, string content)
+        {
+            var path = Path.Join(takeoutDir, "files", fileName);
+            return File.WriteAllTextAsync(path, content);
+        }
+        public string ZipTakeoutDirectory(string takeoutDir)
+        {
+            var filesPath = Path.Join(takeoutDir, "files");
+            var zipFilePath = Path.Join(takeoutDir, "takeout.zip");
+
+            ZipFile.CreateFromDirectory(filesPath, zipFilePath);
+            return zipFilePath;
+        }
+        public byte[] ReadBytes(string path)
+        {
+            return File.ReadAllBytes(path);
+        }
+    }
+}

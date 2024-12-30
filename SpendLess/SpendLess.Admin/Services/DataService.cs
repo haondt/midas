@@ -1,9 +1,12 @@
 ﻿using Haondt.Core.Models;
+using Newtonsoft.Json;
+using SpendLess.Domain.Constants;
 using SpendLess.Domain.Services;
+using SpendLess.Kvs.Services;
 
 namespace SpendLess.Admin.Services
 {
-    public class DataService(IAsyncJobRegistry jobRegistry) : IDataService
+    public class DataService(IAsyncJobRegistry jobRegistry, IFileService fileService, IKvsService kvsService) : IDataService
     {
         public string StartCreateTakeout(
             bool includeMappings,
@@ -15,6 +18,30 @@ namespace SpendLess.Admin.Services
             _ = Task.Run(async () =>
             {
                 var result = new TakeoutResult();
+                var workDir = fileService.CreateTakeoutWorkDirectory(jobId);
+                var tasks = new List<Task>();
+
+                if (includeMappings)
+                    tasks.Add(Task.Run(async () =>
+                    {
+                        var mappings = await kvsService.ExportMappings();
+                        var mappingsString = JsonConvert.SerializeObject(mappings, SpendLessConstants.PrettySerializerSettings);
+                        await fileService.CreateTakeoutFile(workDir, "mappings.json", mappingsString);
+                    }));
+
+                try
+                {
+                    await Task.WhenAll(tasks);
+                    var zipPath = fileService.ZipTakeoutDirectory(workDir);
+                    result.ZipPath = zipPath;
+                }
+                catch (Exception ex)
+                {
+                    result.Errors = [ex.ToString()];
+                    result.IsSuccessful = false;
+                    jobRegistry.FailJob(jobId, result);
+                    throw;
+                }
 
                 jobRegistry.CompleteJob(jobId, result);
             });

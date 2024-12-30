@@ -3,9 +3,10 @@
     public required string JobId { get; set; }
 }
 <div class="control">
-    <div class="hero">
-        <div class="hero-body is-flex is-justify-content-center">
-            <a class="button" href="/_asset/admin/takeout/@(JobId).json" download="spendless.json">Download</a>
-        </div>
+    <div class="block">
+        <p>Click to download your takeout.</p>
+    </div>
+    <div class="block">
+        <a class="button" href="/_asset/admin.takeout.@(JobId).zip" download="spendless.zip">Download</a>
     </div>
 </div>
