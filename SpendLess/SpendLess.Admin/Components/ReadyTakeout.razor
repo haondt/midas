@@ -1,0 +1,11 @@
+﻿@code {
+    [Parameter, EditorRequired]
+    public required string JobId { get; set; }
+}
+<div class="control">
+    <div class="hero">
+        <div class="hero-body is-flex is-justify-content-center">
+            <a class="button" href="/_asset/admin/takeout/@(JobId).json" download="spendless.json">Download</a>
+        </div>
+    </div>
+</div>

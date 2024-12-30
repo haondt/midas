@@ -15,6 +15,7 @@ namespace SpendLess.Admin.Extensions
             });
 
             services.AddSingleton<IAssetSource, ExportMappingsAssetSource>();
+            services.AddSingleton<IDataService, DataService>();
 
             return services;
         }
