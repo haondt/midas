@@ -18,5 +18,6 @@ namespace SpendLess.Transactions.Storages
         Task<int> DeleteTransactions(List<long> keys);
         Task<bool> DeleteTransaction(long key);
         Task<int> DeleteTransactions(List<TransactionFilter> filters);
+        Task<int> DeleteAllTransactions();
     }
 }

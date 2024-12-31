@@ -140,6 +140,10 @@ namespace SpendLess.Accounts.Services
             var key = id.SeedStorageKey<AccountDto>();
             return storage.Delete(key);
         }
+        public Task<int> DeleteAllAccounts()
+        {
+            return storage.DeleteByForeignKey(StorageKey<AccountDto>.Empty);
+        }
 
         public Task<long> GetNumberOfAccounts()
         {

@@ -22,5 +22,6 @@ namespace SpendLess.Accounts.Services
         Task<bool> HasAccountWithName(string accountName);
         Task<Dictionary<string, AccountDetails>> GetPagedDetails(int pageSize, int page);
         Task<long> GetNumberOfAccounts();
+        Task<int> DeleteAllAccounts();
     }
 }

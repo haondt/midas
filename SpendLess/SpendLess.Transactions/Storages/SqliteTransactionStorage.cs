@@ -240,6 +240,17 @@ namespace SpendLess.Transactions.Storages
             return Task.FromResult(result);
         }
 
+        public Task<int> DeleteAllTransactions()
+        {
+            var result = WithConnection(conn =>
+            {
+                var command = new SqliteCommand($"DELETE FROM {_tableName}", conn);
+                return command.ExecuteNonQuery();
+            });
+
+            return Task.FromResult(result);
+        }
+
         public Task<int> DeleteTransactions(List<TransactionFilter> filters)
         {
             var baseQuery = new StringBuilder($@"

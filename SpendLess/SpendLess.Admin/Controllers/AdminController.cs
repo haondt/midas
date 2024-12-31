@@ -75,5 +75,29 @@ namespace SpendLess.Admin.Controllers
             Response.AsResponseData().HxReswap("none");
             return Results.Ok();
         }
+
+        [HttpDelete("bulk/transactions")]
+        public async Task<IResult> DeleteAllTransactions()
+        {
+            var deleted = await dataService.DeleteAllTransactions();
+
+            return await componentFactory.RenderComponentAsync(new Toast
+            {
+                Severity = ToastSeverity.Success,
+                Message = $"Deleted {deleted} transactions."
+            });
+        }
+
+        [HttpDelete("bulk/accounts")]
+        public async Task<IResult> DeleteAllAccounts()
+        {
+            var deleted = await dataService.DeleteAllAccounts();
+
+            return await componentFactory.RenderComponentAsync(new Toast
+            {
+                Severity = ToastSeverity.Success,
+                Message = $"Deleted {deleted} accounts."
+            });
+        }
     }
 }

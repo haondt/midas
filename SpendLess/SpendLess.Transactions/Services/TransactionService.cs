@@ -26,6 +26,7 @@ namespace SpendLess.Transactions.Services
             return getResult();
         }
 
+
         public Task<Dictionary<long, TransactionDto>> GetTransactions(List<TransactionFilter> filters)
         {
             return transactionStorage.GetTransactions(filters);
@@ -104,6 +105,11 @@ namespace SpendLess.Transactions.Services
         public Task<int> DeleteTransactions(List<long> keys)
         {
             return transactionStorage.DeleteTransactions(keys);
+        }
+
+        public Task<int> DeleteAllTransactions()
+        {
+            return transactionStorage.DeleteAllTransactions();
         }
 
         public Task<bool> DeleteTransaction(long key)

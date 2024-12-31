@@ -1,7 +1,9 @@
 ﻿using Haondt.Core.Models;
+using SpendLess.Accounts.Services;
 using SpendLess.Domain.Services;
 using SpendLess.NodeRed.Services;
 using SpendLess.Persistence.Storages;
+using SpendLess.Transactions.Services;
 
 namespace SpendLess.Admin.Services
 {
@@ -9,8 +11,20 @@ namespace SpendLess.Admin.Services
         IAsyncJobRegistry jobRegistry,
         INodeRedService nodeRedService,
         IFileService fileService,
+        IAccountsService accountsService,
+        ITransactionService transactionService,
         IDataExportStorage dataExportStorage) : IDataService
     {
+        public Task<int> DeleteAllTransactions()
+        {
+            return transactionService.DeleteAllTransactions();
+        }
+
+        public Task<int> DeleteAllAccounts()
+        {
+            return accountsService.DeleteAllAccounts();
+        }
+
         public string StartCreateTakeout()
         {
             var (jobId, cancellationToken) = jobRegistry.RegisterJob();

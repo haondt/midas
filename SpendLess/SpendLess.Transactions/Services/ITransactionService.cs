@@ -16,6 +16,7 @@ namespace SpendLess.Transactions.Services
         Task<Dictionary<long, TransactionDto>> GetTransactions(List<TransactionFilter> filters);
         Task<int> DeleteTransactions(List<long> keys);
         Task<bool> DeleteTransaction(long key);
+        Task<int> DeleteAllTransactions();
         Task<long> GetTransactionsCount(List<TransactionFilter> filters);
         Task<int> DeleteTransactions(List<TransactionFilter> filters);
     }
