@@ -16,11 +16,18 @@ namespace SpendLess.Admin.Services
             return path;
         }
 
-        public Task CreateTakeoutFile(string takeoutDir, string fileName, string content)
+        public Task CreateTakeoutFileAsync(string takeoutDir, string fileName, string content)
         {
-            var path = Path.Join(takeoutDir, "files", fileName);
+            var path = GetTakeoutFilePath(takeoutDir, fileName);
             return File.WriteAllTextAsync(path, content);
         }
+
+        public string GetTakeoutFilePath(string takeoutDir, string fileName)
+        {
+            return Path.Join(takeoutDir, "files", fileName);
+
+        }
+
         public string ZipTakeoutDirectory(string takeoutDir)
         {
             var filesPath = Path.Join(takeoutDir, "files");

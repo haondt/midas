@@ -10,7 +10,7 @@ namespace SpendLess.NodeRed.Services
     public class NodeRedService(HttpClient httpClient) : INodeRedService
     {
         private const string ApplyPath = "/apply";
-        //private const string ExtractKeyPath = "/extract-key";
+        private const string ExportPath = "/export";
 
         private async Task<HttpResponseMessage> InternalSendToNodeRed(string path, string input, CancellationToken? cancellationToken = null)
         {
@@ -34,6 +34,16 @@ namespace SpendLess.NodeRed.Services
             var result = await SendToNodeRed(input.ToString(), cancellationToken);
             return JsonConvert.DeserializeObject<SendToNodeRedResponseDto>(result, SpendLessConstants.ApiSerializerSettings)
                 ?? throw new NodeRedException($"failed to deserialize response to {typeof(SendToNodeRedResponseDto)}: {result}");
+        }
+
+        public async Task<NodeRedExportDto> ExportDataAsync()
+        {
+            var response = await httpClient.GetAsync(ExportPath);
+            response.EnsureSuccessStatusCode();
+            var responseString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<NodeRedExportDto>(responseString, SpendLessConstants.ApiSerializerSettings);
+            return result
+                ?? throw new NodeRedException($"failed to deserialize response to {typeof(NodeRedExportDto)}: {result}");
         }
 
         public async Task<(int ResponseCode, Optional<string> Body)> SendToNodeRedRaw(string input, CancellationToken? cancellationToken = null)

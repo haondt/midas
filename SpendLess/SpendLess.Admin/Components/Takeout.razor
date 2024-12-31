@@ -12,9 +12,12 @@
     </div>
 
     <div class="panel-block">
-        <p>Your takeout is still being prepared. Check back here later to see when it's ready.</p>
+        <div class="control">
+            <progress class="progress is-small is-primary"></progress>
+            <p>Your takeout is still being prepared. Check back here later to see when it's ready.</p>
+        </div>
         <div 
-            hx-trigger="every 250ms"
+            hx-trigger="load, every 250ms"
             hx-target="closest .panel-block"
             hx-swap="innerHTML"
             hx-get="/admin/takeout/@JobId/poll"

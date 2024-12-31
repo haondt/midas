@@ -12,6 +12,7 @@ namespace SpendLess.Persistence.Extensions
         {
             services.Configure<SpendLessPersistenceSettings>(configuration.GetSection(nameof(SpendLessPersistenceSettings)));
             services.AddSingleton<SpendLessStorage>();
+            services.AddSingleton<IDataExportStorage, SqliteDataExportStorage>();
             services.AddSingleton<ISpendLessStorage>(sp => sp.GetRequiredService<SpendLessStorage>());
             services.AddSingleton<IStorage>(sp
                 => new TransientTransactionalBatchStorage(sp.GetRequiredService<SpendLessStorage>()));

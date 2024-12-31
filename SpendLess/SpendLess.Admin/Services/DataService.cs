@@ -1,37 +1,33 @@
 ﻿using Haondt.Core.Models;
-using Newtonsoft.Json;
-using SpendLess.Domain.Constants;
 using SpendLess.Domain.Services;
-using SpendLess.Kvs.Services;
+using SpendLess.NodeRed.Services;
+using SpendLess.Persistence.Storages;
 
 namespace SpendLess.Admin.Services
 {
-    public class DataService(IAsyncJobRegistry jobRegistry, IFileService fileService, IKvsService kvsService) : IDataService
+    public class DataService(
+        IAsyncJobRegistry jobRegistry,
+        INodeRedService nodeRedService,
+        IFileService fileService,
+        IDataExportStorage dataExportStorage) : IDataService
     {
-        public string StartCreateTakeout(
-            bool includeMappings,
-            bool includeAccounts,
-            bool includeTransactions,
-            bool includeFlows)
+        public string StartCreateTakeout()
         {
             var (jobId, cancellationToken) = jobRegistry.RegisterJob();
             _ = Task.Run(async () =>
             {
                 var result = new TakeoutResult();
                 var workDir = fileService.CreateTakeoutWorkDirectory(jobId);
-                var tasks = new List<Task>();
-
-                if (includeMappings)
-                    tasks.Add(Task.Run(async () =>
-                    {
-                        var mappings = await kvsService.ExportMappings();
-                        var mappingsString = JsonConvert.SerializeObject(mappings, SpendLessConstants.PrettySerializerSettings);
-                        await fileService.CreateTakeoutFile(workDir, "mappings.json", mappingsString);
-                    }));
 
                 try
                 {
-                    await Task.WhenAll(tasks);
+                    var targetDbPath = fileService.GetTakeoutFilePath(workDir, "spendless.db");
+                    dataExportStorage.Export(targetDbPath);
+
+                    var nodeRedData = await nodeRedService.ExportDataAsync();
+                    await fileService.CreateTakeoutFileAsync(workDir, "flows.json", nodeRedData.Flows);
+                    await fileService.CreateTakeoutFileAsync(workDir, "settings.js", nodeRedData.Settings);
+
                     var zipPath = fileService.ZipTakeoutDirectory(workDir);
                     result.ZipPath = zipPath;
                 }

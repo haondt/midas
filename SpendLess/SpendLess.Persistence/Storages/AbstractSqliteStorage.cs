@@ -20,7 +20,8 @@ namespace SpendLess.Persistence.Storages
             {
                 DataSource = _settings.DatabasePath,
                 Mode = SqliteOpenMode.ReadWriteCreate,
-                Cache = SqliteCacheMode.Private
+                Cache = SqliteCacheMode.Private,
+                Pooling = _settings.UseConnectionPooling
             }.ToString();
             ConfigureSerializerSettings(_serializerSettings);
         }

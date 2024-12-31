@@ -6,7 +6,6 @@ using SpendLess.Admin.Components;
 using SpendLess.Admin.Services;
 using SpendLess.Kvs.Models;
 using SpendLess.Kvs.Services;
-using SpendLess.Web.Core.ModelBinders;
 using SpendLess.Web.Domain.Components;
 using SpendLess.Web.Domain.Controllers;
 using SpendLess.Web.Domain.Extensions;
@@ -41,13 +40,9 @@ namespace SpendLess.Admin.Controllers
         }
 
         [HttpPost("takeout")]
-        public async Task<IResult> ImportMappings(
-            [FromForm(Name = "include-mappings"), ModelBinder(typeof(CheckboxModelBinder))] bool includeMappings,
-            [FromForm(Name = "include-accounts"), ModelBinder(typeof(CheckboxModelBinder))] bool includeAccounts,
-            [FromForm(Name = "include-transactions"), ModelBinder(typeof(CheckboxModelBinder))] bool includeTransactions,
-            [FromForm(Name = "include-flows"), ModelBinder(typeof(CheckboxModelBinder))] bool includeFlows)
+        public async Task<IResult> ImportMappings()
         {
-            var jobId = dataService.StartCreateTakeout(includeMappings, includeAccounts, includeTransactions, includeFlows);
+            var jobId = dataService.StartCreateTakeout();
 
             Response.AsResponseData()
                 .HxPushUrl($"/admin/takeout/{jobId}");

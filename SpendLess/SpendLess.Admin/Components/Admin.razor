@@ -60,33 +60,12 @@
     <div class="panel-block">
         <form hx-post="/admin/takeout" hx-target="#admin-panel" hx-swap="outerHTML">
             <div class="control">
-                <p class="title is-4">Takeout</p>
+                <p class="title is-4">Export Data</p>
                 <div class="field">
-                    <label class="checkbox">
-                        <input type="checkbox" name="include-mappings" checked>
-                        Include Key-Value Store mappings
-                    </label>
+                    <p>Export the Node-Red flows, settings and a copy of the sqlite db.</p>
                 </div>
                 <div class="field">
-                    <label class="checkbox">
-                        <input type="checkbox" name="include-accounts" checked>
-                        Include accounts
-                    </label>
-                </div>
-                <div class="field">
-                    <label class="checkbox">
-                        <input type="checkbox" name="include-transactions" checked>
-                        Include transactions
-                    </label>
-                </div>
-                <div class="field">
-                    <label class="checkbox">
-                        <input type="checkbox" name="include-flows" checked>
-                        Include Node-Red flows
-                    </label>
-                </div>
-                <div class="field">
-                    <button class="button">Export Data</button>
+                    <button class="button">Create Takeout</button>
                 </div>
             </div>
         </form>
