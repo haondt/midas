@@ -1,21 +1,10 @@
-- transaction import
-  - dry run import and see a list of
-    - errors
-    - warnings
-    - new accounts
-    - updated balances for tracked accounts
-  - for the dry run, ability to replay the dry run (to resolve warnings/errors)
-  - play the import for realsies
-- ability back up / export data (takeout)
+## Short Term
+- re-import transactions
+  - whatever that copy button was supposed to do 
+- select transactions to omit form import (e.g. those with a conflicting import hash)
+
+## Medium Term
 - ability to reconcile transfers
-- reports (similar to ff3)
-  - select date range
-  - display amounts
-    - balance
-    - cash in
-    - cash out
-  - break down per
-    - category
-    - month
-    - tag
-    - account
+
+## Long term
+- fine-tuned data import/export

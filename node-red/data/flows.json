@@ -15,6 +15,14 @@
         "info": ""
     },
     {
+        "id": "61831238545f7697",
+        "type": "tab",
+        "label": "File Export",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "99f384cef6a769fb",
         "type": "subflow",
         "name": "apply in",
@@ -550,6 +558,23 @@
         "env": [],
         "meta": {},
         "color": "#DDAA99"
+    },
+    {
+        "id": "212ce6b191f48eaa",
+        "type": "subflow",
+        "name": "file export",
+        "info": "Make the flow files available for download.",
+        "category": "spendless",
+        "in": [],
+        "out": [],
+        "env": [],
+        "meta": {
+            "module": "node-red-contrib-haondt-spend-less-subflows",
+            "type": "haondt-spend-less-file-export",
+            "version": "1.0.0"
+        },
+        "color": "#00ebc7",
+        "icon": "font-awesome/fa-dollar"
     },
     {
         "id": "c1a42afb431f2ac2",
@@ -3503,7 +3528,7 @@
                 "447cb9d790aea380"
             ],
             [
-                "f4ecb70a16ef02a5"
+                "fe6d45d481dfc430"
             ]
         ]
     },
@@ -3571,7 +3596,7 @@
         "links": [
             "78f0f6e82dde2f0b"
         ],
-        "x": 795,
+        "x": 815,
         "y": 40,
         "wires": []
     },
@@ -3584,9 +3609,67 @@
         "links": [
             "fd1ac414dfb6e342"
         ],
-        "x": 515,
-        "y": 80,
+        "x": 525,
+        "y": 160,
         "wires": []
+    },
+    {
+        "id": "fe6d45d481dfc430",
+        "type": "switch",
+        "z": "1ce79c5fce6b8fe5",
+        "name": "Is SXSLX BNS PREAUTH PMT ?",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "SXSLX BNS PREAUTH PMT",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 320,
+        "y": 80,
+        "wires": [
+            [
+                "0157452e684891b1"
+            ],
+            [
+                "f4ecb70a16ef02a5"
+            ]
+        ]
+    },
+    {
+        "id": "0157452e684891b1",
+        "type": "change",
+        "z": "1ce79c5fce6b8fe5",
+        "name": "set result to transfers account",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.parsedAccount",
+                "pt": "msg",
+                "to": "{\t   \"id\": $globalContext('spendless.configuration.transfersAccountId')\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 630,
+        "y": 80,
+        "wires": [
+            [
+                "d4c012243fad690f"
+            ]
+        ]
     },
     {
         "id": "acad7c39e448dd04",
@@ -4833,6 +4916,182 @@
         ]
     },
     {
+        "id": "711ec9a86af3bbc8",
+        "type": "http in",
+        "z": "212ce6b191f48eaa",
+        "name": "",
+        "url": "/export",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 210,
+        "y": 80,
+        "wires": [
+            [
+                "0d8fa30e559949d5"
+            ]
+        ]
+    },
+    {
+        "id": "1d461187666a0bdf",
+        "type": "file in",
+        "z": "212ce6b191f48eaa",
+        "name": "",
+        "filename": "/data/flows.json",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 600,
+        "y": 80,
+        "wires": [
+            [
+                "434690bf6f111734"
+            ]
+        ]
+    },
+    {
+        "id": "60da8fab41c90d39",
+        "type": "file in",
+        "z": "212ce6b191f48eaa",
+        "name": "",
+        "filename": "/data/settings.js",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 600,
+        "y": 140,
+        "wires": [
+            [
+                "0398f5430fef0b8e"
+            ]
+        ]
+    },
+    {
+        "id": "434690bf6f111734",
+        "type": "change",
+        "z": "212ce6b191f48eaa",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "context[\"flows.json\"]",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 840,
+        "y": 80,
+        "wires": [
+            [
+                "60da8fab41c90d39"
+            ]
+        ]
+    },
+    {
+        "id": "0d8fa30e559949d5",
+        "type": "change",
+        "z": "212ce6b191f48eaa",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "context",
+                "pt": "msg",
+                "to": "{}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 400,
+        "y": 80,
+        "wires": [
+            [
+                "1d461187666a0bdf"
+            ]
+        ]
+    },
+    {
+        "id": "0398f5430fef0b8e",
+        "type": "change",
+        "z": "212ce6b191f48eaa",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "context[\"settings.js\"]",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 840,
+        "y": 140,
+        "wires": [
+            [
+                "3fb4ad9e0633b935"
+            ]
+        ]
+    },
+    {
+        "id": "3fb4ad9e0633b935",
+        "type": "change",
+        "z": "212ce6b191f48eaa",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "context",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 800,
+        "y": 200,
+        "wires": [
+            [
+                "9489f66f0b89efa9"
+            ]
+        ]
+    },
+    {
+        "id": "9489f66f0b89efa9",
+        "type": "http response",
+        "z": "212ce6b191f48eaa",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 970,
+        "y": 200,
+        "wires": []
+    },
+    {
         "id": "39d3e0623ca2f9fc",
         "type": "inject",
         "z": "e4616b5d8579dbd3",
@@ -4924,7 +5183,7 @@
                 "t": "set",
                 "p": "spendless.configuration",
                 "pt": "global",
-                "to": "{    \t    \"spendLessApiUrl\": $env(\"SPEND_LESS_API_URL\"),\t    \"defaultAccountId\": \"00000000-0000-0000-0000-000000000000\"\t}",
+                "to": "{    \t    \"spendLessApiUrl\": $env(\"SPEND_LESS_API_URL\"),\t    \"defaultAccountId\": \"00000000-0000-0000-0000-000000000000\",\t    \"transfersAccountId\": \"5a003b1f-3af7-4530-afe6-cb2b716d1c62\"\t}",
                 "tot": "jsonata"
             }
         ],
@@ -5046,7 +5305,7 @@
             },
             {
                 "t": "eq",
-                "v": "cibc-smart-plus",
+                "v": "cibc-chequing",
                 "vt": "str"
             },
             {
@@ -5421,7 +5680,7 @@
         "type": "debug",
         "z": "f6f2187d.f17ca8",
         "name": "debug 2",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -5845,5 +6104,14 @@
                 "3306a716ee02987e"
             ]
         ]
+    },
+    {
+        "id": "ecab7f80c0df9d0f",
+        "type": "subflow:212ce6b191f48eaa",
+        "z": "61831238545f7697",
+        "name": "",
+        "x": 100,
+        "y": 40,
+        "wires": []
     }
 ]
