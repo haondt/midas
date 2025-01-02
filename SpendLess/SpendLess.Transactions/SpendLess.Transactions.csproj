@@ -8,13 +8,14 @@
       <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
   </PropertyGroup>
 
+
   <ItemGroup>
     <ProjectReference Include="..\SpendLess.Domain\SpendLess.Domain.csproj" />
     <ProjectReference Include="..\SpendLess.Web.Domain\SpendLess.Web.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Haondt.Web" Version="0.0.16-alpha-20241228095635" />
+    <PackageReference Include="Haondt.Web" Version="0.0.16-alpha-20250102142006" />
   </ItemGroup>
 
 </Project>

@@ -9,6 +9,7 @@
         public int MaxKvsSearchHits { get; init; } = 5;
         public string TransactionsTableName { get; init; } = "transactions";
         public string TransactionsTagsTableName { get; init; } = "transactionsTags";
+        public string TransactionsImportDataTableName { get; init; } = "transactionsImportData";
         public bool UseConnectionPooling { get; init; } = true;
     }
 }

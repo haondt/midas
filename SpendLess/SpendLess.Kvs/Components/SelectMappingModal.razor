@@ -4,6 +4,15 @@
     class="modal is-active is-justify-content-flex-start pt-6"
     hx-swap-oob="true"
     hx-on::load="htmx.find('#kvs-autocomplete').focus()">
+    <style>
+        @@scope {
+            :scope {
+                .modal, .modal-card-body, .modal-card {
+                    overflow: visible;
+                }
+            }
+        }
+    </style>
     <div 
         class="modal-background"
         _="

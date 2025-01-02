@@ -1,7 +1,7 @@
 ﻿using Haondt.Core.Models;
 using System.Diagnostics.CodeAnalysis;
 
-namespace SpendLess.Charts.Models
+namespace SpendLess.Core.Models
 {
     public readonly record struct Union<T1, T2> where T1 : notnull where T2 : notnull
     {

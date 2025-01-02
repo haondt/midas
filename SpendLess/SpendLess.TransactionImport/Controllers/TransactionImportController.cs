@@ -1,6 +1,7 @@
 ﻿using Haondt.Core.Extensions;
 using Haondt.Core.Models;
 using Haondt.Identity.StorageKey;
+using Haondt.Persistence.Services;
 using Haondt.Web.Components;
 using Haondt.Web.Core.Extensions;
 using Haondt.Web.Core.Services;
@@ -8,24 +9,28 @@ using Haondt.Web.Middleware;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SpendLess.Accounts.Services;
-using SpendLess.Domain.Models;
-using SpendLess.Persistence.Extensions;
+using SpendLess.Core.Exceptions;
 using SpendLess.Persistence.Services;
 using SpendLess.TransactionImport.Components;
 using SpendLess.TransactionImport.Models;
 using SpendLess.TransactionImport.Services;
+using SpendLess.Transactions.Controllers;
+using SpendLess.Transactions.Models;
+using SpendLess.Transactions.Services;
+using SpendLess.Web.Core.ModelBinders;
 using SpendLess.Web.Domain.Components;
 using SpendLess.Web.Domain.Controllers;
 using SpendLess.Web.Domain.Extensions;
-using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 
 namespace SpendLess.TransactionImport.Controllers
 {
     [Route("transaction-import")]
     public class TransactionImportController(
         IComponentFactory componentFactory,
-        ISingleTypeSpendLessStorage<TransactionImportConfigurationDto> configStorage,
         IAccountsService accountsService,
+        IStorage storage,
+        ITransactionService transactionService,
         ISingleTypeSpendLessStorage<TransactionImportAccountMetadataDto> accountMetadataStorage,
         ITransactionImportService import) : SpendLessUIController
     {
@@ -36,79 +41,133 @@ namespace SpendLess.TransactionImport.Controllers
             return componentFactory.RenderComponentAsync<TransactionImport.Components.TransactionImport>();
         }
 
-        [HttpGet("config")]
-        public async Task<IResult> GetConfigModal(
-            [FromQuery] string? config,
-            [FromQuery] string? account)
+        [HttpGet("reimport")]
+        [ServiceFilter(typeof(RenderPageFilter))]
+        public Task<IResult> GetReimport()
         {
-            var model = new UpsertConfigurationModal();
+            return componentFactory.RenderComponentAsync<TransactionImport.Components.TransactionReimport>();
+        }
 
-            if (!string.IsNullOrEmpty(config))
+        [HttpGet("reimport/search")]
+        [ServiceFilter(typeof(RenderPageFilter))]
+        public async Task<IResult> GetReimportSearchModal()
+        {
+            return await componentFactory.RenderComponentAsync<TransactionReimportSearchModal>();
+        }
+
+        [HttpPost("reimport/search")]
+        public async Task<IResult> UpdateReimportSearchQuery(
+            [FromForm] IEnumerable<string> filters,
+            [FromForm(Name = "select-all"), ModelBinder(typeof(CheckboxModelBinder))] bool selectAll)
+        {
+            var result = new SetupSelectTransactionsField
             {
-                model.Id = config;
-                var configDto = await configStorage.Get(config.SeedStorageKey<TransactionImportConfigurationDto>());
-                model.Name = configDto.Name;
-                model.AddImportTag = configDto.AddImportTag;
+                Swap = true
+            };
 
-            }
-            if (!string.IsNullOrEmpty(account))
+            if (selectAll)
             {
-                var accountMetadata = await accountMetadataStorage.TryGet(account.SeedStorageKey<TransactionImportAccountMetadataDto>());
-                var isDefault = accountMetadata.HasValue
-                    && accountMetadata.Value.DefaultConfiguration.HasValue
-                    && accountMetadata.Value.DefaultConfiguration.Value.SingleValue() == config;
-
-                model.SelectedAccount = new((account, isDefault));
-
+                var parsedFilters = TransactionsController.ParseFilters(filters).ToList();
+                result.SelectedTransactions = await transactionService.GetTransactionsCount(parsedFilters);
+                result.SelectedTransactionFilters = filters.ToList();
             }
-            return await componentFactory.RenderComponentAsync(model);
+            else
+            {
+                result.SelectedTransactionIds = Request.AsRequestData().Form
+                    .Where(kvp => Regex.IsMatch(kvp.Key, "^t-[0-9]+$"))
+                    .Select(kvp => kvp.Key.Substring(2))
+                    .Select(s => long.Parse(s))
+                    .ToList();
+                result.SelectedTransactions = result.SelectedTransactionIds.Count;
+            }
+
+            return await componentFactory.RenderComponentAsync(new AppendComponentLayout
+            {
+                Components = [
+                    result,
+                    new CloseModal()
+                ]
+            });
+        }
+
+        [HttpGet("configs")]
+        public async Task<IResult> GetConfigModal()
+        {
+            return await componentFactory.RenderComponentAsync<UpsertConfigurationModal>();
         }
 
 
-        [HttpPost("{config}")]
-        public async Task<IResult> UpsertConfig([FromForm] TransactionImportUpsertConfigRequestDto request)
+        [HttpPost("configs")]
+        public async Task<IResult> UpsertConfigs([FromForm(Name = "config-slug")] IEnumerable<string?> slugs)
         {
-            request.Name = request.Name.Trim();
-            request.Id ??= Guid.NewGuid().ToString();
-            var configStorageKey = request.Id.SeedStorageKey<TransactionImportConfigurationDto>();
-
-            var updatedConfig = new TransactionImportConfigurationDto
+            await storage.Set(StorageKey<TransactionImportConfigurationSlugsDto>.Empty, new TransactionImportConfigurationSlugsDto
             {
-                AddImportTag = request.AddImportTag,
-                Name = request.Name,
-            };
-            await configStorage.Set(configStorageKey, updatedConfig);
+                Slugs = slugs
+                    .Select(s => s?.Trim())
+                    .Where(s => !string.IsNullOrWhiteSpace(s))
+                    .Cast<string>()
+                    .ToList()
+            });
 
-            if (!string.IsNullOrEmpty(request.Account))
-            {
-                var accountStorageKey = request.Account.SeedStorageKey<TransactionImportAccountMetadataDto>();
-                await accountMetadataStorage.Set(accountStorageKey, new TransactionImportAccountMetadataDto
-                {
-                    DefaultConfiguration = configStorageKey
-                });
-            }
-
-            var setupModel = new Setup();
-            if (!string.IsNullOrEmpty(request.Account))
-                setupModel.SelectedAccount = request.Account;
             return await componentFactory.RenderComponentAsync(new AppendComponentLayout
             {
                 Components = [
                     new CloseModal(),
-                    setupModel
+                    new SetupConfigurationField()
                 ]
             });
         }
 
         [HttpPost("dry-run")]
         public async Task<IResult> StartDryRun(
-            [FromForm, Required] string account,
-            [FromForm, Required] string config,
-            [FromForm, Required] IFormFile file)
+            [FromForm] string? account,
+            [FromForm] string? config,
+            [FromForm] IFormFile? file,
+            [FromForm(Name = "is-reimport")] bool isReimport,
+            [FromForm(Name = "add-import-tag"), ModelBinder(typeof(CheckboxModelBinder))] bool addImportTag,
+            [FromForm] IEnumerable<string> filters,
+            [FromForm] string? transactions)
         {
-            var csvData = file.ParseAsCsv();
-            var configDto = await configStorage.Get(config.SeedStorageKey<TransactionImportConfigurationDto>());
-            var jobId = import.StartDryRun(configDto, account, csvData);
+            // TODO 
+            //if (setDefaultConfiguration
+            //    && !string.IsNullOrEmpty(account)
+            //    && !string.IsNullOrEmpty(config))
+            //    await accountMetadataStorage.Set(account.SeedStorageKey<TransactionImportAccountMetadataDto>(), new TransactionImportAccountMetadataDto
+            //    {
+            //        DefaultConfiguration = config
+            //    });
+
+            string jobId;
+            if (!isReimport)
+            {
+                if (file is null)
+                    throw new UserException("Please select a file.");
+                if (string.IsNullOrEmpty(account))
+                    throw new UserException("Please select an account.");
+                if (string.IsNullOrEmpty(config))
+                    throw new UserException("Please select a configuration.");
+                var csvData = file.ParseAsCsv();
+                jobId = import.StartDryRun(csvData, addImportTag, config, account);
+            }
+            else
+            {
+                var parsedFilters = TransactionsController.ParseFilters(filters).ToList();
+                if (!string.IsNullOrEmpty(transactions))
+                    parsedFilters.Add(TransactionFilter.TransactionIdIsOneOf(transactions
+                        .Split(',')
+                        .Select(q => long.Parse(q))
+                        .ToList()));
+
+                if (string.IsNullOrEmpty(account))
+                {
+                    jobId = import.StartDryRun(parsedFilters.ToList(), addImportTag);
+                }
+                else
+                {
+                    jobId = import.StartDryRun(parsedFilters.ToList(), addImportTag, config, account);
+                }
+
+            }
 
             return await componentFactory.RenderComponentAsync(new ProgressPanel
             {
@@ -129,16 +188,18 @@ namespace SpendLess.TransactionImport.Controllers
                     ProgressPercent = result.Reason.Progress
                 });
             }
+
+
             var creditBalanceChanges = result.Value.Transactions
-                .Where(t => t.Transaction.HasValue)
-                .GroupBy(t => t.Transaction.Value.Destination.Id)
-                .ToDictionary(grp => grp.Key, grp => grp.Sum(t => t.Transaction.Value.Amount));
+                .Where(t => t.TransactionData.HasValue)
+                .GroupBy(t => t.TransactionData.Value.Destination.Id)
+                .ToDictionary(grp => grp.Key, grp => grp.Sum(t => t.TransactionData.Value.Amount));
 
 
             var debitBalanceChanges = result.Value.Transactions
-                .Where(t => t.Transaction.HasValue)
-                .GroupBy(t => t.Transaction.Value.Source.Id)
-                .ToDictionary(grp => grp.Key, grp => grp.Sum(t => t.Transaction.Value.Amount)); ;
+                .Where(t => t.TransactionData.HasValue)
+                .GroupBy(t => t.TransactionData.Value.Source.Id)
+                .ToDictionary(grp => grp.Key, grp => grp.Sum(t => t.TransactionData.Value.Amount)); ;
 
             var balanceChanges = creditBalanceChanges;
             foreach (var (key, value) in debitBalanceChanges)
@@ -148,8 +209,27 @@ namespace SpendLess.TransactionImport.Controllers
                 balanceChanges[key] -= value;
             }
 
+            var unimportedTransactionIds = result.Value.Transactions
+                .Where(t => t.ReplacementTarget.HasValue)
+                .Select(t => t.ReplacementTarget.Value);
+            var unimportedTransactions = await transactionService.GetAmounts([TransactionFilter.TransactionIdIsOneOf(unimportedTransactionIds.ToList())]);
+            foreach (var (key, value) in unimportedTransactions.BySource)
+            {
+                if (!balanceChanges.ContainsKey(key))
+                    balanceChanges[key] = 0;
+                balanceChanges[key] += value;
+            }
+            foreach (var (key, value) in unimportedTransactions.ByDestination)
+            {
+                if (!balanceChanges.ContainsKey(key))
+                    balanceChanges[key] = 0;
+                balanceChanges[key] -= value;
+            }
+
             var pulledAccounts = new Dictionary<string, string>();
-            var balanceChangesTasks = balanceChanges.Select(async kvp =>
+            var balanceChangesTasks = balanceChanges
+                .Where(kvp => kvp.Value != 0)
+                .Select(async kvp =>
             {
                 if (result.Value.NewAccounts.TryGetValue(kvp.Key, out var accountName))
                     return (accountName, kvp.Value);
@@ -312,16 +392,16 @@ namespace SpendLess.TransactionImport.Controllers
                         switch (op)
                         {
                             case TransactionImportFilterOperators.IsEqualTo:
-                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => string.Equals(t.Description, value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
+                                filteredTransactions = filteredTransactions.Where(t => t.TransactionData.As(t => string.Equals(t.Description, value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
                                 break;
                             case TransactionImportFilterOperators.IsNotEqualTo:
-                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => !string.Equals(t.Description, value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
+                                filteredTransactions = filteredTransactions.Where(t => t.TransactionData.As(t => !string.Equals(t.Description, value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
                                 break;
                             case TransactionImportFilterOperators.Contains:
-                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Description.Contains(value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
+                                filteredTransactions = filteredTransactions.Where(t => t.TransactionData.As(t => t.Description.Contains(value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
                                 break;
                             case TransactionImportFilterOperators.StartsWith:
-                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Description.StartsWith(value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
+                                filteredTransactions = filteredTransactions.Where(t => t.TransactionData.As(t => t.Description.StartsWith(value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
                                 break;
                             default:
                                 throw new InvalidOperationException($"unknown operator {op}");
@@ -331,16 +411,16 @@ namespace SpendLess.TransactionImport.Controllers
                         switch (op)
                         {
                             case TransactionImportFilterOperators.IsEqualTo:
-                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => string.Equals(t.Category, value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
+                                filteredTransactions = filteredTransactions.Where(t => t.TransactionData.As(t => string.Equals(t.Category, value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
                                 break;
                             case TransactionImportFilterOperators.IsNotEqualTo:
-                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => !string.Equals(t.Category, value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
+                                filteredTransactions = filteredTransactions.Where(t => t.TransactionData.As(t => !string.Equals(t.Category, value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
                                 break;
                             case TransactionImportFilterOperators.Contains:
-                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Category.Contains(value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
+                                filteredTransactions = filteredTransactions.Where(t => t.TransactionData.As(t => t.Category.Contains(value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
                                 break;
                             case TransactionImportFilterOperators.StartsWith:
-                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Category.StartsWith(value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
+                                filteredTransactions = filteredTransactions.Where(t => t.TransactionData.As(t => t.Category.StartsWith(value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
                                 break;
                             default:
                                 throw new InvalidOperationException($"unknown operator {op}");
@@ -350,10 +430,10 @@ namespace SpendLess.TransactionImport.Controllers
                         switch (op)
                         {
                             case TransactionImportFilterOperators.IsEqualTo:
-                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Amount == decimal.Parse(value)).Or(false));
+                                filteredTransactions = filteredTransactions.Where(t => t.TransactionData.As(t => t.Amount == decimal.Parse(value)).Or(false));
                                 break;
                             case TransactionImportFilterOperators.IsNotEqualTo:
-                                filteredTransactions = filteredTransactions.Where(t => t.Transaction.As(t => t.Amount != decimal.Parse(value)).Or(false));
+                                filteredTransactions = filteredTransactions.Where(t => t.TransactionData.As(t => t.Amount != decimal.Parse(value)).Or(false));
                                 break;
                             case TransactionImportFilterOperators.Contains:
                             case TransactionImportFilterOperators.StartsWith:
@@ -416,5 +496,4 @@ namespace SpendLess.TransactionImport.Controllers
             });
         }
     }
-
 }

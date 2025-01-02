@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SpendLess.TransactionImport.Models;
 using SpendLess.TransactionImport.Services;
+using SpendLess.TransactionImport.Storages;
 using SpendLess.Web.Domain.Models;
 
 namespace SpendLess.TransactionImport.Extensions
@@ -20,11 +21,17 @@ namespace SpendLess.TransactionImport.Extensions
                     {
                         Title = "Import",
                         Slug = "transaction-import",
+                    },
+                    new NavigationLink
+                    {
+                        Title = "Re-Import",
+                        Slug = "transaction-import/reimport",
                     }
                 }
             });
 
             services.AddSingleton<ITransactionImportService, TransactionImportService>();
+            services.AddSingleton<ITransactionImportDataStorage, SqliteTransactionImportDataStorage>();
             services.Configure<TransactionImportSettings>(configuration.GetSection(nameof(TransactionImportSettings)));
 
             return services;

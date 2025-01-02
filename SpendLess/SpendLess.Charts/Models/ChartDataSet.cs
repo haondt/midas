@@ -1,4 +1,6 @@
-﻿namespace SpendLess.Charts.Models
+﻿using SpendLess.Core.Models;
+
+namespace SpendLess.Charts.Models
 {
     public class ChartDataSet
     {

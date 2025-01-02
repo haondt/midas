@@ -21,13 +21,9 @@ namespace SpendLess.Transactions.Controllers
     {
         [HttpGet]
         [ServiceFilter(typeof(RenderPageFilter))]
-        public async Task<IResult> Get()
+        public Task<IResult> Get()
         {
-            return await componentFactory.RenderComponentAsync(new Transactions.Components.Transactions
-            {
-                Tags = await transactionService.GetTags(),
-                Categories = await transactionService.GetCategories()
-            });
+            return componentFactory.RenderComponentAsync(new Transactions.Components.Transactions());
         }
 
         [HttpDelete]
@@ -103,7 +99,7 @@ namespace SpendLess.Transactions.Controllers
                 filters, totalPages, pageSize, page));
         }
 
-        private IEnumerable<TransactionFilter> ParseFilters(IEnumerable<string> filters)
+        public static IEnumerable<TransactionFilter> ParseFilters(IEnumerable<string> filters)
         {
             return filters.Select(filter =>
             {
@@ -126,7 +122,7 @@ namespace SpendLess.Transactions.Controllers
                         switch (op)
                         {
                             case TransactionFilterOperators.IsEqualTo:
-                                return TransactionFilter.HasCategory(target);
+                                return TransactionFilter.HasCategory(value);
                             default:
                                 throw new NotSupportedException($"Operation {op} is not supported with target {target}.");
                         }

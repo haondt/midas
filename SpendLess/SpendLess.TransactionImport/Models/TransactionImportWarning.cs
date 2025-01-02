@@ -10,6 +10,7 @@ namespace SpendLess.TransactionImport.Models
         public const string CreatingAccountWithSameNameAsExisting = "create_with_same_name_as_existing";
         public const string MissingCategory = "no_category";
         public const string SourceDataHashExists = "source_data_hash_exists";
+        public const string WillUpdateExisting = "will_update_existing";
 
         public static string GetDescription(string value) => value switch
         {
@@ -18,6 +19,7 @@ namespace SpendLess.TransactionImport.Models
             CreatingAccountWithSameNameAsExisting => "The account being created has the same name as an existing account.",
             MissingCategory => $"No category was set. The default \"{SpendLessConstants.DefaultCategory}\" category will be used.",
             SourceDataHashExists => $"There is one or more existing transactions that were generated from identical import data.",
+            WillUpdateExisting => $"One or more existing transactions will be updated.",
             _ => throw new ArgumentException($"value \"{value}\" not known.")
         };
     }

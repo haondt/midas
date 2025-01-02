@@ -1,0 +1,152 @@
+﻿@using SpendLess.Domain.Models
+@using SpendLess.Transactions.Models
+@using SpendLess.Web.Domain.Components
+@using SpendLess.Web.Domain.Services
+
+@code {
+    [Parameter, EditorRequired]
+    public required long Id { get; set; }
+
+    [Parameter, EditorRequired]
+    public required ExtendedTransactionDto TransactionDto { get; set; } 
+
+    [Parameter]
+    public bool ShowActions { get; set; } = true;
+}
+
+<tr class="summary" 
+    id="summary-@Id"
+    _="
+    on click
+        if (the event's target is not the first <input/> in me
+            and the event's target is not in the first .actions in me)
+            toggle .is-hidden on the next <tr/> toggle .expanded on me
+        end
+    end
+    on afterDeleted
+        remove the next <tr/>
+        then remove me
+    end
+">
+    <td>
+        <input
+            _="on click send updateState to #select-all"
+            class="select-checkbox" name="t-@Id" type="checkbox"/>
+    </td>
+    <td>
+        @TransactionDto.Description
+    </td>
+    <td>
+        @StringFormatter.FormatCurrency(TransactionDto.Amount)
+    </td>
+    <td>
+        @StringFormatter.FormatDate(TransactionDto.TimeStamp)
+    </td>
+    <td class="actions">
+        <div class="is-flex is-flex-direction-column is-align-items-flex-end">
+            <div>
+                <button class="button is-small"
+                    _="
+                        set :dd to the next .dropdown
+                        on click toggle .is-active on :dd then halt the event
+                        on click from elsewhere
+                            if the event's target is not in :dd
+                                remove .is-active from :dd">
+                    <span>actions</span>
+                    <span class="icon">
+                        <i class="fa-solid fa-caret-down"></i>
+                    </span>
+                </button>
+            </div>
+            <div class="dropdown is-right">
+                <div class="dropdown-menu">
+                    <div class="dropdown-content">
+                        <button 
+                            class="dropdown-item"
+                            hx-swap="none"
+                            _="on htmx:afterOnLoad
+                                if event.detail.xhr.status == 204 then
+                                    send afterDeleted to the closest <tr/>"
+                            hx-confirm="are you sure?"
+                            hx-delete="/transaction/@Id">
+                            <span class="icon has-text-danger">
+                                <i class="fa-solid fa-trash"></i>
+                            </span>
+                            <span>delete</span>
+                        </button>
+                        <div data-loading-states>
+                            <button 
+                                class="dropdown-item"
+                                data-loading-class="is-disabled"
+                                hx-post="/transaction-import/reimport/@Id">
+                                <span class="icon has-text-warning">
+                                    <i class="fa-solid fa-arrows-rotate"></i>
+                                </span>
+                                <span>re-import</span>
+                                </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </td>
+</tr>
+<tr class="details is-hidden"
+    id="details-@Id">
+    <td colspan="5">
+        <table style="width:100%;">
+            <tbody>
+                <tr>
+                    <th>Source account name</th>
+                    <td>@TransactionDto.SourceAccountName</td>
+                </tr>
+                <tr>
+                    <th>Source account ID</th>
+                    <td>@TransactionDto.SourceAccount</td>
+                </tr>
+                <tr>
+                    <th>Destination account name</th>
+                    <td>@TransactionDto.DestinationAccountName</td>
+                </tr>
+                <tr>
+                    <th>Destination account ID</th>
+                    <td>@TransactionDto.DestinationAccount</td>
+                </tr>
+                <tr>
+                    <th>Category</th>
+                    <td>@TransactionDto.Category</td>
+                </tr>
+                <tr>
+                    <th>Tags</th>
+                    <td>
+                        <div class="tags">
+                            @foreach(var tag in TransactionDto.Tags)
+                            {
+                                <span class="tag is-info">@tag</span>
+                            }
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><button 
+                        class="button"
+                        _="
+                            on click
+                                halt the event
+                                writeText('@TransactionDto.SourceDataString.Replace("'", "\\'")') into the navigator's clipboard
+                                set target to the first .copy-button-text in me
+                                set the target's innerHTML to 'Copied!'
+                                    then wait 1.3s
+                                    then set the target's innerHTML to 'Copy Request'
+                        ">
+                        <span class="icon is-small">
+                            <i class="fas fa-copy"></i>
+                        </span>
+                        <span class="copy-button-text">TODO</span>
+                    </button></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </td>
+</tr>

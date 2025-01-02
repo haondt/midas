@@ -6,7 +6,7 @@ namespace SpendLess.Transactions.Storages
 {
     public interface ITransactionStorage
     {
-        Task<List<long>> AddTransactions(List<TransactionDto> transaction);
+        Task<List<long>> AddTransactions(List<TransactionDto> transactions, List<long>? deleteTransactions = null);
         Task<TransactionDto> GetTransaction(long key);
         (StorageOperation Operation, Func<List<long>> GetResult) CreateAddTransactionsOperation(List<TransactionDto> transactions);
         Task<List<bool>> CheckIfHasSourceDataHash(IEnumerable<long> hashes);

@@ -6,7 +6,7 @@
 
 @code {
     [Parameter]
-    public List<SendToNodeRedSingleResultDto> Results { get; set; } = [];
+    public List<DryRunTransactionDto> Results { get; set; } = [];
 
     [Parameter, EditorRequired]
     public required int Page { get; set; }
@@ -22,12 +22,12 @@
     @foreach(var result in Results)
     {
         <tr>
-            @if (result.Transaction.HasValue)
+            @if (result.TransactionData.HasValue)
             {
-                <td>@result.Transaction.Value.Source.Name</td>
-                <td>@result.Transaction.Value.Destination.Name</td>
-                <td>@result.Transaction.Value.Description</td>
-                <td style="text-align:end;">@StringFormatter.FormatCurrency(result.Transaction.Value.Amount)</td>
+                <td>@result.TransactionData.Value.Source.Name</td>
+                <td>@result.TransactionData.Value.Destination.Name</td>
+                <td>@result.TransactionData.Value.Description</td>
+                <td style="text-align:end;">@StringFormatter.FormatCurrency(result.TransactionData.Value.Amount)</td>
             }
             else
             {

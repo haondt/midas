@@ -19,5 +19,6 @@ namespace SpendLess.Transactions.Services
         Task<int> DeleteAllTransactions();
         Task<long> GetTransactionsCount(List<TransactionFilter> filters);
         Task<int> DeleteTransactions(List<TransactionFilter> filters);
+        Task<List<long>> ReplaceTransactions(List<TransactionDto> newTransactions, List<long> oldTransacations);
     }
 }

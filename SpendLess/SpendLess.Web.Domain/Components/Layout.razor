@@ -24,9 +24,6 @@
             right: 0;
         }
 
-        .modal, .modal-card-body, .modal-card {
-            overflow: visible;
-        }
 
         .field.has-addons .file .file-name {
           border-top-right-radius: 0;
@@ -50,6 +47,12 @@
         box-shadow: none;
         border-bottom: 1px solid var(--bulma-border-weak);
     }
+
+    .dropdown-item.is-disabled {
+        pointer-events: none;
+        opacity: 0.65;
+    }
+
     
 </style>
 <div id="mother-container" hx-ext="rename,loading-states,include-vals">

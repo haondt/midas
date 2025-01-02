@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using SpendLess.Charts.Models;
+using SpendLess.Core.Models;
 
 namespace SpendLess.Charts.Converters
 {

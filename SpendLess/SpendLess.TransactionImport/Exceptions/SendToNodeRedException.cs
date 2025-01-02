@@ -1,9 +1,10 @@
-﻿namespace SpendLess.TransactionImport.Exceptions
+﻿using SpendLess.NodeRed.Models;
+
+namespace SpendLess.TransactionImport.Exceptions
 {
     public class SendToNodeRedException : Exception
     {
-        public required string SourceRequestPayload { get; set; }
-        public required List<string> SourceData { get; set; }
+        public required SendToNodeRedRequestDto Request { get; set; }
 
         public SendToNodeRedException()
         {

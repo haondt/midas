@@ -133,8 +133,8 @@ namespace SpendLess.Kvs.Services
                     if (value.Aliases != null)
                         foreach (var alias in value.Aliases)
                             await AddAlias(key, alias);
-
                 }
+
                 logger.LogInformation("Completed mapping import");
             }
             catch (Exception)

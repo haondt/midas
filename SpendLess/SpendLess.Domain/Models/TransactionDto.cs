@@ -13,7 +13,6 @@ namespace SpendLess.Domain.Models
         public string DestinationAccount { get; set; } = SpendLessConstants.DefaultAccount;
         public string Description { get; set; } = "";
         public required long TimeStamp { get; set; }
-        public required string ImportAccount { get; set; }
 
         private List<string> _sourceData = default!;
         public required List<string> SourceData

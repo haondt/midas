@@ -46,7 +46,6 @@ namespace SpendLess.Transactions.Storages
                         sourceAccount TEXT NOT NULL,
                         destinationAccount TEXT NOT NULL,
                         description TEXT NOT NULL,
-                        importAccount TEXT NOT NULL,
                         sourceData TEXT NOT NULL,
                         sourceDataHash INTEGER NOT NULL
                      );", connection, transaction);
@@ -65,9 +64,15 @@ namespace SpendLess.Transactions.Storages
             });
         }
 
-        public Task<List<long>> AddTransactions(List<TransactionDto> transactions)
+        public Task<List<long>> AddTransactions(List<TransactionDto> transactions, List<long>? deleteTransactions = null)
         {
-            var result = WithTransaction((conn, trns) => AddTransactionsInternal(transactions, conn, trns));
+            var result = WithTransaction((conn, trns) =>
+            {
+                var added = AddTransactionsInternal(transactions, conn, trns);
+                if (deleteTransactions?.Count > 0)
+                    DeleteTransactionsInternal(deleteTransactions, conn, trns);
+                return added;
+            });
             return Task.FromResult(result);
         }
 
@@ -82,7 +87,6 @@ namespace SpendLess.Transactions.Storages
                         sourceAccount,
                         destinationAccount,
                         description,
-                        importAccount,
                         sourceData,
                         sourceDataHash)
                     VALUES
@@ -92,7 +96,6 @@ namespace SpendLess.Transactions.Storages
                         @SourceAccount,
                         @DestinationAccount,
                         @Description,
-                        @ImportAccount,
                         @SourceData,
                         @SourceDataHash);
                     SELECT last_insert_rowid();
@@ -104,7 +107,6 @@ namespace SpendLess.Transactions.Storages
             var sourceAccountParameter = insertCommand.Parameters.Add("@SourceAccount", SqliteType.Text);
             var destinationAccountParameter = insertCommand.Parameters.Add("@DestinationAccount", SqliteType.Text);
             var descriptionParameter = insertCommand.Parameters.Add("@Description", SqliteType.Text);
-            var importAccountParameter = insertCommand.Parameters.Add("@ImportAccount", SqliteType.Text);
             var sourceDataParameter = insertCommand.Parameters.Add("@SourceData", SqliteType.Text);
             var sourceDataHashParameter = insertCommand.Parameters.Add("@SourceDataHash", SqliteType.Integer);
 
@@ -125,7 +127,6 @@ namespace SpendLess.Transactions.Storages
                 sourceAccountParameter.Value = transaction.SourceAccount;
                 destinationAccountParameter.Value = transaction.DestinationAccount;
                 descriptionParameter.Value = transaction.Description;
-                importAccountParameter.Value = transaction.ImportAccount;
                 sourceDataParameter.Value = transaction.SourceDataString;
                 sourceDataHashParameter.Value = transaction.SourceDataHash;
 
@@ -223,21 +224,25 @@ namespace SpendLess.Transactions.Storages
         {
             var result = WithTransaction((conn, trns) =>
             {
-                var command = new SqliteCommand($"DELETE FROM {_tableName} WHERE id = @key",
-                    conn, trns);
-                var parameter = command.Parameters.Add("@key", SqliteType.Integer);
-
-                var deleted = 0;
-                foreach (var key in keys)
-                {
-                    parameter.Value = key;
-                    deleted += command.ExecuteNonQuery();
-                }
-
-                return deleted;
+                return DeleteTransactionsInternal(keys, conn, trns);
             });
 
             return Task.FromResult(result);
+        }
+        public int DeleteTransactionsInternal(List<long> keys, SqliteConnection conn, SqliteTransaction trns)
+        {
+            var command = new SqliteCommand($"DELETE FROM {_tableName} WHERE id = @key",
+                conn, trns);
+            var parameter = command.Parameters.Add("@key", SqliteType.Integer);
+
+            var deleted = 0;
+            foreach (var key in keys)
+            {
+                parameter.Value = key;
+                deleted += command.ExecuteNonQuery();
+            }
+
+            return deleted;
         }
 
         public Task<int> DeleteAllTransactions()
@@ -385,7 +390,6 @@ namespace SpendLess.Transactions.Storages
                     t.sourceAccount,
                     t.destinationAccount,
                     t.description,
-                    t.importAccount,
                     t.sourceData,
                     t.sourceDataHash
                 FROM {_tableName} t
@@ -447,7 +451,6 @@ namespace SpendLess.Transactions.Storages
                         SourceAccount = reader["sourceAccount"].ToString() ?? "",
                         DestinationAccount = reader["destinationAccount"].ToString() ?? "",
                         Description = reader["description"].ToString() ?? "",
-                        ImportAccount = reader["importAccount"].ToString() ?? "",
                         SourceData = TransactionDto.DestringifySourceData(reader["sourceData"].ToString() ?? ""),
                         Tags = getGetTags.Execute(Convert.ToInt32(reader["id"])).ToHashSet()
                     };
@@ -520,6 +523,13 @@ namespace SpendLess.Transactions.Storages
                 var filter = filters[i];
                 switch (filter)
                 {
+                    case TransactionIdIsOneOf idIsOneOfFilter:
+                        var idIsOneOfParameters = idIsOneOfFilter.Ids
+                            .Select((v, j) => ($"@TransactionIdIsOneOf{i}_{j}", v));
+                        var idIsOneOfInString = string.Join(", ", idIsOneOfParameters.Select(q => q.Item1));
+                        whereClauses.Add($"t.id IN ({idIsOneOfInString})");
+                        parameters.AddRange(idIsOneOfParameters.Select(q => new SqliteParameter(q.Item1, q.Item2)));
+                        break;
                     case MinDateTransactionFilter minDateFilter:
                         whereClauses.Add($"t.timeStamp >= @MinDate{i}");
                         parameters.Add(new SqliteParameter($"@MinDate{i}", minDateFilter.UnixSeconds));

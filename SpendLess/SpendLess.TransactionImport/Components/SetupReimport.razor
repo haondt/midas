@@ -1,7 +1,8 @@
-﻿@using Haondt.Core.Extensions
+@using Haondt.Core.Extensions
 @using Haondt.Core.Models
 @using Haondt.Identity.StorageKey
 @using Haondt.Persistence.Services
+@using Haondt.Web.Components
 @using SpendLess.Persistence.Extensions
 @using SpendLess.Accounts.Services
 @using global::SpendLess.Domain.Models
@@ -14,13 +15,11 @@
 
 @code {
     [Parameter]
-    public Optional<string> SelectedAccount { get; set; } = new();
+    public SetupSelectTransactionsField? SelectTransactionsField { get; set; }
 
     private Dictionary<string, string> _accounts { get; set; } = [];
     private List<string> _configurations { get; set; } = [];
     private Dictionary<string, string> _accountDefaultConfigurations { get; set; } = [];
-    private Optional<string> _selectedAccountDefaultConfiguration;
-
     protected override async Task OnInitializedAsync()
     {
         var accounts = await AccountsService.GetAccountsIncludedInNetWorth();
@@ -38,49 +37,25 @@
                 continue;
             _accountDefaultConfigurations[key.SingleValue()] = value.DefaultConfiguration.Value;
         }
-
-        if (!SelectedAccount.HasValue && _accounts.Count > 0)
-            SelectedAccount = _accounts.First().Key;
-
-        if (SelectedAccount.HasValue)
-            if (_accountDefaultConfigurations.TryGetValue(SelectedAccount.Value, out var configId))
-                _selectedAccountDefaultConfiguration = configId;
     }
 }
 
 <form id="setup" 
     hx-post="/transaction-import/dry-run" 
     hx-swap="innerHTML"
-    hx-target="#dry-run-result"
-    hx-encoding="multipart/form-data">
-    <div class="field">
-        <label class="label">Input file</label>
-        <div class="file">
-            <label class="file-label">
-            <input 
-                _="on change 
-                    set files to the event's target.files
-                    if files.length is 1
-                        set file to files[0]
-                        add .has-name to the closest .file
-                        set (the next .file-name)'s innerHTML to the file's name
-                        remove .is-hidden from the next .file-name
-                    else
-                        remove .has-name from the closest .file
-                        add .is-hidden to the next .file-name
-                    end
-                    "
-                class="file-input" type="file" name="file" accept=".csv" />
-                <span class="file-cta">
-                    <span class="file-icon">
-                        <i class="fas fa-upload"></i>
-                    </span>
-                    <span class="file-label"> Choose a file… </span>
-                </span>
-                <span class="file-name is-hidden"></span>
-            </label>
-        </div>
-    </div>
+    hx-target="#dry-run-result">
+
+    <input type="hidden" name="is-reimport" value="true" />
+
+    @if(SelectTransactionsField != null)
+    {
+        <ObjectComponentT Component="@SelectTransactionsField" />
+    }
+    else
+    {
+        <SetupSelectTransactionsField />
+    }
+
 
     <div class="field">
         <label class="label">Account</label>
@@ -98,14 +73,17 @@
                             var attributes = new Dictionary<string, object>();
                             if (_accountDefaultConfigurations.TryGetValue(id, out var configId))
                                 attributes["sl-default-config"] = configId;
-                            if(SelectedAccount.HasValue && SelectedAccount.Value == id)
-                                attributes["selected"] = "";
                             <option
                                 @attributes="attributes"
                                 value="@id">
                                 @name
                             </option>
                         }
+                        <option
+                            selected
+                            value="">
+                            Use Existing Account and Configuration
+                        </option>
                 </select>
             </div>
         </div>
@@ -113,17 +91,7 @@
 
     <SetupConfigurationField 
         IsSwap="@false" 
-        SelectedAccountDefaultConfiguration="_selectedAccountDefaultConfiguration"
         Configurations="_configurations"/>
-
-    <div class="field">
-        <div class="control">
-            <label class="checkbox">
-                <input type="checkbox" name="add-import-tag" value="true" checked/>
-                Add import tag
-            </label>
-        </div>
-    </div>
 
     <hr/>
     <div id="preprocess-file-controls">
@@ -131,7 +99,7 @@
             <div class="control">
                 <button 
                     class="button is-primary">
-                    Process File
+                    Reprocess Transactions
                 </button>
             </div>
         </div>

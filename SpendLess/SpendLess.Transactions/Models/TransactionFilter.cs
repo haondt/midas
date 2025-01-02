@@ -2,6 +2,10 @@
 {
     public abstract class TransactionFilter
     {
+        public static TransactionFilter TransactionIdIsOneOf(List<long> ids)
+        {
+            return new TransactionIdIsOneOf { Ids = ids };
+        }
         public static TransactionFilter MinDate(DateTime value)
         {
             return new MinDateTransactionFilter { UnixSeconds = ((DateTimeOffset)value).ToUnixTimeSeconds() };
@@ -53,6 +57,10 @@
         }
     }
 
+    public class TransactionIdIsOneOf : TransactionFilter
+    {
+        public required List<long> Ids { get; set; }
+    }
     public class MinDateTransactionFilter : TransactionFilter
     {
         public required long UnixSeconds { get; set; }

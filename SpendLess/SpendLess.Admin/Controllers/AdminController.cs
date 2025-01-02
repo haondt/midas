@@ -6,6 +6,7 @@ using SpendLess.Admin.Components;
 using SpendLess.Admin.Services;
 using SpendLess.Kvs.Models;
 using SpendLess.Kvs.Services;
+using SpendLess.Web.Core.ModelBinders;
 using SpendLess.Web.Domain.Components;
 using SpendLess.Web.Domain.Controllers;
 using SpendLess.Web.Domain.Extensions;
@@ -26,7 +27,7 @@ namespace SpendLess.Admin.Controllers
 
         [HttpPost("import-mappings")]
         public async Task<IResult> ImportMappings([FromForm] IFormFile file,
-            [FromForm(Name = "overwrite-existing")] bool overwriteExisting)
+            [FromForm(Name = "overwrite-existing"), ModelBinder(typeof(CheckboxModelBinder))] bool overwriteExisting)
         {
             var parsedData = file.DeserializeFromJson<ExternalKvsMappingsDto>();
 

@@ -65,10 +65,11 @@ namespace SpendLess.Dashboard.Services
                     }
 
                 balanceChartData.TimeStamps.Add(currentDay);
+                balanceChartData.Balances[0].Add(0);
                 for (int i = 0; i < accountsList.Count; i++)
                 {
                     balanceChartData.Balances[i + 1].Add(currentBalances[accountsList[i]]);
-                    balanceChartData.Balances[0].Add(currentBalances[accountsList[i]]);
+                    balanceChartData.Balances[0][^1] += currentBalances[accountsList[i]];
                 }
                 currentDay = currentDay.AddDays(1);
             }

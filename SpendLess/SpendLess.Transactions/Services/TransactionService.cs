@@ -17,6 +17,7 @@ namespace SpendLess.Transactions.Services
             if (transactions.Count == 0)
                 return [];
 
+
             var operations = new List<StorageOperation>();
             var (addTransactionsOperation, getResult) = transactionStorage.CreateAddTransactionsOperation(transactions);
             operations.Add(addTransactionsOperation);
@@ -26,6 +27,10 @@ namespace SpendLess.Transactions.Services
             return getResult();
         }
 
+        public Task<List<long>> ReplaceTransactions(List<TransactionDto> newTransactions, List<long> oldTransacations)
+        {
+            return transactionStorage.AddTransactions(newTransactions, oldTransacations);
+        }
 
         public Task<Dictionary<long, TransactionDto>> GetTransactions(List<TransactionFilter> filters)
         {
@@ -67,7 +72,6 @@ namespace SpendLess.Transactions.Services
                     Amount = kvp.Value.Amount,
                     DestinationAccount = kvp.Value.DestinationAccount,
                     DestinationAccountName = accountNames.GetValueOrDefault(kvp.Value.DestinationAccount, SpendLessConstants.DefaultAccountName),
-                    ImportAccount = kvp.Value.ImportAccount,
                     SourceAccount = kvp.Value.SourceAccount,
                     SourceAccountName = accountNames.GetValueOrDefault(kvp.Value.SourceAccount, SpendLessConstants.DefaultAccountName),
                     Category = kvp.Value.Category,

@@ -4,41 +4,42 @@ using SpendLess.TransactionImport.Models;
 
 namespace SpendLess.Domain.Models
 {
-    public class SendToNodeRedResultDto
+    public class DryRunResultDto
     {
-        public List<SendToNodeRedSingleResultDto> Transactions { get; set; } = [];
+        public List<DryRunTransactionDto> Transactions { get; set; } = [];
         public Dictionary<string, string> NewAccounts { get; set; } = [];
         public Dictionary<string, int> NewCategories { get; set; } = [];
         public Dictionary<string, int> NewTags { get; set; } = [];
         public decimal BalanceChange { get; set; } = 0;
-        public Optional<string> ImportTag { get; set; } = new();
-        public required SendToNodeRedResultAccountDataDto ImportAccount { get; set; }
+        public Optional<string> ImportTag { get; set; }
     }
 
-    public class SendToNodeRedSingleResultDto
+    public class DryRunTransactionDto
     {
         public required string SourceRequestPayload { get; set; }
+        public required TransactionImportData ImportData { get; set; }
         public required List<string> SourceData { get; set; }
         public HashSet<string> Warnings { get; set; } = [];
         public HashSet<string> Errors { get; set; } = [];
         public string Status => Errors.Count > 0 ? TransactionImportStatus.Error
             : Warnings.Count > 0 ? TransactionImportStatus.Warning
             : TransactionImportStatus.Success;
-        public Optional<SendToNodeRedTransactionResultDto> Transaction { get; set; } = new();
+        public Optional<DryRunTransactionDataDto> TransactionData { get; set; } = new();
+        public Optional<long> ReplacementTarget { get; set; }
     }
 
-    public class SendToNodeRedTransactionResultDto
+    public class DryRunTransactionDataDto
     {
         public required decimal Amount { get; set; }
         public HashSet<string> Tags { get; set; } = [];
         public string Category { get; set; } = SpendLessConstants.DefaultCategory;
         public required long TimeStamp { get; set; }
-        public required SendToNodeRedResultAccountDataDto Source { get; set; }
-        public required SendToNodeRedResultAccountDataDto Destination { get; set; }
+        public required DryRunAccountDto Source { get; set; }
+        public required DryRunAccountDto Destination { get; set; }
         public string Description { get; set; } = "";
     }
 
-    public class SendToNodeRedResultAccountDataDto
+    public class DryRunAccountDto
     {
         public required string Id { get; set; }
         public required string Name { get; set; }

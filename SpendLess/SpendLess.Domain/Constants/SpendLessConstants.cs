@@ -20,7 +20,14 @@ namespace SpendLess.Domain.Constants
             ApiSerializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
             ApiSerializerSettings.Formatting = Formatting.None;
             ApiSerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-            ApiSerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            ApiSerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver
+            {
+                NamingStrategy = new CamelCaseNamingStrategy
+                {
+                    ProcessDictionaryKeys = false,
+                    OverrideSpecifiedNames = true
+                }
+            };
             ApiSerializerSettings.Converters.Add(new GenericStorageKeyJsonConverter());
             ApiSerializerSettings.Converters.Add(new GenericOptionalJsonConverter());
 
