@@ -1,5 +1,5 @@
 ## Short Term
-- select transactions to omit from import (e.g. those with a conflicting import hash)
+
 
 ## Medium Term
 - ability to reconcile transfers
