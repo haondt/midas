@@ -4059,7 +4059,7 @@
                 "t": "set",
                 "p": "url",
                 "pt": "msg",
-                "to": "$globalContext('spendless.configuration.spendLessApiUrl')\t    & \"api/kvs/mapping\"",
+                "to": "$globalContext('spendless.configuration.spendLessApiUrl')\t    & \"api/kvs/value\"",
                 "tot": "jsonata"
             },
             {
@@ -5290,7 +5290,7 @@
         "type": "switch",
         "z": "f6f2187d.f17ca8",
         "name": "Check config name",
-        "property": "spendless.request.configuration.name",
+        "property": "spendless.request.configuration",
         "propertyType": "msg",
         "rules": [
             {
