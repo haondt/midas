@@ -92,10 +92,11 @@
                                         </button>
                                         <button 
                                             class="dropdown-item"
-                                            hx-swap="none"
-                                            hx-confirm="are you sure?"
+                                            hx-target="#content"
+                                            hx-swap="innerHTML"
                                             hx-include="closest <form/>, #filters"
-                                            hx-delete="/transactions">
+                                            hx-push-url="true"
+                                            hx-get="/transaction-import/reimport">
                                             <span class="icon has-text-warning">
                                                 <i class="fa-solid fa-arrows-rotate"></i>
                                             </span>

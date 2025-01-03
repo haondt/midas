@@ -43,13 +43,34 @@ namespace SpendLess.TransactionImport.Controllers
 
         [HttpGet("reimport")]
         [ServiceFilter(typeof(RenderPageFilter))]
-        public Task<IResult> GetReimport()
+        public async Task<IResult> GetReimport(
+            [FromQuery] IEnumerable<string> filters,
+            [FromQuery(Name = "select-all"), ModelBinder(typeof(CheckboxModelBinder))] bool selectAll)
         {
-            return componentFactory.RenderComponentAsync<TransactionImport.Components.TransactionReimport>();
+            var result = new SetupSelectTransactionsField();
+            if (selectAll)
+            {
+                var parsedFilters = TransactionsController.ParseFilters(filters).ToList();
+                result.SelectedTransactions = await transactionService.GetTransactionsCount(parsedFilters);
+                result.SelectedTransactionFilters = filters.ToList();
+            }
+            else
+            {
+                result.SelectedTransactionIds = Request.AsRequestData().Query
+                    .Where(kvp => Regex.IsMatch(kvp.Key, "^t-[0-9]+$"))
+                    .Select(kvp => kvp.Key.Substring(2))
+                    .Select(s => long.Parse(s))
+                    .ToList();
+                result.SelectedTransactions = result.SelectedTransactionIds.Count;
+            }
+
+            return await componentFactory.RenderComponentAsync(new TransactionReimport
+            {
+                SelectTransactionsField = result,
+            });
         }
 
         [HttpGet("reimport/search")]
-        [ServiceFilter(typeof(RenderPageFilter))]
         public async Task<IResult> GetReimportSearchModal()
         {
             return await componentFactory.RenderComponentAsync<TransactionReimportSearchModal>();
