@@ -117,6 +117,22 @@
         Configurations="_configurations"/>
 
     <div class="field">
+        <label class="label">Handle Conflicting Import Hashes</label>
+        <div class="control">
+            <div class="select">
+                <select name="conflicts">
+                    <option value="@TransactionImportConflictResolutionStrategy.Warn" selected>
+                        Warn
+                    </option>
+                    <option value="@TransactionImportConflictResolutionStrategy.Omit">
+                        Omit
+                    </option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="field">
         <div class="control">
             <label class="checkbox">
                 <input type="checkbox" name="add-import-tag" value="true" checked/>

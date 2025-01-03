@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SpendLess.Accounts.Services;
 using SpendLess.Core.Exceptions;
-using SpendLess.Persistence.Services;
 using SpendLess.TransactionImport.Components;
 using SpendLess.TransactionImport.Models;
 using SpendLess.TransactionImport.Services;
@@ -31,7 +30,6 @@ namespace SpendLess.TransactionImport.Controllers
         IAccountsService accountsService,
         IStorage storage,
         ITransactionService transactionService,
-        ISingleTypeSpendLessStorage<TransactionImportAccountMetadataDto> accountMetadataStorage,
         ITransactionImportService import) : SpendLessUIController
     {
         [HttpGet]
@@ -147,6 +145,7 @@ namespace SpendLess.TransactionImport.Controllers
             [FromForm(Name = "is-reimport")] bool isReimport,
             [FromForm(Name = "add-import-tag"), ModelBinder(typeof(CheckboxModelBinder))] bool addImportTag,
             [FromForm] IEnumerable<string> filters,
+            [FromForm] TransactionImportConflictResolutionStrategy conflicts,
             [FromForm] string? transactions)
         {
             // TODO 
@@ -168,7 +167,7 @@ namespace SpendLess.TransactionImport.Controllers
                 if (string.IsNullOrEmpty(config))
                     throw new UserException("Please select a configuration.");
                 var csvData = file.ParseAsCsv();
-                jobId = import.StartDryRun(csvData, addImportTag, config, account);
+                jobId = import.StartDryRun(csvData, addImportTag, config, account, conflicts);
             }
             else
             {

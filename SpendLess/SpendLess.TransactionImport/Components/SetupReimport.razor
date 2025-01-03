@@ -16,6 +16,9 @@
 @code {
     [Parameter]
     public SetupSelectTransactionsField? SelectTransactionsField { get; set; }
+    [Parameter]
+    public Optional<string> SelectedAccount { get; set; } = new();
+    private Optional<string> _selectedAccountDefaultConfiguration;
 
     private Dictionary<string, string> _accounts { get; set; } = [];
     private List<string> _configurations { get; set; } = [];
@@ -37,6 +40,10 @@
                 continue;
             _accountDefaultConfigurations[key.SingleValue()] = value.DefaultConfiguration.Value;
         }
+
+        if (SelectedAccount.HasValue)
+            if (_accountDefaultConfigurations.TryGetValue(SelectedAccount.Value, out var configId))
+                _selectedAccountDefaultConfiguration = configId;
     }
 }
 
@@ -91,6 +98,7 @@
 
     <SetupConfigurationField 
         IsSwap="@false" 
+        SelectedAccountDefaultConfiguration="_selectedAccountDefaultConfiguration"
         Configurations="_configurations"/>
 
     <hr/>

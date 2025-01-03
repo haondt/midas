@@ -2,8 +2,7 @@
 {
     public enum TransactionImportConflictResolutionStrategy
     {
-        Proceed,
-        Omit,
-        Replace
+        Warn,
+        Omit
     }
 }

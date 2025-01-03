@@ -257,7 +257,8 @@ namespace SpendLess.TransactionImport.Services
             List<List<string>> csvData,
             bool addImportTag,
             string configurationSlug,
-            string accountId)
+            string accountId,
+            TransactionImportConflictResolutionStrategy conflictResolutionStrategy)
         {
 
             var (jobId, cancellationToken) = jobRegistry.RegisterJob("parsing csv...");
@@ -302,9 +303,18 @@ namespace SpendLess.TransactionImport.Services
                     //var header = csvData.First();
                     var batches = csvData.Chunk(batchSize);
 
+                    var hasBeenImported = new List<bool>();
+                    var processed = 0;
                     foreach (var batch in batches)
                     {
-                        var payloads = batch.Select(b => new SendToNodeRedRequestDto
+                        List<List<string>> filteredBatch = batch.ToList();
+                        var batchedHasBeenImported = await transactionService.CheckIfTransactionsHaveBeenImported(filteredBatch);
+                        if (conflictResolutionStrategy == TransactionImportConflictResolutionStrategy.Omit)
+                            filteredBatch = batch.Where((b, i) => !batchedHasBeenImported[i]).ToList();
+                        else
+                            hasBeenImported.AddRange(batchedHasBeenImported);
+
+                        var payloads = filteredBatch.Select(b => new SendToNodeRedRequestDto
                         {
                             Account = accountId,
                             Configuration = configurationSlug,
@@ -326,10 +336,11 @@ namespace SpendLess.TransactionImport.Services
                             }
                         }));
                         results.AddRange(batchResults);
-                        jobRegistry.UpdateJobProgress(jobId, (double)results.Count / (double)csvData.Count);
+                        processed += batch.Length;
+                        jobRegistry.UpdateJobProgress(jobId, (double)processed / (double)csvData.Count);
                     }
 
-                    jobRegistry.UpdateJobProgress(jobId, (double)results.Count / (double)csvData.Count);
+                    jobRegistry.UpdateJobProgress(jobId, (double)processed / (double)csvData.Count);
 
                     var context = new TransactionImportDryRunContext
                     {
@@ -341,15 +352,15 @@ namespace SpendLess.TransactionImport.Services
                     foreach (var (request, response) in results)
                         await ProcessNodeRedResult(request, response, context);
 
-                    foreach (var batch in result.Transactions.Chunk(options.Value.StorageOperationBatchSize))
-                    {
-                        var hasBeenImported = await transactionService.CheckIfTransactionsHaveBeenImported(batch.Select(r => r.SourceData).ToList());
-                        foreach (var resultDto in batch
-                            .Zip(hasBeenImported)
-                            .Where(zipped => zipped.Second)
-                            .Select(zipped => zipped.First))
-                            resultDto.Warnings.Add(TransactionImportWarning.SourceDataHashExists);
-                    }
+                    if (conflictResolutionStrategy == TransactionImportConflictResolutionStrategy.Warn)
+                        foreach (var batch in result.Transactions.Chunk(options.Value.StorageOperationBatchSize))
+                        {
+                            foreach (var resultDto in batch
+                                .Zip(hasBeenImported)
+                                .Where(zipped => zipped.Second)
+                                .Select(zipped => zipped.First))
+                                resultDto.Warnings.Add(TransactionImportWarning.SourceDataHashExists);
+                        }
 
                     jobRegistry.CompleteJob(jobId, result);
                 }
