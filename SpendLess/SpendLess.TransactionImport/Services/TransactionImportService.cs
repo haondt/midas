@@ -153,6 +153,7 @@ namespace SpendLess.TransactionImport.Services
                     var page = 1;
                     var transactions = await transactionService.GetPagedTransactions(filters, pageSize, page);
                     var totalTransactions = await transactionService.GetTransactionsCount(filters);
+                    var processed = 0;
                     while (transactions.Count > 0)
                     {
                         Dictionary<long, TransactionImportData> importDatas = [];
@@ -174,7 +175,8 @@ namespace SpendLess.TransactionImport.Services
                         {
                             try
                             {
-                                return (p, await nodeRed.SendToNodeRed(p.Request, cancellationToken));
+                                var response = await nodeRed.SendToNodeRed(p.Request, cancellationToken);
+                                return response.As(r => (p, r));
                             }
                             catch (Exception ex)
                             {
@@ -185,7 +187,7 @@ namespace SpendLess.TransactionImport.Services
                             }
                         }));
 
-                        foreach (var (source, response) in batchResults)
+                        foreach (var (source, response) in batchResults.Where(q => q.HasValue).Select(q => q.Value))
                         {
                             var context = new TransactionImportDryRunContext
                             {
@@ -212,7 +214,8 @@ namespace SpendLess.TransactionImport.Services
                             }
                         }
 
-                        jobRegistry.UpdateJobProgress(jobId, (double)results.Count / (double)totalTransactions);
+                        processed += transactions.Count;
+                        jobRegistry.UpdateJobProgress(jobId, (double)processed / (double)totalTransactions);
 
 
                         page++;
@@ -300,19 +303,19 @@ namespace SpendLess.TransactionImport.Services
                 try
                 {
                     var batchSize = options.Value.NodeRedOperationBatchSize;
-                    //var header = csvData.First();
+                    var header = csvData.First();
                     var batches = csvData.Chunk(batchSize);
 
-                    var hasBeenImported = new List<bool>();
                     var processed = 0;
+                    var isFirstBatch = true;
                     foreach (var batch in batches)
                     {
                         List<List<string>> filteredBatch = batch.ToList();
-                        var batchedHasBeenImported = await transactionService.CheckIfTransactionsHaveBeenImported(filteredBatch);
                         if (conflictResolutionStrategy == TransactionImportConflictResolutionStrategy.Omit)
+                        {
+                            var batchedHasBeenImported = await transactionService.CheckIfTransactionsHaveBeenImported(filteredBatch);
                             filteredBatch = batch.Where((b, i) => !batchedHasBeenImported[i]).ToList();
-                        else
-                            hasBeenImported.AddRange(batchedHasBeenImported);
+                        }
 
                         var payloads = filteredBatch.Select(b => new SendToNodeRedRequestDto
                         {
@@ -321,11 +324,25 @@ namespace SpendLess.TransactionImport.Services
                             Data = b
                         });
 
+                        if (isFirstBatch)
+                        {
+                            payloads = payloads.Take(1)
+                                .Select(r => new SendToNodeRedRequestDto
+                                {
+                                    Account = r.Account,
+                                    Configuration = r.Configuration,
+                                    Data = r.Data,
+                                    IsFirstRow = true
+                                })
+                                .Concat(payloads.Skip(1));
+                        }
+
                         var batchResults = await Task.WhenAll(payloads.Select(async p =>
                         {
                             try
                             {
-                                return (p, await nodeRed.SendToNodeRed(p, cancellationToken));
+                                var response = await nodeRed.SendToNodeRed(p, cancellationToken);
+                                return response.As(r => (p, r));
                             }
                             catch (Exception ex)
                             {
@@ -335,7 +352,8 @@ namespace SpendLess.TransactionImport.Services
                                 };
                             }
                         }));
-                        results.AddRange(batchResults);
+                        results.AddRange(batchResults.Where(x => x.HasValue).Select(x => x.Value));
+                        isFirstBatch = false;
                         processed += batch.Length;
                         jobRegistry.UpdateJobProgress(jobId, (double)processed / (double)csvData.Count);
                     }
@@ -355,8 +373,9 @@ namespace SpendLess.TransactionImport.Services
                     if (conflictResolutionStrategy == TransactionImportConflictResolutionStrategy.Warn)
                         foreach (var batch in result.Transactions.Chunk(options.Value.StorageOperationBatchSize))
                         {
+                            var batchedHasBeenImported = await transactionService.CheckIfTransactionsHaveBeenImported(batch.Select(b => b.SourceData).ToList());
                             foreach (var resultDto in batch
-                                .Zip(hasBeenImported)
+                                .Zip(batchedHasBeenImported)
                                 .Where(zipped => zipped.Second)
                                 .Select(zipped => zipped.First))
                                 resultDto.Warnings.Add(TransactionImportWarning.SourceDataHashExists);

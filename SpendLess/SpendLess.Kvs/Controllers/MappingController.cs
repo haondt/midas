@@ -105,10 +105,10 @@ namespace SpendLess.Kvs.Controllers
             });
         }
 
-        [HttpDelete("mapping/{encodedKey}/aliases")]
+        [HttpDelete("{encodedKey}/aliases")]
         public async Task<IResult> DeleteAlias(
             string encodedKey,
-            [FromForm]
+            [FromQuery]
             [Required]
             string alias)
         {

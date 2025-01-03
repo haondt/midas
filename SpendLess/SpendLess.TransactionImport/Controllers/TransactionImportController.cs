@@ -209,7 +209,6 @@ namespace SpendLess.TransactionImport.Controllers
                 });
             }
 
-
             var creditBalanceChanges = result.Value.Transactions
                 .Where(t => t.TransactionData.HasValue)
                 .GroupBy(t => t.TransactionData.Value.Destination.Id)
@@ -246,19 +245,22 @@ namespace SpendLess.TransactionImport.Controllers
                 balanceChanges[key] -= value;
             }
 
+            var myAccounts = await accountsService.GetAccountsIncludedInNetWorth();
             var pulledAccounts = new Dictionary<string, string>();
             var balanceChangesTasks = balanceChanges
                 .Where(kvp => kvp.Value != 0)
                 .Select(async kvp =>
             {
+                var isMine = myAccounts.ContainsKey(kvp.Key);
                 if (result.Value.NewAccounts.TryGetValue(kvp.Key, out var accountName))
-                    return (accountName, kvp.Value);
+                    return (accountName, isMine, kvp.Value);
 
                 if (!pulledAccounts.TryGetValue(kvp.Key, out accountName))
                     pulledAccounts[kvp.Key] = (await accountsService.GetAccount(kvp.Key)).Name;
-                return (pulledAccounts[kvp.Key], kvp.Value);
+                return (pulledAccounts[kvp.Key], isMine, kvp.Value);
             });
             var balanceChangesList = await Task.WhenAll(balanceChangesTasks);
+
 
             return await componentFactory.RenderComponentAsync(new DryRunResult
             {

@@ -8,6 +8,7 @@ namespace SpendLess.NodeRed.Models
         public string Account { get; set; } = "";
         public string Configuration { get; set; } = "";
         public List<string> Data { get; set; } = [];
+        public bool IsFirstRow { get; set; } = false;
 
         public override string ToString()
         {

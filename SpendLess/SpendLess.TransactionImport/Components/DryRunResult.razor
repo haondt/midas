@@ -17,7 +17,7 @@
     public required string JobId { get; set; }
 
     [Parameter, EditorRequired]
-    public required List<(string AccountName, decimal Change)> BalanceChanges { get; set; }
+    public required List<(string AccountName, bool IsMine, decimal Change)> BalanceChanges { get; set; }
 
     private RenderFragment<(string Title, RenderFragment Inner)> CreateResultItem = (args) =>
         @<details open class="block">
@@ -72,9 +72,10 @@
     @CreateResultItem(("Account Balance Change", 
     @<table class="table is-hoverable  is-fullwidth">
         <tbody>
-            @foreach(var (accountName, amount) in BalanceChanges)
+            @foreach(var (accountName, isMine, amount) in BalanceChanges)
             {
-                <tr>
+
+                <tr class="@(isMine? "has-background-info-dark" : "")">
                     <td>
                         @accountName
                     </td>

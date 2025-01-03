@@ -26,12 +26,16 @@ namespace SpendLess.NodeRed.Services
 
             var response = await InternalSendToNodeRed(ApplyPath, input);
             response.EnsureSuccessStatusCode();
+            if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                return "";
             return await response.Content.ReadAsStringAsync();
         }
 
-        public async Task<SendToNodeRedResponseDto> SendToNodeRed(SendToNodeRedRequestDto input, CancellationToken? cancellationToken = null)
+        public async Task<Optional<SendToNodeRedResponseDto>> SendToNodeRed(SendToNodeRedRequestDto input, CancellationToken? cancellationToken = null)
         {
             var result = await SendToNodeRed(input.ToString(), cancellationToken);
+            if (string.IsNullOrEmpty(result))
+                return new();
             return JsonConvert.DeserializeObject<SendToNodeRedResponseDto>(result, SpendLessConstants.ApiSerializerSettings)
                 ?? throw new NodeRedException($"failed to deserialize response to {typeof(SendToNodeRedResponseDto)}: {result}");
         }
