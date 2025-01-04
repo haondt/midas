@@ -1,6 +1,7 @@
 @using SpendLess.Domain.Models
 @using SpendLess.NodeRed.Models
 @using System.Web
+@using SpendLess.TransactionImport.Models
 @using SpendLess.Web.Domain.Components
 @using SpendLess.Web.Domain.Services
 
@@ -35,7 +36,7 @@
             }
             <td>
                 <span class="tag">
-                    @TransactionDto.HashSourceData(result.SourceData)
+                    @TransactionImportData.HashSourceData(result.SourceData)
                 </span>
             </td>
             <td style="text-align:center;"><button 

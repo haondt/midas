@@ -9,7 +9,6 @@ namespace SpendLess.Transactions.Storages
         Task<List<long>> AddTransactions(List<TransactionDto> transactions, List<long>? deleteTransactions = null);
         Task<TransactionDto> GetTransaction(long key);
         (StorageOperation Operation, Func<List<long>> GetResult) CreateAddTransactionsOperation(List<TransactionDto> transactions);
-        Task<List<bool>> CheckIfHasSourceDataHash(IEnumerable<long> hashes);
         Task<Dictionary<long, TransactionDto>> GetTransactions(List<TransactionFilter> filters, long? limit = null, long? offset = null);
         Task<long> GetTransactionsCount(List<TransactionFilter> filters);
         Task<(Dictionary<string, decimal> BySource, Dictionary<string, decimal> ByDestination)> GetAmounts(List<TransactionFilter> filters);

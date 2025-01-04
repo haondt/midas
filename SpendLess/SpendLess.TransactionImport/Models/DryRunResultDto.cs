@@ -17,7 +17,7 @@ namespace SpendLess.Domain.Models
     public class DryRunTransactionDto
     {
         public required string SourceRequestPayload { get; set; }
-        public required TransactionImportData ImportData { get; set; }
+        public required DryRunTransactionImportData ImportData { get; set; }
         public required List<string> SourceData { get; set; }
         public HashSet<string> Warnings { get; set; } = [];
         public HashSet<string> Errors { get; set; } = [];
@@ -37,6 +37,29 @@ namespace SpendLess.Domain.Models
         public required DryRunAccountDto Source { get; set; }
         public required DryRunAccountDto Destination { get; set; }
         public string Description { get; set; } = "";
+    }
+
+    public class DryRunTransactionImportData
+    {
+        public required string Account { get; set; }
+        public required string ConfigurationSlug { get; set; }
+        private List<string> _sourceData = default!;
+        public required List<string> SourceData
+        {
+            get
+            {
+                return _sourceData;
+            }
+            set
+            {
+                _sourceData = value;
+                _sourceDataHash = TransactionImportData.HashSourceData(_sourceData);
+            }
+        }
+
+        private long _sourceDataHash = 0;
+        public long SourceDataHash { get { return _sourceDataHash; } }
+
     }
 
     public class DryRunAccountDto

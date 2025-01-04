@@ -11,6 +11,7 @@ namespace SpendLess.TransactionImport.Models
         public const string MissingCategory = "no_category";
         public const string SourceDataHashExists = "source_data_hash_exists";
         public const string WillUpdateExisting = "will_update_existing";
+        public const string WasMerged = "was_merged";
 
         public static string GetDescription(string value) => value switch
         {
@@ -20,6 +21,7 @@ namespace SpendLess.TransactionImport.Models
             MissingCategory => $"No category was set. The default \"{SpendLessConstants.DefaultCategory}\" category will be used.",
             SourceDataHashExists => $"There is one or more existing transactions that were generated from identical import data.",
             WillUpdateExisting => $"One or more existing transactions will be updated.",
+            WasMerged => $"One or more existing transactions were merged into a single transaction, and will be split back into their original components.",
             _ => throw new ArgumentException($"value \"{value}\" not known.")
         };
     }

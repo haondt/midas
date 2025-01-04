@@ -60,7 +60,7 @@ namespace SpendLess.TransactionImport.Services
             {
                 var result = new TransactionImportResultDto
                 {
-                    TotalTransactions = dryRunResult.Transactions.Count,
+                    TotalTransactions = 0,
                     ImportTag = dryRunResult.ImportTag
                 };
                 try
@@ -86,18 +86,22 @@ namespace SpendLess.TransactionImport.Services
                                 DestinationAccount = t.TransactionData.Value.Destination.Id,
                                 Description = t.TransactionData.Value.Description,
                                 TimeStamp = t.TransactionData.Value.TimeStamp,
-                                SourceData = t.SourceData
                             })
                             .ToList();
 
                         var deleteTransactions = batch
                             .Where(q => q.ReplacementTarget.HasValue)
                             .Select(q => q.ReplacementTarget.Value)
+                            .Distinct()
                             .ToList();
                         var transactionIds = await transactionService.ReplaceTransactions(transactions, deleteTransactions);
-                        await importDataStorage.SetMany(transactionIds
-                            .Zip(batch)
-                            .ToDictionary(t => t.First, t => t.Second.ImportData));
+                        await importDataStorage.AddMany(transactionIds.Zip(batch).Select(q => new TransactionImportData
+                        {
+                            Account = q.Second.ImportData.Account,
+                            ConfigurationSlug = q.Second.ImportData.ConfigurationSlug,
+                            SourceData = q.Second.ImportData.SourceData,
+                            Transaction = q.First
+                        }));
 
                         result.TotalTransactions += batch.Length;
                         jobRegistry.UpdateJobProgress(jobId, result.TotalTransactions / dryRunResult.Transactions.Count);
@@ -151,24 +155,26 @@ namespace SpendLess.TransactionImport.Services
                 {
                     var pageSize = Math.Min(options.Value.NodeRedOperationBatchSize, options.Value.StorageOperationBatchSize);
                     var page = 1;
-                    var transactions = await transactionService.GetPagedTransactions(filters, pageSize, page);
+                    var transactions = (await transactionService.GetPagedTransactions(filters, pageSize, page)).ToList();
                     var totalTransactions = await transactionService.GetTransactionsCount(filters);
                     var processed = 0;
                     while (transactions.Count > 0)
                     {
-                        Dictionary<long, TransactionImportData> importDatas = [];
+                        List<List<TransactionImportData>> importDatas = [];
                         if (string.IsNullOrEmpty(accountId) || string.IsNullOrEmpty(configurationSlug))
-                            importDatas = await importDataStorage.GetMany(transactions.Keys.ToList());
+                            importDatas = await importDataStorage.GetMany(transactions.Select(t => t.Key));
 
-                        var payloads = new List<(SendToNodeRedRequestDto Request, long TransactionId)>();
-                        foreach (var b in transactions)
+                        var payloads = new List<(SendToNodeRedRequestDto Request, long TransactionId, bool WasMerged)>();
+                        for (int i = 0; i < transactions.Count; i++)
                         {
-                            payloads.Add((new SendToNodeRedRequestDto
+                            var (tid, transaction) = transactions[i];
+                            var datas = importDatas[i];
+                            payloads.AddRange(datas.Select(d => (new SendToNodeRedRequestDto
                             {
-                                Account = accountId ?? importDatas[b.Key].Account,
-                                Configuration = configurationSlug ?? importDatas[b.Key].ConfigurationSlug,
-                                Data = b.Value.SourceData
-                            }, b.Key));
+                                Account = accountId ?? d.Account,
+                                Configuration = configurationSlug ?? d.ConfigurationSlug,
+                                Data = d.SourceData
+                            }, tid, datas.Count > 1)));
                         }
 
                         var batchResults = await Task.WhenAll(payloads.Select(async p =>
@@ -199,11 +205,13 @@ namespace SpendLess.TransactionImport.Services
 
                             await ProcessNodeRedResult(source.Request, response, context);
                             context.Result.Transactions[^1].ReplacementTarget = source.TransactionId;
+                            if (source.WasMerged)
+                                context.Result.Transactions[^1].Warnings.Add(TransactionImportWarning.WasMerged);
                         }
 
                         foreach (var batch in result.Transactions.Chunk(options.Value.StorageOperationBatchSize))
                         {
-                            var hasBeenImported = await transactionService.CheckIfTransactionsHaveBeenImported(batch.Select(r => r.SourceData).ToList());
+                            var hasBeenImported = await importDataStorage.CheckIfHasSourceDataHash(batch.Select(r => TransactionImportData.HashSourceData(r.SourceData)));
                             foreach (var resultDto in batch
                                 .Zip(hasBeenImported))
                             {
@@ -219,7 +227,7 @@ namespace SpendLess.TransactionImport.Services
 
 
                         page++;
-                        transactions = await transactionService.GetPagedTransactions(filters, pageSize, page);
+                        transactions = (await transactionService.GetPagedTransactions(filters, pageSize, page)).ToList();
                     }
 
                     jobRegistry.CompleteJob(jobId, result);
@@ -236,10 +244,11 @@ namespace SpendLess.TransactionImport.Services
                             {
                                 ex.Message
                             },
-                            ImportData = new TransactionImportData
+                            ImportData = new DryRunTransactionImportData
                             {
                                 Account = ex.Request.Account,
-                                ConfigurationSlug = ex.Request.Configuration
+                                ConfigurationSlug = ex.Request.Configuration,
+                                SourceData = ex.Request.Data,
                             }
                         }
                     };
@@ -278,11 +287,6 @@ namespace SpendLess.TransactionImport.Services
                         .As(a => a.Name)
                         .Or(SpendLessConstants.FallbackAccountName)
                 };
-                var importData = new TransactionImportData
-                {
-                    Account = importAccount.Id,
-                    ConfigurationSlug = configurationSlug
-                };
 
                 var result = new DryRunResultDto();
 
@@ -313,7 +317,7 @@ namespace SpendLess.TransactionImport.Services
                         List<List<string>> filteredBatch = batch.ToList();
                         if (conflictResolutionStrategy == TransactionImportConflictResolutionStrategy.Omit)
                         {
-                            var batchedHasBeenImported = await transactionService.CheckIfTransactionsHaveBeenImported(filteredBatch);
+                            var batchedHasBeenImported = await importDataStorage.CheckIfHasSourceDataHash(filteredBatch.Select(TransactionImportData.HashSourceData));
                             filteredBatch = batch.Where((b, i) => !batchedHasBeenImported[i]).ToList();
                         }
 
@@ -373,7 +377,7 @@ namespace SpendLess.TransactionImport.Services
                     if (conflictResolutionStrategy == TransactionImportConflictResolutionStrategy.Warn)
                         foreach (var batch in result.Transactions.Chunk(options.Value.StorageOperationBatchSize))
                         {
-                            var batchedHasBeenImported = await transactionService.CheckIfTransactionsHaveBeenImported(batch.Select(b => b.SourceData).ToList());
+                            var batchedHasBeenImported = await importDataStorage.CheckIfHasSourceDataHash(batch.Select(r => TransactionImportData.HashSourceData(r.SourceData)));
                             foreach (var resultDto in batch
                                 .Zip(batchedHasBeenImported)
                                 .Where(zipped => zipped.Second)
@@ -395,10 +399,11 @@ namespace SpendLess.TransactionImport.Services
                             {
                                 ex.Message
                             },
-                            ImportData = new TransactionImportData
+                            ImportData = new DryRunTransactionImportData
                             {
                                 Account = ex.Request.Account,
-                                ConfigurationSlug = ex.Request.Configuration
+                                ConfigurationSlug = ex.Request.Configuration,
+                                SourceData = ex.Request.Data
                             }
                         }
                     };
@@ -424,7 +429,8 @@ namespace SpendLess.TransactionImport.Services
                 ImportData = new()
                 {
                     Account = request.Account,
-                    ConfigurationSlug = request.Configuration
+                    ConfigurationSlug = request.Configuration,
+                    SourceData = request.Data,
                 },
             };
 

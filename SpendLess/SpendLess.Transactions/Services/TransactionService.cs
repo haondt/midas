@@ -32,6 +32,7 @@ namespace SpendLess.Transactions.Services
             return transactionStorage.AddTransactions(newTransactions, oldTransacations);
         }
 
+
         public Task<Dictionary<long, TransactionDto>> GetTransactions(List<TransactionFilter> filters)
         {
             return transactionStorage.GetTransactions(filters);
@@ -76,7 +77,6 @@ namespace SpendLess.Transactions.Services
                     SourceAccountName = accountNames.GetValueOrDefault(kvp.Value.SourceAccount, SpendLessConstants.DefaultAccountName),
                     Category = kvp.Value.Category,
                     Description = kvp.Value.Description,
-                    SourceData = kvp.Value.SourceData,
                     Tags = kvp.Value.Tags,
                     TimeStamp = kvp.Value.TimeStamp,
                 });
@@ -87,15 +87,7 @@ namespace SpendLess.Transactions.Services
             return transactionStorage.GetAmounts(filters);
         }
 
-        public Task<List<bool>> CheckIfTransactionsHaveBeenImported(List<TransactionDto> transactions)
-        {
-            return transactionStorage.CheckIfHasSourceDataHash(transactions.Select(t => t.SourceDataHash));
-        }
 
-        public Task<List<bool>> CheckIfTransactionsHaveBeenImported(List<List<string>> sourceDatas)
-        {
-            return transactionStorage.CheckIfHasSourceDataHash(sourceDatas.Select(TransactionDto.HashSourceData));
-        }
 
         public Task<List<string>> GetCategories()
         {

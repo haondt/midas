@@ -1,13 +1,13 @@
-﻿using Haondt.Core.Models;
-using SpendLess.TransactionImport.Models;
+﻿using SpendLess.TransactionImport.Models;
 
 namespace SpendLess.TransactionImport.Storages
 {
     public interface ITransactionImportDataStorage
     {
-        Task<Optional<TransactionImportData>> Get(long transactionId);
-        Task<Dictionary<long, TransactionImportData>> GetMany(List<long> transactionIds);
-        Task Set(long transactionId, TransactionImportData data);
-        Task SetMany(Dictionary<long, TransactionImportData> datum);
+        Task Add(TransactionImportData data);
+        Task AddMany(IEnumerable<TransactionImportData> datum);
+        Task<List<bool>> CheckIfHasSourceDataHash(IEnumerable<long> hashes);
+        Task<List<TransactionImportData>> Get(long transactionId);
+        Task<List<List<TransactionImportData>>> GetMany(IEnumerable<long> transactionIds);
     }
 }

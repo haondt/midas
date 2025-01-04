@@ -45,9 +45,7 @@ namespace SpendLess.Transactions.Storages
                         category TEXT NOT NULL,
                         sourceAccount TEXT NOT NULL,
                         destinationAccount TEXT NOT NULL,
-                        description TEXT NOT NULL,
-                        sourceData TEXT NOT NULL,
-                        sourceDataHash INTEGER NOT NULL
+                        description TEXT NOT NULL
                      );", connection, transaction);
                 createPrimaryTableCommand.ExecuteNonQuery();
 
@@ -86,18 +84,14 @@ namespace SpendLess.Transactions.Storages
                         category,
                         sourceAccount,
                         destinationAccount,
-                        description,
-                        sourceData,
-                        sourceDataHash)
+                        description)
                     VALUES
                     (@AmountCents,
                         @TimeStamp,
                         @Category,
                         @SourceAccount,
                         @DestinationAccount,
-                        @Description,
-                        @SourceData,
-                        @SourceDataHash);
+                        @Description);
                     SELECT last_insert_rowid();
                     ", conn, trns);
 
@@ -107,8 +101,6 @@ namespace SpendLess.Transactions.Storages
             var sourceAccountParameter = insertCommand.Parameters.Add("@SourceAccount", SqliteType.Text);
             var destinationAccountParameter = insertCommand.Parameters.Add("@DestinationAccount", SqliteType.Text);
             var descriptionParameter = insertCommand.Parameters.Add("@Description", SqliteType.Text);
-            var sourceDataParameter = insertCommand.Parameters.Add("@SourceData", SqliteType.Text);
-            var sourceDataHashParameter = insertCommand.Parameters.Add("@SourceDataHash", SqliteType.Integer);
 
             using var insertTagCommand = new SqliteCommand(
                 $@"
@@ -127,8 +119,6 @@ namespace SpendLess.Transactions.Storages
                 sourceAccountParameter.Value = transaction.SourceAccount;
                 destinationAccountParameter.Value = transaction.DestinationAccount;
                 descriptionParameter.Value = transaction.Description;
-                sourceDataParameter.Value = transaction.SourceDataString;
-                sourceDataHashParameter.Value = transaction.SourceDataHash;
 
                 var transactionId = Convert.ToInt64(insertCommand.ExecuteScalar());
                 tagTransactionParameter.Value = transactionId;
@@ -160,34 +150,6 @@ namespace SpendLess.Transactions.Storages
             return (operation, () => result);
         }
 
-        public Task<List<bool>> CheckIfHasSourceDataHash(IEnumerable<long> hashes)
-        {
-            var result = WithConnection(conn =>
-            {
-                using var command = new SqliteCommand(
-                    $@"
-                    WITH hashes(hash) AS (VALUES {string.Join(',', hashes.Select(h => $"({h})"))})
-
-                    SELECT hash,
-                        CASE WHEN hash IN (SELECT sourceDataHash FROM {_tableName}) THEN 1 ELSE 0 END AS isDuplicate
-                    
-                    FROM hashes;
-                    ", conn);
-
-                var hasHash = new Dictionary<long, bool>();
-                using var reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    var hash = Convert.ToInt64(reader["hash"]);
-                    var isDuplicate = Convert.ToBoolean(reader["isDuplicate"]);
-                    hasHash[hash] = isDuplicate;
-                }
-
-                return hasHash;
-            });
-
-            return Task.FromResult(hashes.Select(h => result[h]).ToList());
-        }
 
         private (SqliteCommand Command, Func<long, List<string>> Execute) GetGetTransactionTagsCommand(SqliteConnection conn)
         {
@@ -389,9 +351,7 @@ namespace SpendLess.Transactions.Storages
                     t.category,
                     t.sourceAccount,
                     t.destinationAccount,
-                    t.description,
-                    t.sourceData,
-                    t.sourceDataHash
+                    t.description
                 FROM {_tableName} t
             ");
 
@@ -451,7 +411,6 @@ namespace SpendLess.Transactions.Storages
                         SourceAccount = reader["sourceAccount"].ToString() ?? "",
                         DestinationAccount = reader["destinationAccount"].ToString() ?? "",
                         Description = reader["description"].ToString() ?? "",
-                        SourceData = TransactionDto.DestringifySourceData(reader["sourceData"].ToString() ?? ""),
                         Tags = getGetTags.Execute(Convert.ToInt32(reader["id"])).ToHashSet()
                     };
                     transactions.Add(Convert.ToInt64(reader["id"]), transaction);

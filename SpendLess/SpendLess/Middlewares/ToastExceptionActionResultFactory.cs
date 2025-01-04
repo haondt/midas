@@ -1,12 +1,12 @@
 ﻿using Haondt.Web.Core.Extensions;
 using Haondt.Web.Core.Services;
 using SpendLess.Core.Exceptions;
-using SpendLess.Web.Domain.Models;
 using SpendLess.Web.Domain.Components;
+using SpendLess.Web.Domain.Models;
 
 namespace SpendLess.Middlewares
 {
-    public class ToastExceptionActionResultFactory(IComponentFactory componentFactory) : ISpecificExceptionActionResultFactory
+    public class ToastExceptionActionResultFactory(IComponentFactory componentFactory, ILogger<ToastExceptionActionResultFactory> logger) : ISpecificExceptionActionResultFactory
     {
         public bool CanHandle(Exception exception)
         {
@@ -15,6 +15,7 @@ namespace SpendLess.Middlewares
 
         public async Task<IResult> CreateAsync(Exception exception, HttpContext context)
         {
+            logger.LogError(exception, "Toasting exception {Exception}", exception.Message);
             var severity = ToastSeverity.Error;
             var statusCode = 500;
             var model = new Toast { Message = $"{exception.GetType().Name}: {exception.Message}", Severity = severity };
