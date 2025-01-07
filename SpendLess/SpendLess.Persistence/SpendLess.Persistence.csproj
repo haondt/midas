@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
+    <ProjectReference Include="..\SpendLess.Core\SpendLess.Core.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,43 @@
+﻿@using SpendLess.UI.Shared.Models
+@code {
+
+    [Parameter, EditorRequired]
+    public required string Message { get; set; }
+
+    [Parameter]
+    public ToastSeverity Severity { get; set; } = ToastSeverity.Error;
+    private string SeverityString { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        SeverityString = Severity switch
+        {
+            ToastSeverity.Warning => "is-warning",
+            ToastSeverity.Error => "is-danger",
+            ToastSeverity.Success => "is-success",
+            ToastSeverity.Info => "is-info",
+            _ => throw new ArgumentException(Severity.ToString())
+        };
+    }
+}
+
+<div hx-swap-oob="afterbegin:#toast-container">
+    <div style="width:400px;z-index:1000;"
+        class="notification toast @SeverityString is-light"
+        _="
+            on load
+                add .created to me
+                then wait 2s
+                then remove .created from me
+                then wait for transitionend
+                then send deleted to me
+            end
+            on deleted
+                remove me
+            end
+            ">
+        <button class="delete" _="on click send deleted to the closest <div.toast />"></button>
+        @Message
+    </div>
+</div>
+

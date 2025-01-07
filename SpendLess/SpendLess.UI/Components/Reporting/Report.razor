@@ -1,0 +1,385 @@
+﻿@using Newtonsoft.Json;
+@using SpendLess.Core.Models
+@using SpendLess.UI.Components.Charts
+@using SpendLess.UI.Models.Charts
+@code {
+    [Parameter, EditorRequired]
+    public required DateTime StartTime { get; set; }
+    [Parameter, EditorRequired]
+    public required DateTime EndTime { get; set; }
+
+    [Parameter, EditorRequired]
+    public required List<string> TimeStepLabels { get; set; }
+    [Parameter, EditorRequired]
+    public required List<decimal> SpendingPerTimeStep { get; set; }
+    [Parameter, EditorRequired]
+    public required List<decimal> IncomePerTimeStep { get; set; }
+    [Parameter, EditorRequired]
+    public required List<decimal> CashFlowPerTimeStep { get; set; }
+    [Parameter, EditorRequired]
+    public required List<(string CategoryName, List<decimal> Amounts)> CategoricalSpendingPerTimeStep { get; set; }
+
+    [Parameter, EditorRequired]
+    public required List<(string AccountName, decimal Income, decimal Spending, decimal CashFlow)> AccountSpending { get; set; }
+    [Parameter, EditorRequired]
+    public required (decimal Income, decimal Spending, decimal CashFlow) TotalSpending { get; set; }
+    [Parameter, EditorRequired]
+    public required List<(string CategoryName, decimal Amount)> CategoricalSpending { get; set; }
+
+    [Parameter, EditorRequired]
+    public required List<(string AccountName, decimal Amount, int TransactionsCount, decimal AverageAmountPerTransaction)> TopIncomeSources { get; set; }
+    [Parameter, EditorRequired]
+    public required List<(string AccountName, decimal Amount, int TransactionsCount, decimal AverageAmountPerTransaction)> TopSpendingDestinations { get; set; }
+
+}
+
+<style>
+    @@scope {
+        .chart-wrapper {
+            position: absolute;
+            width: calc(100% - 3em); /* based on --bulma-message-body-padding */
+            height: calc(100% - 2.5em);
+        }
+    }
+
+</style>
+
+<div class="panel is-link">
+    <p class="panel-heading">Report - @StringFormatter.FormatDate(StartTime) to @StringFormatter.FormatDate(EndTime)</p>
+    <div class="panel-block">
+        <div class="control">
+            <p class="title is-4">Summary</p>
+            <table class="table is-fullwidth">
+                <thead>
+                    <tr>
+                        <th>Total income</th>
+                        <th>Total spending</th>
+                        <th>Cash flow</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>@StringFormatter.FormatCurrency(TotalSpending.Income)</td>
+                        <td>@StringFormatter.FormatCurrency(TotalSpending.Spending)</td>
+                        @if(TotalSpending.CashFlow > 0)
+                        {
+                            <td class="has-text-success">+@StringFormatter.FormatCurrency(TotalSpending.CashFlow)</td>
+                        }
+                        else if(TotalSpending.CashFlow < 0)
+                        {
+                            <td class="has-text-danger">@StringFormatter.FormatCurrency(TotalSpending.CashFlow, false)</td>
+                        }
+                        else
+                        {
+                            <td>@StringFormatter.FormatCurrency(TotalSpending.CashFlow)</td>
+                        }
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="block">
+    <div class="message">
+        <div class="message-header">
+            <p>Income vs Spending</p>
+        </div>
+        <div class="message-body" style="position:relative;height:350px;">
+            @{
+                var successColor = "#48c78e";
+                var dangerColor = "#ff6685";
+                var cashFlowColors = CashFlowPerTimeStep
+                    .Select(q => q < 0 ? dangerColor : successColor)
+                    .ToList();
+
+                var balanceChartConfiguration = new BarConfiguration
+                {
+                    Data = new()
+                    {
+                        Labels = TimeStepLabels,
+                        Datasets = new()
+                        {
+                            new()
+                            {
+                                Label = "Cash Flow",
+                                Data = CashFlowPerTimeStep.Cast<object>().ToList(),
+                                Type = "line",
+                                Tension = 0.35,
+                                BorderColor = "#2e333d",
+                                PointBackgroundColor = cashFlowColors,
+                                PointBorderColor = cashFlowColors,
+                                BackgroundColor = "#2e333d",
+                            },
+                            new()
+                            {
+                                Label = "Spending",
+                                Data = SpendingPerTimeStep.Cast<object>().ToList(),
+                                BackgroundColor = dangerColor
+                            },
+                            new()
+                            {
+                                Label = "Income",
+                                Data = IncomePerTimeStep.Cast<object>().ToList(),
+                                BackgroundColor = successColor
+                            },
+                        },
+                    },
+                    Options = new()
+                    {
+                        Plugins = new()
+                        {
+                            Tooltip = new()
+                            {
+                                Callbacks = new()
+                                {
+                                    Label = new()
+                                    {
+                                        Function = @"function(context) { 
+                                            const rawValue = context.raw;
+                                            const formattedValue = Math.abs(rawValue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                            return rawValue < 0 ? `${context.dataset.label}: -$${formattedValue}` : `${context.dataset.label}: $${formattedValue}`;
+                                        }"
+                                    }
+                                }
+                            }
+                        },
+                        Scales = new()
+                        {
+                            Y = new()
+                            {
+                                BeginAtZero = true,
+                                Grid = new()
+                                {
+                                    Color = new()
+                                    {
+                                        Function = "({ tick }) => tick.value == 0 ? '#2e333d' : Chart.defaults.borderColor"
+                                    }
+                                },
+                                Ticks = new()
+                                {
+                                    Callback = new()
+                                    {
+                                        Function = @"function(value) { 
+                                            const formattedValue = Math.abs(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                            return value < 0 ? `-$${formattedValue}` : `$${formattedValue}`;
+                                        }"
+                                    }
+                                },
+                            }
+                        }
+                    }
+                };
+
+            }
+
+            <div class="chart-wrapper">
+                <Chart Configuration="@balanceChartConfiguration"/>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="block">
+    <div class="columns is-multiline">
+        <div class="column">
+            <div class="box">
+                <div class="control">
+                    <p class="title is-4">Account Balance Breakdown</p>
+                    <table class="table is-fullwidth is-hoverable">
+                        <thead>
+                            <tr>
+                                <th>Account</th>
+                                <th>Income</th>
+                                <th>Spending</th>
+                                <th style="white-space:nowrap;">Cash flow</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach(var (name, income, spending, cashFlow) in AccountSpending)
+                            {
+                                <tr>
+                                    <td>@name</td>
+                                    <td>@StringFormatter.FormatCurrency(income)</td>
+                                    <td>@StringFormatter.FormatCurrency(spending)</td>
+                                    @if(cashFlow > 0)
+                                    {
+                                        <td class="has-text-success">+@StringFormatter.FormatCurrency(cashFlow)</td>
+                                    }
+                                    else if(cashFlow < 0)
+                                    {
+                                        <td class="has-text-danger">@StringFormatter.FormatCurrency(cashFlow, false)</td>
+                                    }
+                                    else
+                                    {
+                                        <td>@StringFormatter.FormatCurrency(cashFlow)</td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="box">
+                <div class="control">
+                    <p class="title is-4">Categorical Spending Breakdown</p>
+                    <table class="table is-fullwidth is-hoverable">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach(var (name, amount) in CategoricalSpending)
+                            {
+                                <tr>
+                                    <td>@name</td>
+                                    <td>@StringFormatter.FormatCurrency(amount)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="block">
+    <div class="message">
+        <div class="message-header">
+            <p>Spending By Category</p>
+        </div>
+        <div class="message-body" style="position:relative;height:350px;">
+            @{
+                var categoricalSpendingChartConfiguration = new BarConfiguration
+                {
+                    Data = new()
+                    {
+                        Labels = TimeStepLabels,
+                        Datasets = CategoricalSpendingPerTimeStep
+                            .Select(spending => new ChartDataSet
+                            {
+                                Label = spending.CategoryName,
+                                Data  = spending.Amounts.Cast<object>().ToList(),
+                            })
+                            .ToList()
+                    },
+                    Options = new()
+                    {
+                        Plugins = new()
+                        {
+                            Tooltip = new()
+                            {
+                                Callbacks = new()
+                                {
+                                    Label = new()
+                                    {
+                                        Function = @"function(context) { 
+                                            const rawValue = context.raw;
+                                            const formattedValue = Math.abs(rawValue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                            return rawValue < 0 ? `${context.dataset.label}: -$${formattedValue}` : `${context.dataset.label}: $${formattedValue}`;
+                                        }"
+                                    }
+                                }
+                            }
+                        },
+                        Scales = new()
+                        {
+                            X = new()
+                            {
+                                Stacked = true
+                            },
+                            Y = new()
+                            {
+                                Stacked = true,
+                                Ticks = new()
+                                {
+                                    Callback = new()
+                                    {
+                                        Function = @"function(value) { 
+                                            const formattedValue = Math.abs(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                            return value < 0 ? `-$${formattedValue}` : `$${formattedValue}`;
+                                        }"
+                                    }
+                                },
+                            }
+                        }
+                    }
+                };
+
+            }
+
+            <div class="chart-wrapper">
+                <Chart Configuration="@categoricalSpendingChartConfiguration"/>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="block">
+    <div class="columns is-multiline">
+        <div class="column">
+            <div class="box">
+                <div class="control">
+                    <p class="title is-4">Top Income Sources</p>
+                    <table class="table is-fullwidth is-hoverable">
+                        <thead>
+                            <tr>
+                                <th>Source</th>
+                                <th>Amount</th>
+                                <th>Transactions</th>
+                                <th style="white-space:nowrap;">Amount (avg)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach(var (name, amount, count, average) in TopIncomeSources)
+                            {
+                                <tr>
+                                    <td>@name</td>
+                                    <td>@StringFormatter.FormatCurrency(amount)</td>
+                                    <td>@count</td>
+                                    <td>@StringFormatter.FormatCurrency(average)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="box">
+                <div class="control">
+                    <p class="title is-4">Top Spending Destinations</p>
+                    <table class="table is-fullwidth is-hoverable">
+                        <thead>
+                            <tr>
+                                <th>Destination</th>
+                                <th>Amount</th>
+                                <th>Transactions</th>
+                                <th style="white-space:nowrap;">Amount (avg)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach(var (name, amount, count, average) in TopSpendingDestinations)
+                            {
+                                <tr>
+                                    <td>@name</td>
+                                    <td>@StringFormatter.FormatCurrency(amount)</td>
+                                    <td>@count</td>
+                                    <td>@StringFormatter.FormatCurrency(average)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,78 @@
+﻿@using SpendLess.UI.Shared.Models
+@inject IEnumerable<NavigationSection> Sections
+@inject IEnumerable<NavigationLink> UngroupedLinks
+
+@code{
+    private static RenderFragment<NavigationItem> RenderNavigationItem = (item) =>
+        item switch
+        {
+            NavigationLink link => @<li>
+                <a 
+                    hx-boost="true"
+                    href="/@link.Slug"
+                    hx-target="#content">
+                    @link.Title
+                </a>
+            </li>,
+            NavigationSection sec => @<text>
+                <p class="menu-label">@sec.Label</p>
+                <ul class="menu-list">
+                    @foreach(var child in sec.Children)
+                    {
+                        @RenderNavigationItem!(child);
+                    }
+                </ul>
+            </text>,
+            _ => @<div>ruhrioh</div>
+        };
+
+    private IEnumerable<NavigationSection> MergedSections = default!;
+
+    private IEnumerable<NavigationSection> MergeNavigationSections(IEnumerable<NavigationSection> sections)
+    {
+        return sections.GroupBy(s => s.Label)
+            .Select(grp => new NavigationSection
+                {
+                    Label = grp.Key,
+                    Children = grp.SelectMany(q => q.Children)
+                        .GroupBy(c => c is NavigationSection)
+                        .SelectMany(childGroup =>
+                        {
+                            if (!childGroup.Key)
+                                return childGroup;
+                            var sections = childGroup.Cast<NavigationSection>();
+                            return MergeNavigationSections(sections).Cast<NavigationItem>();
+                        })
+                        .ToList()
+                });
+    }
+
+    protected override void OnInitialized()
+    {
+        if (UngroupedLinks.Any())
+            MergedSections = MergeNavigationSections(Sections
+                .Append(new NavigationSection
+                    {
+                        Label = "General",
+                        Children = UngroupedLinks.Cast<NavigationItem>().ToList()
+                    }));
+        else
+            MergedSections = MergeNavigationSections(Sections);
+
+    }
+
+}
+
+<div class="panel is-primary">
+    <p class="panel-heading">Spend Less</p>
+    <div class="panel-block">
+        <div class="menu is-flex-grow-1">
+            <ul class="menu-list">
+                @foreach(var sec in MergedSections)
+                {
+                    @RenderNavigationItem(sec);
+                }
+            </ul>
+        </div>
+    </div>
+</div>

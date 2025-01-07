@@ -2,7 +2,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SpendLess.Persistence.Services;
-using SpendLess.Persistence.Storages;
+using SpendLess.Persistence.Storages.Abstractions;
+using SpendLess.Persistence.Storages.Sqlite;
 
 namespace SpendLess.Persistence.Extensions
 {
@@ -11,13 +12,17 @@ namespace SpendLess.Persistence.Extensions
         public static IServiceCollection AddSpendLessPersistenceServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<SpendLessPersistenceSettings>(configuration.GetSection(nameof(SpendLessPersistenceSettings)));
-            services.AddSingleton<SpendLessStorage>();
+            services.AddSingleton<SqliteSpendLessStorage>();
             services.AddSingleton<IDataExportStorage, SqliteDataExportStorage>();
-            services.AddSingleton<ISpendLessStorage>(sp => sp.GetRequiredService<SpendLessStorage>());
+            services.AddSingleton<ISpendLessStorage>(sp => sp.GetRequiredService<SqliteSpendLessStorage>());
             services.AddSingleton<IStorage>(sp
-                => new TransientTransactionalBatchStorage(sp.GetRequiredService<SpendLessStorage>()));
+                => new TransientTransactionalBatchStorage(sp.GetRequiredService<SqliteSpendLessStorage>()));
             services.AddSingleton(typeof(ISingleTypeSpendLessStorage<>), typeof(SingleTypeSpendLessStorage<>));
             services.AddSingleton<IKvsStorage, SqliteKvsStorage>();
+            services.AddSingleton<IAccountStorage, SqliteAccountStorage>();
+
+            services.AddSingleton<ITransactionStorage, SqliteTransactionStorage>();
+            services.AddSingleton<ITransactionImportDataStorage, SqliteTransactionImportDataStorage>();
             return services;
         }
     }

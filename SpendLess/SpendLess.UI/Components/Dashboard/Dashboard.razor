@@ -1,0 +1,93 @@
+﻿@using SpendLess.Domain.Dashboard.Models
+@code {
+    [Parameter, EditorRequired]
+    public required DashboardData DashboardData { get; set; }
+
+    public List<(string, string)> Ranges = [];
+
+    private static (string, string) ConvertDateTime(DateTime dt) => (dt.ToString("MMMM yyyy"), ((DateTimeOffset)dt).ToUnixTimeSeconds().ToString());
+    protected override void OnInitialized ()
+    {
+        var localTime = DateTime.Now;
+        var currentMonth = new DateTime(localTime.Year, localTime.Month, 1);
+        var previousMonth = currentMonth.AddMonths(-1);
+        var previousPreviousMonth = currentMonth.AddMonths(-2);
+
+
+        Ranges = [
+            ConvertDateTime(currentMonth),
+            ConvertDateTime(previousMonth),
+            ConvertDateTime(previousPreviousMonth),
+            ("Year to date", DashboardRange.YearToDate),
+            ("Everything", DashboardRange.Everything),
+            ("Custom Range", "")
+        ];
+    }
+
+}
+
+
+
+
+<div class="panel is-link">
+    <p class="panel-heading">Dashboard</p>
+
+    <div class="panel-block">
+        <form class="hide-date-range-picker" hx-get="/dashboard/data" hx-swap="innerHTML" hx-target="#dashboard-data">
+            <style>
+                @@scope {
+                    :scope {
+                        align-items: center;
+                        flex-direction: row;
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: .75rem;
+                        justify-content: flex-start;
+                        width: 100%;
+                    }
+
+                    :scope.hide-date-range-picker .date-range-picker {
+                        display: none;
+                    }
+                }
+            </style>
+            <div class="control">
+                <div class="select">
+                    <select name="r" _="on input
+                        if my value is ''
+                            remove .hide-date-range-picker from the closest <form/>
+                        else
+                            add .hide-date-range-picker to the closest <form/>
+                        end
+
+                        send submit to the closest <form/>
+                    ">
+                        @foreach(var (label, value) in Ranges)
+                        {
+                            <option value="@value">@label</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="control date-range-picker">
+                <div class="field">
+                    <input _="on input send submit to the closest <form/>" name="f" class="input" type="date"/>
+                </div>
+            </div>
+
+            <label class="label is-normal mb-0 date-range-picker">To</label>
+
+            <div class="control date-range-picker">
+                <div class="field">
+                    <input _="on input send submit to the closest <form/>" name="t" class="input" type="date"/>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div id="dashboard-data">
+    <Haondt.Web.Components.ObjectComponentT  Component="DashboardData" />
+</div>

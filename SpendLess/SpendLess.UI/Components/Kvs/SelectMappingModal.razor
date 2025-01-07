@@ -1,0 +1,54 @@
+﻿@using SpendLess.UI.Shared.Components
+
+<div
+    id="modal-container"
+    class="modal is-active is-justify-content-flex-start pt-6"
+    hx-swap-oob="true"
+    hx-on::load="htmx.find('#kvs-autocomplete').focus()">
+    <style>
+        @@scope {
+            :scope {
+                .modal, .modal-card-body, .modal-card {
+                    overflow: visible;
+                }
+            }
+        }
+    </style>
+    <div 
+        class="modal-background"
+        _="
+            on click
+                remove .is-active from #modal-container
+                set #modal-container's innerHTML to ''
+            end
+            on keydown(key) from elsewhere
+                if the key is 'Escape'
+                    send click to me
+                end
+            end
+        "></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Select Mapping</p>
+            <button class="delete" _="on click send click to the previous .modal-background"></button>
+        </header>
+        <section class="modal-card-body">
+            <form hx-get="/kvs/mapping" hx-swap="none" hx-rename="query:key">
+                <div class="field">
+                    <label class="label">Search</label>
+                    <Autocomplete
+                        SuggestionUri="/kvs/mappings/search"
+                        Name="@("query")"
+                        Id="@("kvs-autocomplete")"
+                        IsRight="true" />
+                </div>
+            </form>
+        </section>
+        <footer class="modal-card-foot">
+            <button id="test" class="button is-success" 
+                _="on click send submit to the previous <form/>">
+                Open mapping
+            </button>
+        </footer>
+    </div>
+</div>

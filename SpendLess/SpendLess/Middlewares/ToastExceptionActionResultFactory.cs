@@ -1,8 +1,8 @@
 ﻿using Haondt.Web.Core.Extensions;
 using Haondt.Web.Core.Services;
 using SpendLess.Core.Exceptions;
-using SpendLess.Web.Domain.Components;
-using SpendLess.Web.Domain.Models;
+using SpendLess.UI.Shared.Components;
+using SpendLess.UI.Shared.Models;
 
 namespace SpendLess.Middlewares
 {

@@ -10,6 +10,7 @@
         public string TransactionsTableName { get; init; } = "transactions";
         public string TransactionsTagsTableName { get; init; } = "transactionsTags";
         public string TransactionsImportDataTableName { get; init; } = "transactionsImportData";
+        public string AccountsTableName { get; init; } = "accounts";
         public bool UseConnectionPooling { get; init; } = true;
     }
 }

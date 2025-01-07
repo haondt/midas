@@ -18,18 +18,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SpendLess.Admin\SpendLess.Admin.csproj" />
-    <ProjectReference Include="..\SpendLess.Accounts\SpendLess.Accounts.csproj" />
+    <ProjectReference Include="..\SpendLess.Api\SpendLess.Api.csproj" />
     <ProjectReference Include="..\SpendLess.Core\SpendLess.Core.csproj" />
-    <ProjectReference Include="..\SpendLess.Dashboard\SpendLess.Dashboard.csproj" />
     <ProjectReference Include="..\SpendLess.Domain\SpendLess.Domain.csproj" />
-    <ProjectReference Include="..\SpendLess.Kvs\SpendLess.Kvs.csproj" />
-    <ProjectReference Include="..\SpendLess.NodeRed\SpendLess.NodeRed.csproj" />
     <ProjectReference Include="..\SpendLess.Persistence\SpendLess.Persistence.csproj" />
-    <ProjectReference Include="..\SpendLess.Reporting\SpendLess.Reporting.csproj" />
-    <ProjectReference Include="..\SpendLess.TransactionImport\SpendLess.TransactionImport.csproj" />
-    <ProjectReference Include="..\SpendLess.Transactions\SpendLess.Transactions.csproj" />
-    <ProjectReference Include="..\SpendLess.Web.Domain\SpendLess.Web.Domain.csproj" />
+    <ProjectReference Include="..\SpendLess.UI.Shared\SpendLess.UI.Shared.csproj" />
+    <ProjectReference Include="..\SpendLess.UI\SpendLess.UI.csproj" />
   </ItemGroup>
 
 </Project>
