@@ -2,9 +2,9 @@
 
 namespace SpendLess.Domain.Reconcile.Models
 {
-    public class ReconcileDryRunResult
+    public class ReconcileDryRunResultDto
     {
-
+        public List<ReconcileDryRunSingleResult> MergedTransactions { get; set; } = [];
     }
 
     public class ReconcileDryRunSingleResult

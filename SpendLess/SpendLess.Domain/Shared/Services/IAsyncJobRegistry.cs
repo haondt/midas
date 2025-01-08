@@ -14,5 +14,6 @@ namespace SpendLess.Domain.Shared.Services
         void UpdateJobProgress(string jobId, double progress, Optional<Optional<string>> progressMessage = default);
         (string, CancellationToken) RegisterJob(Optional<string> progressMessage = default);
         Optional<object> GetJobResult(string jobId);
+        Result<T, (double Progress, Optional<string> Message)> GetJobResultOrProgress<T>(string jobId);
     }
 }

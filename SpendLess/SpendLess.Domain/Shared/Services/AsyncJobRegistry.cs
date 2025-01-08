@@ -9,6 +9,18 @@ namespace SpendLess.Domain.Shared.Services
         private Dictionary<string, AsyncJob> _jobs = [];
         private readonly TimeSpan _expiration = TimeSpan.FromHours(1);
 
+        public Result<T, (double Progress, Optional<string> Message)> GetJobResultOrProgress<T>(string jobId)
+        {
+            var (status, progress, message) = GetJobProgress(jobId);
+            if (status < AsyncJobStatus.Complete)
+                return new((progress * 100, message));
+            var result = GetJobResult(jobId);
+            if (!result.HasValue)
+                throw new InvalidOperationException($"Job {jobId} has status {status} and no result.");
+            if (result.Value is not T castedResult)
+                throw new InvalidOperationException($"Job {jobId} has status {status} and a result of type {result.Value.GetType()} instead of {typeof(T)}.");
+            return new(castedResult);
+        }
         public (string, CancellationToken) RegisterJob(Optional<string> progressMessage = default)
         {
             var jobId = Guid.NewGuid().ToString();

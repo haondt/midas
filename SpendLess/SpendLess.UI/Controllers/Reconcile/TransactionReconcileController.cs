@@ -2,6 +2,8 @@
 using Haondt.Web.Core.Services;
 using Haondt.Web.Middleware;
 using Microsoft.AspNetCore.Mvc;
+using SpendLess.Core.Constants;
+using SpendLess.Domain.Accounts.Services;
 using SpendLess.Domain.Reconcile.Models;
 using SpendLess.Domain.Reconcile.Services;
 using SpendLess.Persistence.Models;
@@ -16,6 +18,7 @@ namespace SpendLess.UI.Controllers.Reconcile
     [Route("reconcile")]
     public class TransactionReconcileController(
         IReconcileService reconcileService,
+        IAccountsService accountsService,
         ITransactionFilterService transactionFilterService,
         IComponentFactory componentFactory) : SpendLessUIController
     {
@@ -24,7 +27,7 @@ namespace SpendLess.UI.Controllers.Reconcile
         [ServiceFilter(typeof(RenderPageFilter))]
         public Task<IResult> Get()
         {
-            return componentFactory.RenderComponentAsync<TransactionReconcile>();
+            return componentFactory.RenderComponentAsync<SpendLess.UI.Components.Reconcile.Reconcile>();
         }
 
         [HttpPost("dry-run")]
@@ -55,6 +58,52 @@ namespace SpendLess.UI.Controllers.Reconcile
             {
                 CallbackEndpoint = $"/reconcile/dry-run/{jobId}",
                 ProgressPercent = 0
+            });
+        }
+
+        [HttpGet("dry-run/{id}")]
+        public async Task<IResult> GetDryRunStatus(string id)
+        {
+
+            var result = reconcileService.GetDryRunResult(id);
+            if (!result.IsSuccessful)
+            {
+                // todo: indeterminate?
+                return await componentFactory.RenderComponentAsync(new ProgressPanel
+                {
+                    CallbackEndpoint = $"/reconcile/dry-run/{id}",
+                    ProgressPercent = result.Reason.Progress
+                });
+            }
+
+            var accountIds = result.Value.MergedTransactions.SelectMany(t => new List<string> { t.NewTransaction.SourceAccount, t.NewTransaction.DestinationAccount });
+            var accountNames = (await accountsService.GetMany(accountIds.ToList()))
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Name);
+
+            var expandedResult = new ReconcileDryRunExpandedResultDto
+            {
+                MergedTransactions = result.Value.MergedTransactions.Select(t => new ReconcileDryRunExpandedSingleResult
+                {
+                    OldTransactions = t.OldTransactions,
+                    NewTransaction = new()
+                    {
+                        Amount = t.NewTransaction.Amount,
+                        DestinationAccount = t.NewTransaction.DestinationAccount,
+                        SourceAccount = t.NewTransaction.SourceAccount,
+                        Category = t.NewTransaction.Category,
+                        Description = t.NewTransaction.Description,
+                        Tags = t.NewTransaction.Tags,
+                        TimeStamp = t.NewTransaction.TimeStamp,
+                        SourceAccountName = accountNames.GetValueOrDefault(t.NewTransaction.SourceAccount, SpendLessConstants.DefaultAccountName),
+                        DestinationAccountName = accountNames.GetValueOrDefault(t.NewTransaction.DestinationAccount, SpendLessConstants.DefaultAccountName),
+                    }
+                }).ToList()
+            };
+
+            return await componentFactory.RenderComponentAsync(new ReconcileDryRunResult
+            {
+                JobId = id,
+                Result = expandedResult
             });
         }
     }

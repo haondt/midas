@@ -9,7 +9,6 @@ using SpendLess.Domain.Import.Exceptions;
 using SpendLess.Domain.Import.Models;
 using SpendLess.Domain.NodeRed.Models;
 using SpendLess.Domain.NodeRed.Services;
-using SpendLess.Domain.Shared.Models;
 using SpendLess.Domain.Shared.Services;
 using SpendLess.Domain.Transactions.Services;
 using SpendLess.Persistence.Models;
@@ -26,27 +25,15 @@ namespace SpendLess.Domain.Import.Services
     {
 
 
-        public Result<T, (double, Optional<string>)> GetAsyncJobResult<T>(string jobId)
-        {
-            var (status, progress, message) = jobRegistry.GetJobProgress(jobId);
-            if (status < AsyncJobStatus.Complete)
-                return new((progress * 100, message));
-            var result = jobRegistry.GetJobResult(jobId);
-            if (!result.HasValue)
-                throw new InvalidOperationException($"Job {jobId} has status {status} and no result.");
-            if (result.Value is not T castedResult)
-                throw new InvalidOperationException($"Job {jobId} has status {status} and a result of type {result.Value.GetType()} instead of {typeof(DryRunResultDto)}.");
-            return new(castedResult);
-        }
 
         public Result<DryRunResultDto, (double, Optional<string>)> GetDryRunResult(string jobId)
         {
-            return GetAsyncJobResult<DryRunResultDto>(jobId);
+            return jobRegistry.GetJobResultOrProgress<DryRunResultDto>(jobId);
         }
 
         public Result<TransactionImportResultDto, (double, Optional<string>)> GetImportResult(string jobId)
         {
-            return GetAsyncJobResult<TransactionImportResultDto>(jobId);
+            return jobRegistry.GetJobResultOrProgress<TransactionImportResultDto>(jobId);
         }
 
         public string StartImport(string dryRunId)

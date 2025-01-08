@@ -22,6 +22,20 @@
                     {
                         <SetupSelectTransactionsField />
                     }
+                    <div class="message">
+                        <div class="message-body">
+                            <div class="content">
+                                <p>
+                                    For two transactions to be merged, they must be for the same amount, where one is a transaction from A to B,
+                                    and the other is from B to C. Then we can merge them into a single transaction from A to C. Since the amount
+                                    for both transactions is the same, this would not change the final balance of A, B or C.
+                                </p>
+                                <p>
+                                    Additionally, transactions will only be merged if they match with exactly one other transaction.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="panel-block">
