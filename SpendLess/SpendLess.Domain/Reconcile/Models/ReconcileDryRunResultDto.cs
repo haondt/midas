@@ -1,10 +1,11 @@
-﻿using SpendLess.Persistence.Models;
+﻿using Haondt.Core.Models;
+using SpendLess.Persistence.Models;
 
 namespace SpendLess.Domain.Reconcile.Models
 {
     public class ReconcileDryRunResultDto
     {
-        public List<ReconcileDryRunSingleResult> MergedTransactions { get; set; } = [];
+        public required Result<List<ReconcileDryRunSingleResult>, string> MergedTransactions { get; set; }
     }
 
     public class ReconcileDryRunSingleResult

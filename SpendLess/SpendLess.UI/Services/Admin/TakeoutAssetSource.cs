@@ -24,10 +24,7 @@ namespace SpendLess.UI.Services.Admin
                 || !takeout.ZipPath.HasValue)
                 return Task.FromResult<Result<(byte[] Data, bool Cache), WebReason>>(new(WebReason.NotFound));
 
-            Console.WriteLine(takeout.ZipPath.Value);
-
             var bytes = fileService.ReadBytes(takeout.ZipPath.Value);
-            Console.WriteLine(bytes.Length);
             return Task.FromResult<Result<(byte[] Data, bool Cache), WebReason>>(new((bytes, true)));
         }
     }

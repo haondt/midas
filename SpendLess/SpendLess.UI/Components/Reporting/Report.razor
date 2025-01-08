@@ -4,9 +4,9 @@
 @using SpendLess.UI.Models.Charts
 @code {
     [Parameter, EditorRequired]
-    public required DateTime StartTime { get; set; }
+    public required AbsoluteDateTime StartTime { get; set; }
     [Parameter, EditorRequired]
-    public required DateTime EndTime { get; set; }
+    public required AbsoluteDateTime EndTime { get; set; }
 
     [Parameter, EditorRequired]
     public required List<string> TimeStepLabels { get; set; }

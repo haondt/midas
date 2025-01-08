@@ -2,6 +2,7 @@
 using Haondt.Web.Middleware;
 using Microsoft.AspNetCore.Mvc;
 using SpendLess.Core.Exceptions;
+using SpendLess.Core.Models;
 using SpendLess.Domain.Dashboard.Models;
 using SpendLess.Domain.Dashboard.Services;
 using SpendLess.UI.Components.Dashboard;
@@ -16,9 +17,9 @@ namespace SpendLess.Dashboard.Controllers
         [ServiceFilter(typeof(RenderPageFilter))]
         public async Task<IResult> Get()
         {
-            var localTime = DateTime.Now;
-            var currentMonth = new DateTime(localTime.Year, localTime.Month, 1);
-            var endOfMonth = currentMonth.AddMonths(1);
+            var currentTime = AbsoluteDateTime.Now;
+            var currentMonth = currentTime.FloorToLocalMonth();
+            var endOfMonth = currentMonth.AddLocalMonths(1);
             var data = await GetDashboardData(currentMonth, endOfMonth);
             return await componentFactory.RenderComponentAsync<SpendLess.UI.Components.Dashboard.Dashboard>(new()
             {
@@ -26,7 +27,7 @@ namespace SpendLess.Dashboard.Controllers
             });
         }
 
-        private async Task<DashboardData> GetDashboardData(DateTime start, DateTime end)
+        private async Task<DashboardData> GetDashboardData(AbsoluteDateTime start, AbsoluteDateTime end)
         {
             var dto = await dashboardService.GatherData(start, end);
             return new()
@@ -43,28 +44,30 @@ namespace SpendLess.Dashboard.Controllers
         [HttpGet("data")]
         public async Task<IResult> GetData(
             [FromQuery] string? r,
-            [FromQuery] DateTime? f,
-            [FromQuery] DateTime? t)
+            [FromQuery] AbsoluteDateTime? f,
+            [FromQuery] AbsoluteDateTime? t)
         {
-            DateTime? start = null;
-            DateTime? end = null;
+            AbsoluteDateTime? start = null;
+            AbsoluteDateTime? end = null;
             if (long.TryParse(r, out var ts))
             {
-                start = DateTimeOffset.FromUnixTimeSeconds(ts).DateTime.ToLocalTime();
+                start = AbsoluteDateTime.Create(ts);
                 end = start.Value.AddMonths(1);
             }
             else if (r == DashboardRange.YearToDate)
             {
-                end = DateTime.Now;
-                start = new DateTime(end.Value.Year, 1, 1);
+                end = AbsoluteDateTime.Now;
+                start = AbsoluteDateTime.Now.FloorToLocalYear();
             }
             else if (r == DashboardRange.Everything)
             {
-                end = DateTimeOffset.MaxValue.DateTime.ToLocalTime();
-                start = DateTimeOffset.MinValue.DateTime.ToLocalTime();
+                end = AbsoluteDateTime.MaxValue;
+                start = AbsoluteDateTime.MinValue;
             }
             else if (f.HasValue && t.HasValue)
             {
+                if (t.Value < f.Value)
+                    throw new UserException("\"To\" date must come after \"From\" date.");
                 start = f;
                 end = t;
             }
@@ -76,5 +79,6 @@ namespace SpendLess.Dashboard.Controllers
             var data = await GetDashboardData(start.Value, end.Value);
             return await componentFactory.RenderComponentAsync<DashboardData>(data);
         }
+
     }
 }

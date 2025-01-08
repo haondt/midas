@@ -1,5 +1,6 @@
 ﻿using Haondt.Core.Extensions;
 using SpendLess.Core.Extensions;
+using SpendLess.Core.Models;
 using SpendLess.Domain.Accounts.Services;
 using SpendLess.Domain.Dashboard.Models;
 using SpendLess.Domain.Transactions.Services;
@@ -11,7 +12,7 @@ namespace SpendLess.Domain.Dashboard.Services
         IAccountsService accountsService) : IDashboardService
     {
 
-        public async Task<DashboardDataDto> GatherData(DateTime start, DateTime end)
+        public async Task<DashboardDataDto> GatherData(AbsoluteDateTime start, AbsoluteDateTime end)
         {
             var transactions = await transactionService.GetTransactions(new()
             {
@@ -32,9 +33,7 @@ namespace SpendLess.Domain.Dashboard.Services
             var transactionsByDateTime = transactions
                 .Select(t =>
                 {
-                    var dt = DateTimeOffset.FromUnixTimeSeconds(t.Value.TimeStamp).DateTime;
-                    var rounded = new DateTime(dt.Year, dt.Month, dt.Day);
-                    return new { Date = rounded, Transaction = t.Value };
+                    return new { Date = t.Value.TimeStamp.FloorToLocalDay(), Transaction = t.Value };
                 })
                 .GroupBy(t => t.Date)
                 .ToDictionary(grp => grp.Key, grp => grp.Select(x => x.Transaction));
@@ -46,11 +45,11 @@ namespace SpendLess.Domain.Dashboard.Services
                 TimeStamps = []
             };
 
-            var currentDay = new DateTime(start.Year, start.Month, start.Day);
-            if (start <= DateTime.MinValue.AddDays(7) || start <= DateTimeOffset.MinValue.DateTime.AddDays(7)) // subtracting a week as a buffer for localized time
+            var currentDay = start.FloorToLocalDay();
+            if (start <= AbsoluteDateTime.MinValue.AddDays(7)) // basically, if we are using the min & max datetimes (with some tolerance), just round to the earliest and latest transactions
                 currentDay = transactionsByDateTime.Keys.Min();
-            var lastDay = new DateTime(end.Year, end.Month, end.Day);
-            if (end >= DateTime.MaxValue.AddDays(-7) || end >= DateTimeOffset.MaxValue.DateTime.AddDays(-7))
+            var lastDay = end.FloorToLocalDay();
+            if (end >= AbsoluteDateTime.MaxValue.AddDays(-7))
                 lastDay = transactionsByDateTime.Keys.Max();
 
             while (currentDay <= lastDay)
@@ -71,7 +70,7 @@ namespace SpendLess.Domain.Dashboard.Services
                     balanceChartData.Balances[i + 1].Add(currentBalances[accountsList[i]]);
                     balanceChartData.Balances[0][^1] += currentBalances[accountsList[i]];
                 }
-                currentDay = currentDay.AddDays(1);
+                currentDay = currentDay.AddLocalDays(1);
             }
 
             var categoricalSpendingChartData = new Dictionary<string, decimal>();
@@ -101,6 +100,18 @@ namespace SpendLess.Domain.Dashboard.Services
 
             var categorialSpendingChartKeys = categoricalSpendingChartData.Keys;
 
+            var netAmounts = await transactionService.GetAmounts(new List<TransactionFilter>
+            {
+                TransactionFilter.EitherAccountIsOneOf(accountsList),
+            });
+            var netWorth = 0m;
+            foreach (var (k, v) in netAmounts.BySource)
+                if (accountsList.Contains(k))
+                    netWorth -= v;
+            foreach (var (k, v) in netAmounts.ByDestination)
+                if (accountsList.Contains(k))
+                    netWorth += v;
+
             return new()
             {
                 CashFlow = flow,
@@ -112,7 +123,7 @@ namespace SpendLess.Domain.Dashboard.Services
                 },
                 Income = income,
                 Spending = spending,
-                NetWorth = currentBalances.Values.Sum()
+                NetWorth = netWorth
             };
         }
     }

@@ -1,5 +1,6 @@
 ﻿using Haondt.Core.Models;
 using SpendLess.Core.Constants;
+using SpendLess.Core.Models;
 
 namespace SpendLess.Domain.Import.Models
 {
@@ -32,7 +33,7 @@ namespace SpendLess.Domain.Import.Models
         public required decimal Amount { get; set; }
         public HashSet<string> Tags { get; set; } = [];
         public string Category { get; set; } = SpendLessConstants.DefaultCategory;
-        public required long TimeStamp { get; set; }
+        public required AbsoluteDateTime TimeStamp { get; set; }
         public required DryRunAccountDto Source { get; set; }
         public required DryRunAccountDto Destination { get; set; }
         public string Description { get; set; } = "";

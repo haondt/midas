@@ -54,14 +54,9 @@ namespace SpendLess.Core.Models
             }
             return $"${amount.ToString("N2")}";
         }
-        public static string FormatDate(long unixSeconds)
+        public static string FormatDate(AbsoluteDateTime absoluteDateTime)
         {
-            var dateTime = DateTimeOffset.FromUnixTimeSeconds(unixSeconds).DateTime;
-            return dateTime.ToString("yyyy-MM-dd");
-        }
-        public static string FormatDate(DateTime dateTime)
-        {
-            return dateTime.ToString("yyyy-MM-dd");
+            return absoluteDateTime.LocalTime.ToString("yyyy-MM-dd");
         }
     }
 }

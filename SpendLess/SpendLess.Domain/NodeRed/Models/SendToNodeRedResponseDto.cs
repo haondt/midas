@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SpendLess.Core.Constants;
+using SpendLess.Core.Models;
 
 namespace SpendLess.Domain.NodeRed.Models
 {
@@ -12,7 +13,7 @@ namespace SpendLess.Domain.NodeRed.Models
     {
         [JsonRequired]
         public required decimal Amount { get; set; }
-        public long? TimeStamp { get; set; }
+        public AbsoluteDateTime? TimeStamp { get; set; }
         public HashSet<string> Tags { get; set; } = [];
         public string Category { get; set; } = SpendLessConstants.DefaultCategory;
         public SendToNodeRedResponseDtoAccountData Source { get; set; } = new();

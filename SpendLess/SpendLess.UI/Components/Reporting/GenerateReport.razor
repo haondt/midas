@@ -4,29 +4,29 @@
 
     protected override void OnInitialized()
     {
-        var currentDateTime = DateTime.Now;
-        var currentMonth = new DateTime(currentDateTime.Year, currentDateTime.Month, 1);
-        var currentYear = new DateTime(currentDateTime.Year, 1, 1);
-        var previousYear = currentYear.AddYears(-1);
+        var currentDateTime = AbsoluteDateTime.Now;
+        var currentMonth = currentDateTime.FloorToLocalMonth();
+        var currentYear = currentDateTime.FloorToLocalYear();
+        var previousYear = currentYear.AddLocalYears(-1);
 
         PresetRanges = new()
         {
             new()
             {
-                (currentYear.ToString("yyyy"), StringFormatter.FormatDate(currentYear), StringFormatter.FormatDate(currentYear.AddYears(1)))
+                (currentYear.LocalTime.ToString("yyyy"), StringFormatter.FormatDate(currentYear), StringFormatter.FormatDate(currentYear.AddLocalYears(1)))
             },
             Enumerable.Range(0, 12)
-                .Select(i => currentYear.AddMonths(i))
+                .Select(i => currentYear.AddLocalMonths(i))
                 .Where(d => d <= currentDateTime)
-                .Select(i => (i.ToString("MMMM yyyy"), StringFormatter.FormatDate(i), StringFormatter.FormatDate(i.AddMonths(1))))
+                .Select(i => (i.LocalTime.ToString("MMMM yyyy"), StringFormatter.FormatDate(i), StringFormatter.FormatDate(i.AddLocalMonths(1))))
                 .ToList(),
             new()
             {
-                (previousYear.ToString("yyyy"), StringFormatter.FormatDate(previousYear), StringFormatter.FormatDate(currentYear))
+                (previousYear.LocalTime.ToString("yyyy"), StringFormatter.FormatDate(previousYear), StringFormatter.FormatDate(currentYear))
             },
             Enumerable.Range(0, 12)
-                .Select(i => previousYear.AddMonths(i))
-                .Select(i => (i.ToString("MMMM yyyy"), StringFormatter.FormatDate(i), StringFormatter.FormatDate(i.AddMonths(1))))
+                .Select(i => previousYear.AddLocalMonths(i))
+                .Select(i => (i.LocalTime.ToString("MMMM yyyy"), StringFormatter.FormatDate(i), StringFormatter.FormatDate(i.AddLocalMonths(1))))
                 .ToList(),
         };
     }

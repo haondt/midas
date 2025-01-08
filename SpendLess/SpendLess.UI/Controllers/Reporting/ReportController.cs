@@ -1,6 +1,7 @@
 ﻿using Haondt.Web.Core.Services;
 using Haondt.Web.Middleware;
 using Microsoft.AspNetCore.Mvc;
+using SpendLess.Core.Models;
 using SpendLess.Domain.Reporting.Services;
 using SpendLess.UI.Components.Reporting;
 using SpendLess.UI.Shared.Controllers;
@@ -13,8 +14,8 @@ namespace SpendLess.UI.Controllers.Reporting
         [HttpGet]
         [ServiceFilter(typeof(RenderPageFilter))]
         public async Task<IResult> Get(
-            [FromQuery(Name = "f")] DateTime from,
-            [FromQuery(Name = "t")] DateTime to)
+            [FromQuery(Name = "f")] AbsoluteDateTime from,
+            [FromQuery(Name = "t")] AbsoluteDateTime to)
         {
 
             var report = await reportService.GenerateReportData(from, to);

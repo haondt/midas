@@ -1,17 +1,18 @@
-﻿@using SpendLess.Domain.Dashboard.Models
+﻿@using SpendLess.Core.Models
+@using SpendLess.Domain.Dashboard.Models
 @code {
     [Parameter, EditorRequired]
     public required DashboardData DashboardData { get; set; }
 
     public List<(string, string)> Ranges = [];
 
-    private static (string, string) ConvertDateTime(DateTime dt) => (dt.ToString("MMMM yyyy"), ((DateTimeOffset)dt).ToUnixTimeSeconds().ToString());
+    private static (string, string) ConvertDateTime(AbsoluteDateTime dt) => (dt.LocalTime.ToString("MMMM yyyy"), dt.ToString());
     protected override void OnInitialized ()
     {
-        var localTime = DateTime.Now;
-        var currentMonth = new DateTime(localTime.Year, localTime.Month, 1);
-        var previousMonth = currentMonth.AddMonths(-1);
-        var previousPreviousMonth = currentMonth.AddMonths(-2);
+        var localTime = AbsoluteDateTime.Now;
+        var currentMonth = localTime.FloorToLocalMonth();
+        var previousMonth = currentMonth.AddLocalMonths(-1);
+        var previousPreviousMonth = currentMonth.AddLocalMonths(-2);
 
 
         Ranges = [
@@ -25,9 +26,6 @@
     }
 
 }
-
-
-
 
 <div class="panel is-link">
     <p class="panel-heading">Dashboard</p>

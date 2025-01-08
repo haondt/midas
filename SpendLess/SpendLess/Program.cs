@@ -6,6 +6,7 @@ using SpendLess.Extensions;
 using SpendLess.Persistence.Extensions;
 using SpendLess.UI.Extensions;
 using SpendLess.UI.Shared.Extensions;
+using SpendLess.UI.Shared.ModelBinders;
 
 const string CORS_POLICY = "_spendLessPolicy";
 
@@ -16,7 +17,10 @@ StorageKeyConvert.DefaultSerializerSettings = new StorageKeySerializerSettings
 };
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddControllers()
+builder.Services.AddControllers(o =>
+    {
+        o.ModelBinderProviders.Insert(0, new AbsoluteDateTimeModelBinderProvider());
+    })
     .AddApplicationPart(typeof(Haondt.Web.Extensions.ServiceCollectionExtensions).Assembly)
     .AddApplicationPart(typeof(Haondt.Web.BulmaCSS.Extensions.ServiceCollectionExtensions).Assembly)
     .AddApplicationPart(typeof(SpendLess.Api.Controllers.SpendLessApiController).Assembly);

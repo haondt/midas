@@ -11,7 +11,7 @@ namespace SpendLess.Domain.Reporting.Services
         IAccountsService accountsService,
         IOptions<ReportingSettings> options) : IReportService
     {
-        public async Task<ReportDataDto> GenerateReportData(DateTime start, DateTime end)
+        public async Task<ReportDataDto> GenerateReportData(AbsoluteDateTime start, AbsoluteDateTime end)
         {
             var transactions = await transactionService.GetTransactions(new()
             {
@@ -19,12 +19,10 @@ namespace SpendLess.Domain.Reporting.Services
                 TransactionFilter.ExclusiveMaxDate(end)
             });
 
-            List<(DateTime Date, IEnumerable<TransactionDto> Transactions)> transactionsByDateTime = transactions
+            List<(AbsoluteDateTime Date, IEnumerable<TransactionDto> Transactions)> transactionsByDateTime = transactions
                 .Select(t =>
                 {
-                    var dt = DateTimeOffset.FromUnixTimeSeconds(t.Value.TimeStamp).DateTime;
-                    var rounded = new DateTime(dt.Year, dt.Month, dt.Day);
-                    return new { Date = rounded, Transaction = t.Value };
+                    return new { Date = t.Value.TimeStamp.FloorToLocalDay(), Transaction = t.Value };
                 })
                 .GroupBy(t => t.Date)
                 .OrderBy(t => t.Key)
@@ -35,14 +33,14 @@ namespace SpendLess.Domain.Reporting.Services
                 ))
                 .ToList();
 
-            var startDay = new DateTime(start.Year, start.Month, start.Day);
-            if (start <= DateTime.MinValue.AddDays(7) || start <= DateTimeOffset.MinValue.DateTime.AddDays(7)) // subtracting a week as a buffer for localized time
+            var startDay = start.FloorToLocalDay();
+            if (start <= AbsoluteDateTime.MinValue.AddDays(7))// subtracting a week as a buffer for localized time
                 startDay = transactionsByDateTime[0].Date;
-            var endDay = new DateTime(end.Year, end.Month, end.Day);
-            if (end >= DateTime.MaxValue.AddDays(-7) || end >= DateTimeOffset.MaxValue.DateTime.AddDays(-7))
+            var endDay = end.FloorToLocalDay();
+            if (end >= AbsoluteDateTime.MaxValue.AddDays(-7))
                 endDay = transactionsByDateTime[^1].Date;
             else
-                endDay = new DateTime(end.Year, end.Month, end.Day).AddDays(-1);
+                endDay = endDay.AddLocalDays(-1);
 
             var range = endDay - startDay;
             TimeStepper stepper;
@@ -54,13 +52,13 @@ namespace SpendLess.Domain.Reporting.Services
                 stepper = new TimeStepper(startDay, TimeStepSize.Year);
 
             var transactionsByPeriod = new List<List<TransactionDto>>();
-            var periods = new List<DateTime>();
+            var periods = new List<AbsoluteDateTime>();
 
-            var currentPeriodStart = stepper.DateTime;
+            var currentPeriodStart = stepper.AbsoluteDateTime;
             periods.Add(currentPeriodStart);
             transactionsByPeriod.Add(new());
             stepper = stepper.Step();
-            var currentPeriodEnd = stepper.DateTime;
+            var currentPeriodEnd = stepper.AbsoluteDateTime;
 
             foreach (var (date, transactionGroup) in transactionsByDateTime)
             {
@@ -70,7 +68,7 @@ namespace SpendLess.Domain.Reporting.Services
                     periods.Add(currentPeriodStart);
                     transactionsByPeriod.Add(new());
                     stepper = stepper.Step();
-                    currentPeriodEnd = stepper.DateTime;
+                    currentPeriodEnd = stepper.AbsoluteDateTime;
                 }
 
                 transactionsByPeriod[^1].AddRange(transactionGroup);
@@ -82,7 +80,7 @@ namespace SpendLess.Domain.Reporting.Services
                 periods.Add(currentPeriodStart);
                 transactionsByPeriod.Add(new());
                 stepper = stepper.Step();
-                currentPeriodEnd = stepper.DateTime;
+                currentPeriodEnd = stepper.AbsoluteDateTime;
             }
 
             var reportData = new ReportDataDto
@@ -92,9 +90,9 @@ namespace SpendLess.Domain.Reporting.Services
 
                 TimeStepLabels = stepper.StepSize switch
                 {
-                    TimeStepSize.Day => periods.Select(p => p.ToString("yyyy-MM-dd")).ToList(),
-                    TimeStepSize.Month => periods.Select(p => p.ToString("MMMM yyyy")).ToList(),
-                    TimeStepSize.Year => periods.Select(p => p.ToString("yyyy")).ToList(),
+                    TimeStepSize.Day => periods.Select(p => p.LocalTime.ToString("yyyy-MM-dd")).ToList(),
+                    TimeStepSize.Month => periods.Select(p => p.LocalTime.ToString("MMMM yyyy")).ToList(),
+                    TimeStepSize.Year => periods.Select(p => p.LocalTime.ToString("yyyy")).ToList(),
                     _ => throw new ArgumentException($"Unknown step size {stepper.StepSize}")
                 },
                 SpendingPerTimeStep = [],

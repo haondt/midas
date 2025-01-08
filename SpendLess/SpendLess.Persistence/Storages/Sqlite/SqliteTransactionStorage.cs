@@ -3,6 +3,7 @@ using Haondt.Persistence.Services;
 using Haondt.Persistence.Sqlite.Services;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Options;
+using SpendLess.Core.Models;
 using SpendLess.Persistence.Extensions;
 using SpendLess.Persistence.Models;
 using SpendLess.Persistence.Services;
@@ -114,7 +115,7 @@ namespace SpendLess.Persistence.Storages.Sqlite
             {
                 amountCentsParameter.Value = (int)(transaction.Amount * 100);
                 categoryParameter.Value = transaction.Category;
-                timeStampParameter.Value = transaction.TimeStamp;
+                timeStampParameter.Value = transaction.TimeStamp.UnixTimeSeconds;
                 sourceAccountParameter.Value = transaction.SourceAccount;
                 destinationAccountParameter.Value = transaction.DestinationAccount;
                 descriptionParameter.Value = transaction.Description;
@@ -405,7 +406,7 @@ namespace SpendLess.Persistence.Storages.Sqlite
                     var transaction = new TransactionDto
                     {
                         Amount = Convert.ToDecimal(reader["amountCents"]) / 100,
-                        TimeStamp = Convert.ToInt64(reader["timeStamp"]),
+                        TimeStamp = AbsoluteDateTime.Create(Convert.ToInt64(reader["timeStamp"])),
                         Category = reader["category"].ToString() ?? "",
                         SourceAccount = reader["sourceAccount"].ToString() ?? "",
                         DestinationAccount = reader["destinationAccount"].ToString() ?? "",

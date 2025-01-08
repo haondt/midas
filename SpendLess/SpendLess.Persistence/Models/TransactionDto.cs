@@ -1,4 +1,5 @@
 ﻿using SpendLess.Core.Constants;
+using SpendLess.Core.Models;
 
 namespace SpendLess.Persistence.Models
 {
@@ -10,6 +11,6 @@ namespace SpendLess.Persistence.Models
         public string SourceAccount { get; set; } = SpendLessConstants.DefaultAccount;
         public string DestinationAccount { get; set; } = SpendLessConstants.DefaultAccount;
         public string Description { get; set; } = "";
-        public required long TimeStamp { get; set; }
+        public required AbsoluteDateTime TimeStamp { get; set; }
     }
 }

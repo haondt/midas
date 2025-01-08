@@ -1,4 +1,6 @@
-﻿namespace SpendLess.Persistence.Models
+﻿using SpendLess.Core.Models;
+
+namespace SpendLess.Persistence.Models
 {
     public abstract class TransactionFilter
     {
@@ -6,17 +8,17 @@
         {
             return new TransactionIdIsOneOf { Ids = ids };
         }
-        public static TransactionFilter MinDate(DateTime value)
+        public static TransactionFilter MinDate(AbsoluteDateTime value)
         {
-            return new MinDateTransactionFilter { UnixSeconds = ((DateTimeOffset)value).ToUnixTimeSeconds() };
+            return new MinDateTransactionFilter { UnixSeconds = value.UnixTimeSeconds };
         }
-        public static TransactionFilter MaxDate(DateTime value)
+        public static TransactionFilter MaxDate(AbsoluteDateTime value)
         {
-            return new MaxDateTransactionFilter { UnixSeconds = ((DateTimeOffset)value).ToUnixTimeSeconds() };
+            return new MaxDateTransactionFilter { UnixSeconds = value.UnixTimeSeconds };
         }
-        public static TransactionFilter ExclusiveMaxDate(DateTime value)
+        public static TransactionFilter ExclusiveMaxDate(AbsoluteDateTime value)
         {
-            return new ExclusiveMaxDateTransactionFilter { UnixSeconds = ((DateTimeOffset)value).ToUnixTimeSeconds() };
+            return new ExclusiveMaxDateTransactionFilter { UnixSeconds = value.UnixTimeSeconds };
         }
 
         public static TransactionFilter HasTag(string tag)

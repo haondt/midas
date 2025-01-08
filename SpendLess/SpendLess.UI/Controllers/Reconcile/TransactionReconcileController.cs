@@ -76,13 +76,21 @@ namespace SpendLess.UI.Controllers.Reconcile
                 });
             }
 
-            var accountIds = result.Value.MergedTransactions.SelectMany(t => new List<string> { t.NewTransaction.SourceAccount, t.NewTransaction.DestinationAccount });
+            if (!result.Value.MergedTransactions.IsSuccessful)
+                return await componentFactory.RenderComponentAsync(new ReconcileDryRunResult
+                {
+                    JobId = id,
+                    Result = new() { MergedTransactions = new(result.Value.MergedTransactions.Reason) }
+                });
+
+
+            var accountIds = result.Value.MergedTransactions.Value.SelectMany(t => new List<string> { t.NewTransaction.SourceAccount, t.NewTransaction.DestinationAccount });
             var accountNames = (await accountsService.GetMany(accountIds.ToList()))
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Name);
 
             var expandedResult = new ReconcileDryRunExpandedResultDto
             {
-                MergedTransactions = result.Value.MergedTransactions.Select(t => new ReconcileDryRunExpandedSingleResult
+                MergedTransactions = new(result.Value.MergedTransactions.Value.Select(t => new ReconcileDryRunExpandedSingleResult
                 {
                     OldTransactions = t.OldTransactions,
                     NewTransaction = new()
@@ -97,13 +105,46 @@ namespace SpendLess.UI.Controllers.Reconcile
                         SourceAccountName = accountNames.GetValueOrDefault(t.NewTransaction.SourceAccount, SpendLessConstants.DefaultAccountName),
                         DestinationAccountName = accountNames.GetValueOrDefault(t.NewTransaction.DestinationAccount, SpendLessConstants.DefaultAccountName),
                     }
-                }).ToList()
+                }).ToList())
             };
 
             return await componentFactory.RenderComponentAsync(new ReconcileDryRunResult
             {
                 JobId = id,
                 Result = expandedResult
+            });
+        }
+
+        [HttpPost("run/{id}")]
+        public async Task<IResult> StartMerge(string id)
+        {
+            var jobId = reconcileService.StartMerge(id);
+
+            return await componentFactory.RenderComponentAsync(new ProgressPanel
+            {
+                CallbackEndpoint = $"/reconcile/run/{jobId}",
+                ProgressPercent = 0
+            });
+        }
+
+        [HttpGet("run/{id}")]
+        public async Task<IResult> GetMergeStatus(string id)
+        {
+
+            var result = reconcileService.GetMergeResult(id);
+            if (!result.IsSuccessful)
+            {
+                // todo: indeterminate?
+                return await componentFactory.RenderComponentAsync(new ProgressPanel
+                {
+                    CallbackEndpoint = $"/reconcile/run/{id}",
+                    ProgressPercent = result.Reason.Progress
+                });
+            }
+
+            return await componentFactory.RenderComponentAsync(new ReconcileResult
+            {
+                Result = result.Value
             });
         }
     }

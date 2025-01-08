@@ -1,9 +1,11 @@
-﻿namespace SpendLess.Domain.Reporting.Models
+﻿using SpendLess.Core.Models;
+
+namespace SpendLess.Domain.Reporting.Models
 {
     public class ReportDataDto
     {
-        public required DateTime StartTime { get; set; }
-        public required DateTime EndTime { get; set; }
+        public required AbsoluteDateTime StartTime { get; set; }
+        public required AbsoluteDateTime EndTime { get; set; }
 
         public required List<string> TimeStepLabels { get; set; }
         public required List<decimal> SpendingPerTimeStep { get; set; }

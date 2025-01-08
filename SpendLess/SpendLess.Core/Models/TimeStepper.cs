@@ -2,19 +2,26 @@
 {
     public struct TimeStepper
     {
-        public DateTime DateTime { get; private set; }
+        public AbsoluteDateTime AbsoluteDateTime { get; private set; }
         public TimeStepSize StepSize { get; private set; }
 
         public TimeStepper(DateTime dateTime, TimeStepSize stepSize)
         {
-            DateTime = stepSize switch
+            var absoluteDateTime = AbsoluteDateTime.Create(dateTime);
+            AbsoluteDateTime = stepSize switch
             {
-                TimeStepSize.Day => new DateTime(dateTime.Year, dateTime.Month, dateTime.Day),
-                TimeStepSize.Month => new DateTime(dateTime.Year, dateTime.Month, 1),
-                TimeStepSize.Year => new DateTime(dateTime.Year, 1, 1),
+                TimeStepSize.Day => absoluteDateTime.FloorToLocalDay(),
+                TimeStepSize.Month => absoluteDateTime.FloorToLocalMonth(),
+                TimeStepSize.Year => absoluteDateTime.FloorToLocalYear(),
                 _ => throw new ArgumentException($"Unknown stepsize {stepSize}")
             };
 
+            StepSize = stepSize;
+        }
+
+        public TimeStepper(AbsoluteDateTime absoluteDateTime, TimeStepSize stepSize)
+        {
+            AbsoluteDateTime = absoluteDateTime;
             StepSize = stepSize;
         }
 
@@ -22,9 +29,9 @@
         {
             return StepSize switch
             {
-                TimeStepSize.Day => this with { DateTime = DateTime.AddDays(1) },
-                TimeStepSize.Month => this with { DateTime = DateTime.AddMonths(1) },
-                TimeStepSize.Year => this with { DateTime = DateTime.AddYears(1) },
+                TimeStepSize.Day => this with { AbsoluteDateTime = AbsoluteDateTime.AddLocalDays(1) },
+                TimeStepSize.Month => this with { AbsoluteDateTime = AbsoluteDateTime.AddLocalMonths(1) },
+                TimeStepSize.Year => this with { AbsoluteDateTime = AbsoluteDateTime.AddLocalDays(1) },
                 _ => throw new ArgumentException($"Unknown stepsize {StepSize}")
             };
         }

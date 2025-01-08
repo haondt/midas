@@ -4,6 +4,7 @@ using Haondt.Identity.StorageKey;
 using Microsoft.Extensions.Options;
 using SpendLess.Core.Constants;
 using SpendLess.Core.Extensions;
+using SpendLess.Core.Models;
 using SpendLess.Domain.Accounts.Services;
 using SpendLess.Domain.Import.Exceptions;
 using SpendLess.Domain.Import.Models;
@@ -116,31 +117,31 @@ namespace SpendLess.Domain.Import.Services
         {
 
             var (jobId, cancellationToken) = jobRegistry.RegisterJob();
-            var currentTimeStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            var currentTimeStamp = AbsoluteDateTime.Now;
             var importTag = $"import-{currentTimeStamp}";
 
             _ = Task.Run(async () =>
             {
                 var result = new DryRunResultDto();
-                if (addImportTag)
-                    result.ImportTag = importTag;
-
-                DryRunAccountDto? globalImportAccount = null;
-
-                if (!string.IsNullOrEmpty(accountId))
-                    globalImportAccount = new DryRunAccountDto
-                    {
-                        Id = accountId,
-                        Name = (await accountsService.TryGetAccount(accountId))
-                            .As(a => a.Name)
-                            .Or(SpendLessConstants.FallbackAccountName)
-                    };
-
-                var results = new List<(SendToNodeRedRequestDto Request, SendToNodeRedResponseDto Response)>();
-                var existingCategories = (await transactionService.GetCategories()).ToHashSet();
-                var existingTags = (await transactionService.GetTags()).ToHashSet();
                 try
                 {
+                    if (addImportTag)
+                        result.ImportTag = importTag;
+
+                    DryRunAccountDto? globalImportAccount = null;
+
+                    if (!string.IsNullOrEmpty(accountId))
+                        globalImportAccount = new DryRunAccountDto
+                        {
+                            Id = accountId,
+                            Name = (await accountsService.TryGetAccount(accountId))
+                                .As(a => a.Name)
+                                .Or(SpendLessConstants.FallbackAccountName)
+                        };
+
+                    var results = new List<(SendToNodeRedRequestDto Request, SendToNodeRedResponseDto Response)>();
+                    var existingCategories = (await transactionService.GetCategories()).ToHashSet();
+                    var existingTags = (await transactionService.GetTags()).ToHashSet();
                     var pageSize = Math.Min(options.Value.NodeRedOperationBatchSize, options.Value.StorageOperationBatchSize);
                     var page = 1;
                     var transactions = (await transactionService.GetPagedTransactions(filters, pageSize, page)).ToList();
@@ -262,38 +263,38 @@ namespace SpendLess.Domain.Import.Services
         {
 
             var (jobId, cancellationToken) = jobRegistry.RegisterJob("parsing csv...");
-            var currentTimeStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            var currentTimeStamp = AbsoluteDateTime.Now;
             var importTag = $"import-{currentTimeStamp}";
 
             _ = Task.Run(async () =>
             {
 
-                var importAccount = new DryRunAccountDto
-                {
-                    Id = accountId,
-                    Name = (await accountsService.TryGetAccount(accountId))
-                        .As(a => a.Name)
-                        .Or(SpendLessConstants.FallbackAccountName)
-                };
-
                 var result = new DryRunResultDto();
-
-                if (addImportTag)
-                    result.ImportTag = importTag;
-
-                var results = new List<(SendToNodeRedRequestDto Request, SendToNodeRedResponseDto Response)>();
-
-                if (csvData.Count == 0)
-                {
-                    jobRegistry.CompleteJob(jobId, result);
-                    return;
-                }
-
-                var existingCategories = (await transactionService.GetCategories()).ToHashSet();
-                var existingTags = (await transactionService.GetTags()).ToHashSet();
-
                 try
                 {
+                    var importAccount = new DryRunAccountDto
+                    {
+                        Id = accountId,
+                        Name = (await accountsService.TryGetAccount(accountId))
+                            .As(a => a.Name)
+                            .Or(SpendLessConstants.FallbackAccountName)
+                    };
+
+
+                    if (addImportTag)
+                        result.ImportTag = importTag;
+
+                    var results = new List<(SendToNodeRedRequestDto Request, SendToNodeRedResponseDto Response)>();
+
+                    if (csvData.Count == 0)
+                    {
+                        jobRegistry.CompleteJob(jobId, result);
+                        return;
+                    }
+
+                    var existingCategories = (await transactionService.GetCategories()).ToHashSet();
+                    var existingTags = (await transactionService.GetTags()).ToHashSet();
+
                     var batchSize = options.Value.NodeRedOperationBatchSize;
                     var header = csvData.First();
                     var batches = csvData.Chunk(batchSize);

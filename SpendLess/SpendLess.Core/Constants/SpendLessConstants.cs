@@ -30,6 +30,7 @@ namespace SpendLess.Core.Constants
             };
             ApiSerializerSettings.Converters.Add(new GenericStorageKeyJsonConverter());
             ApiSerializerSettings.Converters.Add(new GenericOptionalJsonConverter());
+            ApiSerializerSettings.Converters.Add(new AbsoluteDateTimeJsonConverter());
 
             PrettySerializerSettings = new JsonSerializerSettings();
             PrettySerializerSettings.TypeNameHandling = TypeNameHandling.None;
@@ -39,6 +40,7 @@ namespace SpendLess.Core.Constants
             PrettySerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             PrettySerializerSettings.Converters.Add(new GenericStorageKeyJsonConverter());
             PrettySerializerSettings.Converters.Add(new GenericOptionalJsonConverter());
+            PrettySerializerSettings.Converters.Add(new AbsoluteDateTimeJsonConverter());
         }
 
         public static JsonSerializerSettings PrettySerializerSettings { get; }
