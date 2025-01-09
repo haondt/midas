@@ -1,0 +1,128 @@
+@using Haondt.Web.Components
+@using Midas.Domain.Reconcile.Models
+@using Midas.UI.Components.Import
+
+@code{
+    [Parameter]
+    public SetupSelectTransactionsField? SelectTransactionsField { get; set; }
+}
+
+<div id="transaction-import" class="block" style="max-width:var(--spendless-form-page-width);margin:auto;">
+    <div class="panel is-link" >
+        <p class="panel-heading">Reconcile Transactions</p>
+        <form hx-post="/reconcile/dry-run" hx-swap="innerHTML" hx-target="#dry-run-result">
+            <div class="panel-block">
+                <div class="control">
+                    <h2 class="subtitle">Select Eligible Transactions</h2>
+                    @if(SelectTransactionsField != null)
+                    {
+                        <ObjectComponentT Component="@SelectTransactionsField" />
+                    }
+                    else
+                    {
+                        <SetupSelectTransactionsField />
+                    }
+                    <div class="message">
+                        <div class="message-body">
+                            <div class="content">
+                                <p>
+                                    For two transactions to be merged, they must be for the same amount, where one is a transaction from A to B,
+                                    and the other is from B to C. Then we can merge them into a single transaction from A to C. Since the amount
+                                    for both transactions is the same, this would not change the final balance of A, B or C.
+                                </p>
+                                <p>
+                                    Additionally, transactions will only be merged if they match with exactly one other transaction.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-block">
+                <div class="control">
+                    <h2 class="subtitle">Configure Pairing Strategy</h2>
+
+                    <div class="field">
+                        <div class="control">
+                            <label class="checkbox">
+                                <input type="checkbox" name="pair-match-description" />
+                                Require matching descriptions
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="control">
+                            <label class="checkbox">
+                                <input type="checkbox" name="pair-match-date" checked/>
+                                Require matching dates
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Date Match Tolerance (days)</label>
+                        <div class="control">
+                            <input style="width:initial;" class="input" type="number" placeholder="days" value="5" name="pair-date-tol"/>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="panel-block">
+                <div class="control">
+                    <h2 class="subtitle">Configure Joining Strategy</h2>
+
+                    <div class="field">
+                        <label class="label">Description Joining Strategy</label>
+                        <div class="control">
+                            <div class="select">
+                                <select name="join-description">
+                                    <option value="@DescriptionJoiningStrategy.Source">Use Source</option>
+                                    <option value="@DescriptionJoiningStrategy.Destination">Use Destination</option>
+                                    <option value="@DescriptionJoiningStrategy.Concatenate" selected>Concatenate</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Date Joining Strategy</label>
+                        <div class="control">
+                            <div class="select">
+                                <select name="join-date">
+                                    <option value="@DateJoiningStrategy.Source">Use Source</option>
+                                    <option value="@DateJoiningStrategy.Destination">Use Destination</option>
+                                    <option value="@DateJoiningStrategy.Average" selected>Average</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Category Joining Strategy</label>
+                        <div class="control">
+                            <div class="select">
+                                <select name="join-category">
+                                    <option value="@CategoryJoiningStrategy.Source">Use Source</option>
+                                    <option value="@CategoryJoiningStrategy.Destination">Use Destination</option>
+                                    <option value="@CategoryJoiningStrategy.Clear" selected>Clear Category</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="panel-block">
+                <div class="control">
+                    <button class="button is-primary">Dry-Run</button>
+
+                </div>
+            </div>
+        </form>
+    </div>
+    <div id="dry-run-result"></div>
+</div>

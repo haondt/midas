@@ -1,0 +1,61 @@
+@using Midas.Core.Models
+@using Midas.Domain.Import.Models
+@using System.Web
+@using Midas.UI.Shared.Components
+
+@code {
+    [Parameter]
+    public List<DryRunTransactionDto> Results { get; set; } = [];
+
+    [Parameter, EditorRequired]
+    public required int Page { get; set; }
+    [Parameter, EditorRequired]
+    public required int TotalPages { get; set; }
+    [Parameter]
+    public long? PageSize { get; set; }
+
+
+
+}
+<tbody id="transactions-list">
+    @foreach(var result in Results)
+    {
+        <tr>
+            @if (result.TransactionData.HasValue)
+            {
+                <td>@result.TransactionData.Value.Source.Name</td>
+                <td>@result.TransactionData.Value.Destination.Name</td>
+                <td>@result.TransactionData.Value.Description</td>
+                <td style="text-align:end;">@StringFormatter.FormatCurrency(result.TransactionData.Value.Amount)</td>
+            }
+            else
+            {
+                <td colspan="4"></td>
+            }
+            <td>
+                <span class="tag">
+                    @TransactionImportData.HashSourceData(result.SourceData)
+                </span>
+            </td>
+            <td style="text-align:center;"><button 
+                class="button"
+                _="
+                    on click
+                        writeText('@result.SourceRequestPayload.Replace("\'", "\\'")') into the navigator's clipboard
+                        set target to the first <i/> in me
+                        set the target's @@class to 'fa-solid fa-check'
+                            then wait 1.3s
+                            then set the target's @@class to 'fas fa-copy'
+                ">
+                <span class="icon is-small">
+                    <i class="fas fa-copy"></i>
+                </span>
+            </button></td>
+        </tr>
+    }
+    <tr>
+        <td colspan="6">
+            <Paginator Page="@Page" PageSize="@PageSize" TotalPages="@TotalPages" OnChange="@("send submit to #filters")"/>
+        </td>
+    </tr>
+</tbody>
