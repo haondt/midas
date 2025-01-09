@@ -3,7 +3,7 @@
     public record MidasPersistenceSettings
     {
         public required string DatabasePath { get; init; }
-        public string PrimaryTableName { get; init; } = "spendless";
+        public string PrimaryTableName { get; init; } = "midas";
         public string ForeignKeyTableName { get; init; } = "foreignKeys";
         public string KvsTableName { get; init; } = "kvs";
         public int MaxKvsSearchHits { get; init; } = 5;

@@ -37,7 +37,7 @@ namespace Midas.Domain.Admin.Services
 
                 try
                 {
-                    var targetDbPath = fileService.GetTakeoutFilePath(workDir, "spendless.db");
+                    var targetDbPath = fileService.GetTakeoutFilePath(workDir, "midas.db");
                     dataExportStorage.Export(targetDbPath);
 
                     var nodeRedData = await nodeRedService.ExportDataAsync();
