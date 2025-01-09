@@ -1,0 +1,144 @@
+﻿@using Midas.Core.Models
+@using Midas.UI.Models.Reconcile
+@code {
+    [Parameter, EditorRequired]
+    public required ReconcileDryRunExpandedResultDto Result { get; set; }
+    [Parameter, EditorRequired]
+    public required string JobId { get; set; }
+}
+<div class="box">
+    <p class="title is-4">Dry Run Result</p>
+
+    @if (Result.MergedTransactions.IsSuccessful)
+    {
+        <div class="table-container">
+            <table class="table is-fullwidth is-hoverable">
+                <style>
+                    @@scope {
+                        tr.summary:hover,
+                        tr.summary:hover + tr,
+                        tr.summary:has(+ tr:hover)
+                        {
+                            cursor: pointer;
+                            background-color: var(--bulma-table-row-hover-background-color);
+                        }
+                        
+                        tr.expanded td {
+                            border: none;
+                        }
+
+                        tr.details table {
+                            --bulma-table-cell-border-color: hsl(0, 0%, 14%);
+                        }
+                    }
+                </style>
+                <thead>
+                    <tr>
+                        <th>Source</th>
+                        <th>Destination</th>
+                        <th>Description</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach(var (merge, id)  in Result.MergedTransactions.Value.Select((t, i) => (t, i)))
+                    {
+                        <tr class="summary"
+                            id="summary-@id"
+                            _="
+                            on click
+                                toggle .is-hidden on the next <tr/>
+                                toggle .expanded on me
+                            end
+                        ">
+                            <td>
+                                @merge.NewTransaction.SourceAccountName
+                            </td>
+                            <td>
+                                @merge.NewTransaction.DestinationAccountName
+                            </td>
+                            <td>
+                                @merge.NewTransaction.Description
+                            </td>
+                            <td>
+                                @StringFormatter.FormatCurrency(merge.NewTransaction.Amount)
+                            </td>
+                            <td>
+                                @StringFormatter.FormatDate(merge.NewTransaction.TimeStamp)
+                            </td>
+                        </tr>
+                        <tr class="details is-hidden"
+                            id="details-@id">
+                            <td colspan="5">
+                                <table style="width:100%;">
+                                    <tbody>
+                                        <tr>
+                                            <th>Source account ID</th>
+                                            <td>@merge.NewTransaction.SourceAccount</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Destination account ID</th>
+                                            <td>@merge.NewTransaction.DestinationAccount</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Category</th>
+                                            <td>@merge.NewTransaction.Category</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Tags</th>
+                                            <td>
+                                                <div class="tags">
+                                                    @foreach(var tag in merge.NewTransaction.Tags)
+                                                    {
+                                                        <span class="tag is-info">@tag</span>
+                                                    }
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Source Transactions</th>
+                                            <td>
+                                                <div class="tags">
+                                                    @foreach(var tid in merge.OldTransactions)
+                                                    {
+                                                        <span class="tag">@tid</span>
+                                                    }
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div> 
+
+        <div class="field">
+            <div class="control">
+                <button 
+                    class="button is-primary"
+                    hx-post="/reconcile/run/@JobId"
+                    hx-swap="innerHTML"
+                    hx-target="#reconcile-result">
+                    Merge Transactions
+                </button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="message is-danger">
+            <div class="message-header">
+                <p>The dry-run failed to complete successfully</p>
+            </div>
+            <div class="message-body">
+                @Result.MergedTransactions.Reason
+            </div>
+        </div>
+    }
+</div>
+
+<div id="reconcile-result"></div>

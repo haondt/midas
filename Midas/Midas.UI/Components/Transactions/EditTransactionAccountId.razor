@@ -1,0 +1,25 @@
+﻿@using Haondt.Core.Models
+@using Midas.Core.Constants
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = MidasConstants.DefaultAccount;
+    [Parameter]
+    public Optional<string> InputName { get; set; }
+    [Parameter]
+    public bool IsExistingAccount { get; set; } = false;
+
+    private Dictionary<string, object> InputAttributes = new();
+    protected override void OnInitialized()
+    {
+        if (InputName.HasValue)
+            InputAttributes["name"] = InputName.Value;
+    }
+}
+
+<span 
+    class="tag @(IsExistingAccount ? "has-text-success" : "")"
+    style="font-family:monospace;">
+    @Id
+</span>
+<input type="hidden" value="@Id" @attributes="InputAttributes"/>

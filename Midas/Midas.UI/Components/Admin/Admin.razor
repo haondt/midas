@@ -1,0 +1,103 @@
+﻿
+<div id="admin-panel" class="panel is-link" style="max-width:var(--midas-form-page-width);margin:auto;">
+    <p class="panel-heading">Administration</p>
+    <div class="panel-block">
+        <div class="control">
+            <p class="title is-4">Key-Value Store</p>
+            <form hx-post="/admin/import-mappings" hx-encoding="multipart/form-data" hx-swap="none" data-loading-states>
+                <div class="field has-addons">
+                    <div class="control">
+                        <div class="file">
+                          <label class="file-label">
+                            <input 
+                                id="mappings-file"
+                                _="on change 
+                                    set files to the event's target.files
+                                    if files.length is 1
+                                        set file to files[0]
+                                        add .has-name to the closest .file
+                                        set (the next .file-name)'s innerHTML to the file's name
+                                        remove .is-hidden from the next .file-name
+                                    else
+                                        remove .has-name from the closest .file
+                                        add .is-hidden to the next .file-name
+                                    end
+                                    "
+                                class="file-input" type="file" name="file" accept=".json" />
+                            <span class="file-cta">
+                              <span class="file-icon">
+                                <i class="fas fa-upload"></i>
+                              </span>
+                              <span class="file-label">Choose a file… </span>
+                            </span>
+                            <span class="file-name is-hidden"></span>
+                          </label>
+                        </div>
+                    </div>
+                    <div class="control">
+                        <button 
+                            data-loading-class="is-loading"
+                            class="button is-primary">
+                            Import Mappings
+                        </button>
+                    </div>
+                </div>
+                <div class="field">
+                  <div class="control">
+                    <label class="checkbox">
+                      <input type="checkbox" name="overwrite-existing" checked/>
+                      Overwrite existing mappings and aliases
+                    </label>
+                  </div>
+                </div>
+            </form>
+            <br/>
+            <div class="field">
+                <a class="button" href="/_asset/admin.kvsmappings.json" download="kvsmappings.json">Export Mappings</a>
+            </div>
+        </div>
+    </div>
+    <div class="panel-block">
+        <form hx-post="/admin/takeout" hx-target="#admin-panel" hx-swap="outerHTML">
+            <div class="control">
+                <p class="title is-4">Export Data</p>
+                <div class="field">
+                    <label class="label">Export the Node-Red flows, settings and a copy of the sqlite db.</label>
+                    <div class="control">
+                        <button class="button">Create Takeout</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="panel-block has-background-danger-dark">
+        <div class="control">
+            <p class="title is-4 is-danger">Delete Data</p>
+            <p class="subtitle is-6">Warning: data deletion is permanent and cannot be reversed. Consider creating a backup using the method(s) above.</p>
+            <div class="block">
+                <label class="label">Delete all accounts. This may cause dead references for transactions to or from existing accounts.</label>
+                <div class="control" data-loading-states>
+                    <button
+                        hx-confirm="are you sure?"
+                        data-loading-class="is-loading"
+                        hx-swap="none" 
+                        hx-delete="admin/bulk/accounts" class="button has-text-danger">
+                        Delete All Accounts
+                    </button>
+                </div>
+            </div>
+            <div class="block">
+                <label class="label">Delete all transactions.</label>
+                <div class="control" data-loading-states>
+                    <button
+                        hx-confirm="are you sure?"
+                        data-loading-class="is-loading"
+                        hx-swap="none" 
+                        hx-delete="admin/bulk/transactions" class="button has-text-danger">
+                        Delete All Transactions
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

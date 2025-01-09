@@ -1,0 +1,26 @@
+﻿@using Haondt.Core.Models
+@code {
+    [Parameter]
+    public Optional<Mapping> Mapping { get; set; } = new();
+
+
+}
+
+<div class="panel is-link" style="max-width:var(--midas-form-page-width);margin:auto;">
+    <p class="panel-heading">Key-Value Store</p>
+    @if (Mapping.HasValue)
+    {
+        <Haondt.Web.Components.ObjectComponentT
+            Component="Mapping.Value" />
+    }
+    else
+    {
+        <div id="kvs-mapping">
+            <div class="panel-block has-background-link-dark">
+                <div class="control">
+                    <KeyView IsSwap="false" />
+                </div>
+            </div>
+        </div>
+    }
+</div>

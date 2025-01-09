@@ -2,6 +2,9 @@ import os
 import re
 import shutil
 
+# chatgpt wrote this script to rename all the files and occurrences of the string inside the files
+# so I could rename the project more easily
+
 def is_binary_file(filepath):
     """Check if a file is binary."""
     try:

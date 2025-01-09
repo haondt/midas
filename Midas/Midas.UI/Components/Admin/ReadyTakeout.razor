@@ -1,0 +1,12 @@
+﻿@code {
+    [Parameter, EditorRequired]
+    public required string JobId { get; set; }
+}
+<div class="control">
+    <div class="field">
+        <p>Click to download your takeout.</p>
+    </div>
+    <div class="field">
+        <a class="button" href="/_asset/admin.takeout.@(JobId).zip" download="midas.zip">Download</a>
+    </div>
+</div>

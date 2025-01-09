@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	  <OutputType>Library</OutputType>
+      <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Midas.Core\Midas.Core.csproj" />
+    <ProjectReference Include="..\Midas.Domain\Midas.Domain.csproj" />
+    <ProjectReference Include="..\Midas.UI.Shared\Midas.UI.Shared.csproj" />
+  </ItemGroup>
+
+</Project>
