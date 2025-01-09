@@ -1,3 +1,7 @@
+node-red/data/*
+!node-red/data/flows.json
+!node-red/data/settings.js
+
 localtestingdata.*
 localtestingfiles
 ## Ignore Visual Studio temporary files, build results, and

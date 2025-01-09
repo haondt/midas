@@ -1,0 +1,11 @@
+services:
+  node-red:
+    build:
+      context: node-red
+    volumes:
+      - ./node-red/data:/data
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      SPEND_LESS_API_URL: http://172.31.0.1:5190/
+    ports:
+      - 1880:1880

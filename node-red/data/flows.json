@@ -1,0 +1,6566 @@
+[
+    {
+        "id": "e4616b5d8579dbd3",
+        "type": "tab",
+        "label": "Configuration",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "f6f2187d.f17ca8",
+        "type": "tab",
+        "label": "Apply",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "61831238545f7697",
+        "type": "tab",
+        "label": "File Export",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "9673a4f6948f5f72",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "99f384cef6a769fb",
+        "type": "subflow",
+        "name": "apply in",
+        "info": "",
+        "category": "spendless",
+        "in": [],
+        "out": [
+            {
+                "x": 760,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "0aee765058a16870",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {
+            "module": "node-red-contrib-haondt-spend-less-subflows",
+            "type": "haondt-spend-less-apply-in",
+            "version": "1.0.0"
+        },
+        "color": "#00ebc7",
+        "icon": "font-awesome/fa-dollar"
+    },
+    {
+        "id": "b2028b08979e589d",
+        "type": "subflow",
+        "name": "apply out",
+        "info": "",
+        "category": "spendless",
+        "in": [
+            {
+                "x": 60,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "fe43ab9557221c93"
+                    }
+                ]
+            }
+        ],
+        "out": [],
+        "env": [],
+        "meta": {
+            "module": "node-red-contrib-haondt-spend-less-subflows",
+            "type": "haondt-spend-less-apply-out",
+            "version": "1.0.0"
+        },
+        "color": "#00ebc7",
+        "icon": "font-awesome/fa-dollar"
+    },
+    {
+        "id": "e650a01280df74d9",
+        "type": "subflow",
+        "name": "error response",
+        "info": "",
+        "category": "spendless",
+        "in": [
+            {
+                "x": 40,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "811fb35dcaf6ab7f"
+                    }
+                ]
+            }
+        ],
+        "out": [],
+        "env": [
+            {
+                "name": "ERROR_STATUS",
+                "type": "str",
+                "value": "400",
+                "ui": {
+                    "label": {
+                        "en-US": "Status code"
+                    },
+                    "type": "select",
+                    "opts": {
+                        "opts": [
+                            {
+                                "l": {
+                                    "en-US": "500"
+                                },
+                                "v": "500"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "400"
+                                },
+                                "v": "400"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "200"
+                                },
+                                "v": "200"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "ERROR_MESSAGE",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "label": {
+                        "en-US": "message"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "USE_ERROR_PROP",
+                "type": "bool",
+                "value": "false",
+                "ui": {
+                    "label": {
+                        "en-US": "Use existing `error` property"
+                    },
+                    "type": "checkbox"
+                }
+            }
+        ],
+        "meta": {
+            "module": "node-red-contrib-haondt-spend-less-subflows",
+            "type": "haondt-spend-less-error-response",
+            "version": "1.0.0"
+        },
+        "color": "#00ebc7",
+        "icon": "font-awesome/fa-dollar"
+    },
+    {
+        "id": "9e3bf19c5e1acd5e",
+        "type": "subflow",
+        "name": "parse cibc-chequing",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 40,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "46e906dcf3dec876"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 1020,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "e207e0967fab5a29",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#DDAA99"
+    },
+    {
+        "id": "1ccf8eefe9fc6980",
+        "type": "subflow",
+        "name": "try trim description",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 40,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "a43035e0d6fdeb48"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 2740,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "aef8bcaec909662f",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 2730,
+                "y": 100,
+                "wires": [
+                    {
+                        "id": "9fecfc405e86434f",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#DDAA99",
+        "outputLabels": [
+            "success",
+            "failure"
+        ]
+    },
+    {
+        "id": "463da193503067ee",
+        "type": "subflow",
+        "name": "kvs lookup",
+        "info": "Try to look up the matching value from the key or alias set in `msg.spendless.kvs`.",
+        "category": "spendless",
+        "in": [
+            {
+                "x": 40,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "04ef9a0945917c06"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 1760,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "44cb5aef5c3c2a60",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 1780,
+                "y": 100,
+                "wires": [
+                    {
+                        "id": "98a045dfd8f165b5",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "parse json",
+                "type": "bool",
+                "value": "true",
+                "ui": {
+                    "type": "checkbox"
+                }
+            }
+        ],
+        "meta": {
+            "module": "node-red-contrib-haondt-spend-less-subflows",
+            "type": "haondt-spend-less-kvs-lookup",
+            "version": "1.0.0",
+            "desc": "Look up value from kvs"
+        },
+        "color": "#00ebc7",
+        "outputLabels": [
+            "key found",
+            "key not found"
+        ],
+        "icon": "font-awesome/fa-dollar"
+    },
+    {
+        "id": "1ce79c5fce6b8fe5",
+        "type": "subflow",
+        "name": "try lookup hardcoded account",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 60,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "f8ecc7e667299526"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 1200,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "78f0f6e82dde2f0b",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 1190,
+                "y": 100,
+                "wires": [
+                    {
+                        "id": "fd1ac414dfb6e342",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#DDAA99",
+        "outputLabels": [
+            "success",
+            "failure"
+        ]
+    },
+    {
+        "id": "b86a301c9c586c6c",
+        "type": "subflow",
+        "name": "compose response",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 40,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "acad7c39e448dd04"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 760,
+                "y": 60,
+                "wires": [
+                    {
+                        "id": "9c2a7410b0650875",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#DDAA99"
+    },
+    {
+        "id": "3b3449ca0b5f5b24",
+        "type": "subflow",
+        "name": "throw error",
+        "info": "",
+        "category": "spendless",
+        "in": [
+            {
+                "x": 40,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "603ab2ba9f1fa998"
+                    }
+                ]
+            }
+        ],
+        "out": [],
+        "env": [
+            {
+                "name": "ERROR_MESSAGE",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "label": {
+                        "en-US": "message"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            }
+        ],
+        "meta": {
+            "module": "node-red-contrib-haondt-spend-less-subflows",
+            "type": "haondt-spend-less-throw-error"
+        },
+        "color": "#00ebc7",
+        "icon": "font-awesome/fa-dollar"
+    },
+    {
+        "id": "1fd0f49415234d19",
+        "type": "subflow",
+        "name": "kvs set value",
+        "info": "Set the value for `msg.spendless.kvs.key` to `msg.spendless.kvs.value`. Value must be a string.",
+        "category": "spendless",
+        "in": [
+            {
+                "x": 40,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "7bd4eca5f1910abc"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 740,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "cf586b6e66370837",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {
+            "module": "node-red-contrib-haondt-spend-less-subflows",
+            "type": "haondt-spend-less-kvs-set-value",
+            "version": "1.0.0",
+            "desc": "Set value in kvs"
+        },
+        "color": "#00ebc7",
+        "icon": "font-awesome/fa-dollar"
+    },
+    {
+        "id": "90f2319c72a33bae",
+        "type": "subflow",
+        "name": "determine opposing account",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 40,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "486e62b9a069ea0a"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 430,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "486e62b9a069ea0a",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 450,
+                "y": 100,
+                "wires": [
+                    {
+                        "id": "486e62b9a069ea0a",
+                        "port": 1
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#DDAA99",
+        "outputLabels": [
+            "source",
+            "destination"
+        ]
+    },
+    {
+        "id": "0a0735a743fb5fc7",
+        "type": "subflow",
+        "name": "try lookup hardcoded descriptions",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 60,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "31d991ae290e2066"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 1180,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "290a6abf9510954e",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 1180,
+                "y": 100,
+                "wires": [
+                    {
+                        "id": "c8af21cb41c2d58e",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#DDAA99"
+    },
+    {
+        "id": "212ce6b191f48eaa",
+        "type": "subflow",
+        "name": "file export",
+        "info": "Make the flow files available for download.",
+        "category": "spendless",
+        "in": [],
+        "out": [],
+        "env": [],
+        "meta": {
+            "module": "node-red-contrib-haondt-spend-less-subflows",
+            "type": "haondt-spend-less-file-export",
+            "version": "1.0.0"
+        },
+        "color": "#00ebc7",
+        "icon": "font-awesome/fa-dollar"
+    },
+    {
+        "id": "054a92868304fee3",
+        "type": "subflow",
+        "name": "parse-scotia-visa-infinite",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 60,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "1e06f2c0cfd6baa1"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 1100,
+                "y": 160,
+                "wires": [
+                    {
+                        "id": "77683f08c0ea7a6e",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 1120,
+                "y": 220,
+                "wires": [
+                    {
+                        "id": "3ca300be887c10fc",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#DDAA99"
+    },
+    {
+        "id": "842bf7ebdfb7fe6d",
+        "type": "subflow",
+        "name": "apply skip",
+        "info": "",
+        "category": "spendless",
+        "in": [
+            {
+                "x": 60,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "ce5fb77c0cb573cc"
+                    }
+                ]
+            }
+        ],
+        "out": [],
+        "env": [],
+        "meta": {
+            "module": "node-red-contrib-haondt-spend-less-subflows",
+            "type": "haondt-spend-less-apply-skip",
+            "version": "1.0.0"
+        },
+        "color": "#00ebc7",
+        "icon": "font-awesome/fa-dollar"
+    },
+    {
+        "id": "c1a42afb431f2ac2",
+        "type": "http in",
+        "z": "99f384cef6a769fb",
+        "name": "",
+        "url": "/apply",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 90,
+        "y": 40,
+        "wires": [
+            [
+                "17947cd8848e32d9"
+            ]
+        ]
+    },
+    {
+        "id": "17947cd8848e32d9",
+        "type": "function",
+        "z": "99f384cef6a769fb",
+        "name": "set up context",
+        "func": "msg.spendless = {\n    'response': {\n        'transaction': { }\n    },\n    'context': { }\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 280,
+        "y": 40,
+        "wires": [
+            [
+                "1f591fe37db4a896"
+            ]
+        ]
+    },
+    {
+        "id": "1f591fe37db4a896",
+        "type": "change",
+        "z": "99f384cef6a769fb",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.request",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 520,
+        "y": 40,
+        "wires": [
+            [
+                "9baf9ec4f2bb206f"
+            ]
+        ]
+    },
+    {
+        "id": "9baf9ec4f2bb206f",
+        "type": "change",
+        "z": "99f384cef6a769fb",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.configuration",
+                "pt": "msg",
+                "to": "spendless.request.configuration",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 530,
+        "y": 80,
+        "wires": [
+            [
+                "33ec8e7a7547a9d9"
+            ]
+        ]
+    },
+    {
+        "id": "33ec8e7a7547a9d9",
+        "type": "change",
+        "z": "99f384cef6a769fb",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.account",
+                "pt": "msg",
+                "to": "spendless.request.account",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 520,
+        "y": 120,
+        "wires": [
+            [
+                "0aee765058a16870"
+            ]
+        ]
+    },
+    {
+        "id": "0aee765058a16870",
+        "type": "change",
+        "z": "99f384cef6a769fb",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.data",
+                "pt": "msg",
+                "to": "spendless.request.data",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 510,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "fe43ab9557221c93",
+        "type": "function",
+        "z": "b2028b08979e589d",
+        "name": "prepare response",
+        "func": "msg.payload = msg.spendless.response;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 210,
+        "y": 40,
+        "wires": [
+            [
+                "cec4238c514532d1"
+            ]
+        ]
+    },
+    {
+        "id": "cec4238c514532d1",
+        "type": "http response",
+        "z": "b2028b08979e589d",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 400,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "ce860c3ca27fd579",
+        "type": "switch",
+        "z": "e650a01280df74d9",
+        "name": "error message provided?",
+        "property": "ERROR_MESSAGE",
+        "propertyType": "env",
+        "rules": [
+            {
+                "t": "null"
+            },
+            {
+                "t": "empty"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 430,
+        "y": 100,
+        "wires": [
+            [
+                "564695becf165bac"
+            ],
+            [
+                "564695becf165bac"
+            ],
+            [
+                "0938ecdecf0fb46d"
+            ]
+        ]
+    },
+    {
+        "id": "0938ecdecf0fb46d",
+        "type": "change",
+        "z": "e650a01280df74d9",
+        "name": "use given error message",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{ 'error': $env('ERROR_MESSAGE') }\t",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 690,
+        "y": 140,
+        "wires": [
+            [
+                "762a4ffb79ee2a08"
+            ]
+        ]
+    },
+    {
+        "id": "564695becf165bac",
+        "type": "change",
+        "z": "e650a01280df74d9",
+        "name": "use default  error message",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\"error\":\"An error occurred.\"}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 690,
+        "y": 100,
+        "wires": [
+            [
+                "762a4ffb79ee2a08"
+            ]
+        ]
+    },
+    {
+        "id": "811fb35dcaf6ab7f",
+        "type": "switch",
+        "z": "e650a01280df74d9",
+        "name": "Use error property",
+        "property": "USE_ERROR_PROP",
+        "propertyType": "env",
+        "rules": [
+            {
+                "t": "true"
+            },
+            {
+                "t": "false"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 190,
+        "y": 40,
+        "wires": [
+            [
+                "f7ab6e4359c48ff5"
+            ],
+            [
+                "ce860c3ca27fd579"
+            ]
+        ]
+    },
+    {
+        "id": "f7ab6e4359c48ff5",
+        "type": "change",
+        "z": "e650a01280df74d9",
+        "name": "copy error property",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "error",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 410,
+        "y": 40,
+        "wires": [
+            [
+                "762a4ffb79ee2a08"
+            ]
+        ]
+    },
+    {
+        "id": "a0bd9e9fe727f113",
+        "type": "switch",
+        "z": "e650a01280df74d9",
+        "name": "check status code",
+        "property": "ERROR_STATUS",
+        "propertyType": "env",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "400",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "200",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 1110,
+        "y": 40,
+        "wires": [
+            [
+                "45e62d9d0e957225"
+            ],
+            [
+                "dc04144810f58356"
+            ],
+            [
+                "72a0f5b770950509"
+            ]
+        ]
+    },
+    {
+        "id": "45e62d9d0e957225",
+        "type": "http response",
+        "z": "e650a01280df74d9",
+        "name": "",
+        "statusCode": "400",
+        "headers": {},
+        "x": 1300,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "72a0f5b770950509",
+        "type": "http response",
+        "z": "e650a01280df74d9",
+        "name": "",
+        "statusCode": "500",
+        "headers": {},
+        "x": 1300,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "dc04144810f58356",
+        "type": "http response",
+        "z": "e650a01280df74d9",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1300,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "2569c2ac569f40d1",
+        "type": "debug",
+        "z": "e650a01280df74d9",
+        "name": "SpendLess Error",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "{\t    'message': 'SpendLess encountered an error.',\t    'error': payload\t}",
+        "targetType": "jsonata",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1110,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "762a4ffb79ee2a08",
+        "type": "change",
+        "z": "e650a01280df74d9",
+        "name": "copy context",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload.context",
+                "pt": "msg",
+                "to": "spendless",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 910,
+        "y": 40,
+        "wires": [
+            [
+                "2569c2ac569f40d1",
+                "a0bd9e9fe727f113"
+            ]
+        ]
+    },
+    {
+        "id": "db5b62c498fd92e0",
+        "type": "change",
+        "z": "9e3bf19c5e1acd5e",
+        "name": "set description",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.description",
+                "pt": "msg",
+                "to": "spendless.request.data[1]",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 180,
+        "y": 80,
+        "wires": [
+            [
+                "2e94ef776eaeaf68"
+            ]
+        ]
+    },
+    {
+        "id": "46e906dcf3dec876",
+        "type": "function",
+        "z": "9e3bf19c5e1acd5e",
+        "name": "set date",
+        "func": "msg.spendless.context.date = Math.floor(new Date(msg.spendless.request.data[0]).getTime() / 1000);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 160,
+        "y": 40,
+        "wires": [
+            [
+                "db5b62c498fd92e0"
+            ]
+        ]
+    },
+    {
+        "id": "6bd44f6395986f67",
+        "type": "function",
+        "z": "9e3bf19c5e1acd5e",
+        "name": "set amount",
+        "func": "let dollarString = msg.spendless.request.data[2].trim();\n\nif (dollarString.includes('.')) {\n    const [dollars, cents] = dollarString.split('.');\n    let totalCents = parseInt(dollars) * 100;\n    totalCents += parseInt(cents);\n    msg.spendless.context.amountCents = totalCents;\n} else {\n    msg.spendless.context.amountCents = parseInt(dollarString) * 100;\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 670,
+        "y": 120,
+        "wires": [
+            [
+                "e207e0967fab5a29"
+            ]
+        ]
+    },
+    {
+        "id": "2e94ef776eaeaf68",
+        "type": "switch",
+        "z": "9e3bf19c5e1acd5e",
+        "name": "check for debit amount",
+        "property": "spendless.request.data[2]",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "nempty"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 200,
+        "y": 120,
+        "wires": [
+            [
+                "93637e878ea964ec"
+            ],
+            [
+                "dfe2c8bf4271348e"
+            ]
+        ]
+    },
+    {
+        "id": "d5ec0371438960de",
+        "type": "function",
+        "z": "9e3bf19c5e1acd5e",
+        "name": "set amount",
+        "func": "let dollarString = msg.spendless.request.data[3].trim();\n\nif (dollarString.includes('.')) {\n    const [dollars, cents] = dollarString.split('.');\n    let totalCents = parseInt(dollars) * 100;\n    totalCents += parseInt(cents);\n    msg.spendless.context.amountCents = totalCents;\n} else {\n    msg.spendless.context.amountCents = parseInt(dollarString) * 100;\n}\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 670,
+        "y": 160,
+        "wires": [
+            [
+                "e207e0967fab5a29"
+            ]
+        ]
+    },
+    {
+        "id": "dfe2c8bf4271348e",
+        "type": "switch",
+        "z": "9e3bf19c5e1acd5e",
+        "name": "check for credit amount",
+        "property": "spendless.request.data[3]",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "nempty"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 210,
+        "y": 160,
+        "wires": [
+            [
+                "a7a4e08cd0932ba8"
+            ],
+            [
+                "566a343361c8193f"
+            ]
+        ]
+    },
+    {
+        "id": "93637e878ea964ec",
+        "type": "change",
+        "z": "9e3bf19c5e1acd5e",
+        "name": "set source account",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.source",
+                "pt": "msg",
+                "to": "{\t    \"id\": spendless.account\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 450,
+        "y": 120,
+        "wires": [
+            [
+                "6bd44f6395986f67"
+            ]
+        ]
+    },
+    {
+        "id": "a7a4e08cd0932ba8",
+        "type": "change",
+        "z": "9e3bf19c5e1acd5e",
+        "name": "set destination account",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.destination",
+                "pt": "msg",
+                "to": "{\t    \"id\": spendless.account\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 460,
+        "y": 160,
+        "wires": [
+            [
+                "d5ec0371438960de"
+            ]
+        ]
+    },
+    {
+        "id": "566a343361c8193f",
+        "type": "subflow:e650a01280df74d9",
+        "z": "9e3bf19c5e1acd5e",
+        "name": "",
+        "env": [
+            {
+                "name": "ERROR_MESSAGE",
+                "value": "CIBC-Chequing data was not in the expected format - missing debit and credit columns",
+                "type": "str"
+            }
+        ],
+        "x": 440,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "e207e0967fab5a29",
+        "type": "switch",
+        "z": "9e3bf19c5e1acd5e",
+        "name": "validate amount",
+        "property": "spendless.context.amountCents",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "gte",
+                "v": "0",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 880,
+        "y": 120,
+        "wires": [
+            [],
+            [
+                "fbc07328588b8244"
+            ]
+        ]
+    },
+    {
+        "id": "fbc07328588b8244",
+        "type": "subflow:e650a01280df74d9",
+        "z": "9e3bf19c5e1acd5e",
+        "name": "",
+        "env": [
+            {
+                "name": "ERROR_MESSAGE",
+                "value": "CIBC-Chequing data was not in the expected format - unable to parse amount",
+                "type": "str"
+            }
+        ],
+        "x": 880,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "a43035e0d6fdeb48",
+        "type": "change",
+        "z": "1ccf8eefe9fc6980",
+        "name": "prepare output",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.parsedDescription",
+                "pt": "msg",
+                "to": "spendless.context.description",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 180,
+        "y": 40,
+        "wires": [
+            [
+                "e105a9ff6d0f2919"
+            ]
+        ]
+    },
+    {
+        "id": "aef8bcaec909662f",
+        "type": "link in",
+        "z": "1ccf8eefe9fc6980",
+        "name": "finish flow with success",
+        "links": [
+            "46d10a633e45e6af",
+            "5013fe6a6f489657",
+            "67e236cc67873ddf",
+            "9c6063c4c00cea84",
+            "a0ea9338e513d4ba",
+            "315a78f88aeab388",
+            "abcf6e573853d225",
+            "b94f3e29c09e3899",
+            "b33580ecffb48518",
+            "096d48169914ee92"
+        ],
+        "x": 2615,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "9fecfc405e86434f",
+        "type": "link in",
+        "z": "1ccf8eefe9fc6980",
+        "name": "finish with fail",
+        "links": [
+            "ea44cb9849b9e872"
+        ],
+        "x": 2615,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a79533c475561b25",
+        "type": "switch",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Is Visa debit purchase",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^Point of Sale - Visa Debit VISA DEBIT RETAIL PURCHASE",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 620,
+        "y": 320,
+        "wires": [
+            [
+                "0441e057a6bdae3c"
+            ],
+            [
+                "69eb438512e22737"
+            ]
+        ]
+    },
+    {
+        "id": "0441e057a6bdae3c",
+        "type": "function",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Trim description",
+        "func": "msg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(\"Point of Sale - Visa Debit VISA DEBIT RETAIL PURCHASE \", \"\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 920,
+        "y": 320,
+        "wires": [
+            [
+                "23e98aae3187d150"
+            ]
+        ]
+    },
+    {
+        "id": "e380ae1691d5c043",
+        "type": "switch",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Is Interac Retail purchase",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^Point of Sale - Interac RETAIL PURCHASE",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 630,
+        "y": 500,
+        "wires": [
+            [
+                "e9c5220dd98299b0"
+            ],
+            [
+                "8df0c90e53c6f996"
+            ]
+        ]
+    },
+    {
+        "id": "23e98aae3187d150",
+        "type": "switch",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Is Paypal",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^PAYPAL\\s+",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 1100,
+        "y": 320,
+        "wires": [
+            [
+                "56bcbefc3723c5e2"
+            ],
+            [
+                "1c70b095d49381fc"
+            ]
+        ]
+    },
+    {
+        "id": "56bcbefc3723c5e2",
+        "type": "function",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Trim description",
+        "func": "msg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(\"PAYPAL \", \"\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1280,
+        "y": 320,
+        "wires": [
+            [
+                "1c70b095d49381fc"
+            ]
+        ]
+    },
+    {
+        "id": "5dec8e51955a258a",
+        "type": "function",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Trim description",
+        "func": "msg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(\"Point of Sale - Interac RETAIL PURCHASE \", \"\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1160,
+        "y": 540,
+        "wires": [
+            [
+                "dff233818966ec5f"
+            ]
+        ]
+    },
+    {
+        "id": "8df0c90e53c6f996",
+        "type": "switch",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Is Preauthorized debit transfer",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^Electronic Funds Transfer PREAUTHORIZED DEBIT",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 650,
+        "y": 600,
+        "wires": [
+            [
+                "9cf074bff90f80af"
+            ],
+            [
+                "633a7e027b75044c"
+            ]
+        ]
+    },
+    {
+        "id": "9cf074bff90f80af",
+        "type": "function",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Trim description",
+        "func": "msg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(\"Electronic Funds Transfer PREAUTHORIZED DEBIT \", \"\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 900,
+        "y": 600,
+        "wires": [
+            [
+                "5f1dbf79bf23d3c2"
+            ]
+        ]
+    },
+    {
+        "id": "dd3a51d742a94ec8",
+        "type": "switch",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Is Visa international debit purchase",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^Point of Sale - Visa Debit INTL VISA DEB RETAIL PURCHASE",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 660,
+        "y": 400,
+        "wires": [
+            [
+                "5376380ccf3f7291"
+            ],
+            [
+                "e380ae1691d5c043"
+            ]
+        ]
+    },
+    {
+        "id": "5376380ccf3f7291",
+        "type": "function",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Trim description",
+        "func": "msg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(\"Point of Sale - Visa Debit INTL VISA DEB RETAIL PURCHASE \", \"\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 920,
+        "y": 400,
+        "wires": [
+            [
+                "23e98aae3187d150"
+            ]
+        ]
+    },
+    {
+        "id": "e105a9ff6d0f2919",
+        "type": "switch",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Check config name 2",
+        "property": "spendless.configuration.name",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "scotia-visa-infinite",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "cibc-visa",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "cibc-smart-plus",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "cibc-premium-growth",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 5,
+        "x": 390,
+        "y": 60,
+        "wires": [
+            [
+                "c20e048d0b26b6de"
+            ],
+            [
+                "3c398ec46d2cec86"
+            ],
+            [
+                "78ba0ab8a1c07c39"
+            ],
+            [
+                "fb0503a797d3fb8c"
+            ],
+            [
+                "fb0503a797d3fb8c"
+            ]
+        ]
+    },
+    {
+        "id": "46d10a633e45e6af",
+        "type": "link out",
+        "z": "1ccf8eefe9fc6980",
+        "name": "finish with success",
+        "mode": "link",
+        "links": [
+            "aef8bcaec909662f"
+        ],
+        "x": 1605,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "a0ea9338e513d4ba",
+        "type": "link out",
+        "z": "1ccf8eefe9fc6980",
+        "name": "finish with success",
+        "mode": "link",
+        "links": [
+            "aef8bcaec909662f"
+        ],
+        "x": 1335,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "e9c5220dd98299b0",
+        "type": "switch",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Has numeric code before vendor",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^Point of Sale - Interac RETAIL PURCHASE [0-9]+\\s+.+",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 910,
+        "y": 500,
+        "wires": [
+            [
+                "661c450d21f1d805"
+            ],
+            [
+                "5dec8e51955a258a"
+            ]
+        ]
+    },
+    {
+        "id": "661c450d21f1d805",
+        "type": "function",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Trim description",
+        "func": "const re = /^Point of Sale - Interac RETAIL PURCHASE [0-9]+\\s+/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1160,
+        "y": 500,
+        "wires": [
+            [
+                "dff233818966ec5f"
+            ]
+        ]
+    },
+    {
+        "id": "1c70b095d49381fc",
+        "type": "switch",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Contains exchange rate information",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^.*[^0-9\\s]+.* [0-9]+\\.[0-9]{2} (CAD|USD) @ [0-9]+\\.[0-9]+$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1340,
+        "y": 360,
+        "wires": [
+            [
+                "72b83d76d7b6375b"
+            ],
+            [
+                "a36bb8eb9975c92f"
+            ]
+        ]
+    },
+    {
+        "id": "72b83d76d7b6375b",
+        "type": "function",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Trim description",
+        "func": "const re = / [0-9]+\\.[0-9]{2} (CAD|USD) @ [0-9]+\\.[0-9]+$/\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1600,
+        "y": 360,
+        "wires": [
+            [
+                "a36bb8eb9975c92f"
+            ]
+        ]
+    },
+    {
+        "id": "a36bb8eb9975c92f",
+        "type": "switch",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Has trailing transaction number",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^.+ [0-9]+$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 1650,
+        "y": 400,
+        "wires": [
+            [
+                "fa3bb8f695d98021"
+            ],
+            [
+                "d11c94839d158c58"
+            ]
+        ]
+    },
+    {
+        "id": "fa3bb8f695d98021",
+        "type": "function",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Trim description",
+        "func": "const re = / [0-9]+$/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1900,
+        "y": 400,
+        "wires": [
+            [
+                "d11c94839d158c58"
+            ]
+        ]
+    },
+    {
+        "id": "67e236cc67873ddf",
+        "type": "link out",
+        "z": "1ccf8eefe9fc6980",
+        "name": "finish with success",
+        "mode": "link",
+        "links": [
+            "aef8bcaec909662f"
+        ],
+        "x": 2155,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "0b46cdec0d132efd",
+        "type": "switch",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Has trailing location data",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^.*[^0-9]+.* {2,}(([A-Za-z]+)|([0-9]{3}-?[0-9]{3}-?[0-9]{4})|([A-Za-z]+\\.[A-Za-z]+)) +[A-Za-z]{2}$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 910,
+        "y": 80,
+        "wires": [
+            [
+                "b72fa73ec844e1b8"
+            ],
+            [
+                "b9be1c3c2b494e3b"
+            ]
+        ]
+    },
+    {
+        "id": "b72fa73ec844e1b8",
+        "type": "function",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Trim description",
+        "func": "const re = / {2,}(([A-Za-z]+)|([0-9]{3}-?[0-9]{3}-?[0-9]{4})|([A-Za-z]+\\.[A-Za-z]+)) +[A-Za-z]{2}$/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1140,
+        "y": 80,
+        "wires": [
+            [
+                "764a6543f7cc23bd"
+            ]
+        ]
+    },
+    {
+        "id": "9c6063c4c00cea84",
+        "type": "link out",
+        "z": "1ccf8eefe9fc6980",
+        "name": "finish with success",
+        "mode": "link",
+        "links": [
+            "aef8bcaec909662f"
+        ],
+        "x": 2155,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "c20e048d0b26b6de",
+        "type": "switch",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Has trailing Google Pay flag?",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^.*[^0-9]+.*\\s+\\(GOOGLE PAY\\)$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 640,
+        "y": 40,
+        "wires": [
+            [
+                "6141e09181d7b0fc"
+            ],
+            [
+                "0b46cdec0d132efd"
+            ]
+        ]
+    },
+    {
+        "id": "6141e09181d7b0fc",
+        "type": "function",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Trim description",
+        "func": "const re = /\\s+\\(GOOGLE PAY\\)$/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 880,
+        "y": 40,
+        "wires": [
+            [
+                "0b46cdec0d132efd"
+            ]
+        ]
+    },
+    {
+        "id": "633a7e027b75044c",
+        "type": "switch",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Is Internet bill payment",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^Internet Banking INTERNET BILL PAY [0-9]+\\s+",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 620,
+        "y": 640,
+        "wires": [
+            [
+                "13f0721e1b4ebb08"
+            ],
+            [
+                "549a94d282dec927"
+            ]
+        ]
+    },
+    {
+        "id": "13f0721e1b4ebb08",
+        "type": "function",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Trim description",
+        "func": "const re = /^Internet Banking INTERNET BILL PAY [0-9]+\\s+/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 900,
+        "y": 640,
+        "wires": [
+            [
+                "5013fe6a6f489657"
+            ]
+        ]
+    },
+    {
+        "id": "5013fe6a6f489657",
+        "type": "link out",
+        "z": "1ccf8eefe9fc6980",
+        "name": "finish with success",
+        "mode": "link",
+        "links": [
+            "aef8bcaec909662f"
+        ],
+        "x": 1035,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "ea44cb9849b9e872",
+        "type": "link out",
+        "z": "1ccf8eefe9fc6980",
+        "name": "finish with fail",
+        "mode": "link",
+        "links": [
+            "9fecfc405e86434f"
+        ],
+        "x": 835,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "3c398ec46d2cec86",
+        "type": "function",
+        "z": "1ccf8eefe9fc6980",
+        "name": "trim description (CIBC VISA format)",
+        "func": "// re with named groups to help u understand\n// ^(?P<message>.+?)\\s*(?P<company_number> [0-9]{10})?(?:(?P<city> [A-Z]+)|(?P<phone> [0-9]{3}-[0-9]{3}-?[0-9]{4}))?(?P<website> [^\\s]+\\.[^\\s]{2,})?(?P<state>, [A-Z]{2})(?P<currency>(?: [0-9]+\\.[0-9]+ USD|CAD) @ [0-9]+\\.[0-9]+$)?$\nconst re = /\\s*( [0-9]{10})?(( [A-Z]+)|( [0-9]{3}-[0-9]{3}-?[0-9]{4}))?( [^\\s]+\\.[^\\s]{2,})?(, [A-Z]{2})(( [0-9]+\\.[0-9]+ USD|CAD) @ [0-9]+\\.[0-9]+$)?$/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 660,
+        "y": 180,
+        "wires": [
+            [
+                "1f6d9e90fd4a3716"
+            ]
+        ]
+    },
+    {
+        "id": "02570fdd04939917",
+        "type": "link in",
+        "z": "1ccf8eefe9fc6980",
+        "name": "try trimming trailing store number",
+        "links": [],
+        "x": 2615,
+        "y": 260,
+        "wires": [
+            [
+                "2096e11973e43d04"
+            ]
+        ]
+    },
+    {
+        "id": "2096e11973e43d04",
+        "type": "switch",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Has trailing store number",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^(.+?[^0-9]+?.+?)(#|(\\s+(((#\\s?)|C|(#C)|(#R))?)))[0-9]+\\*?$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 2780,
+        "y": 260,
+        "wires": [
+            [
+                "fec5b7523c6d1649"
+            ],
+            [
+                "378f48762153cc06"
+            ]
+        ]
+    },
+    {
+        "id": "fec5b7523c6d1649",
+        "type": "function",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Trim description",
+        "func": "const re = /(#|(\\s+(((#\\s?)|C|(#C)|(#R))?)))[0-9]+\\*?$/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3020,
+        "y": 260,
+        "wires": [
+            [
+                "a9265eac5457cd5e"
+            ]
+        ]
+    },
+    {
+        "id": "a9265eac5457cd5e",
+        "type": "link out",
+        "z": "1ccf8eefe9fc6980",
+        "name": "return to caller",
+        "mode": "return",
+        "links": [],
+        "x": 3155,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "764a6543f7cc23bd",
+        "type": "link call",
+        "z": "1ccf8eefe9fc6980",
+        "name": "",
+        "links": [
+            "02570fdd04939917"
+        ],
+        "linkType": "static",
+        "timeout": "30",
+        "x": 1960,
+        "y": 80,
+        "wires": [
+            [
+                "9c6063c4c00cea84"
+            ]
+        ]
+    },
+    {
+        "id": "d11c94839d158c58",
+        "type": "link call",
+        "z": "1ccf8eefe9fc6980",
+        "name": "",
+        "links": [
+            "02570fdd04939917"
+        ],
+        "linkType": "static",
+        "timeout": "30",
+        "x": 1960,
+        "y": 440,
+        "wires": [
+            [
+                "67e236cc67873ddf"
+            ]
+        ]
+    },
+    {
+        "id": "dff233818966ec5f",
+        "type": "link call",
+        "z": "1ccf8eefe9fc6980",
+        "name": "",
+        "links": [
+            "02570fdd04939917"
+        ],
+        "linkType": "static",
+        "timeout": "30",
+        "x": 1420,
+        "y": 500,
+        "wires": [
+            [
+                "46d10a633e45e6af"
+            ]
+        ]
+    },
+    {
+        "id": "5f1dbf79bf23d3c2",
+        "type": "link call",
+        "z": "1ccf8eefe9fc6980",
+        "name": "",
+        "links": [
+            "02570fdd04939917"
+        ],
+        "linkType": "static",
+        "timeout": "30",
+        "x": 1160,
+        "y": 600,
+        "wires": [
+            [
+                "a0ea9338e513d4ba"
+            ]
+        ]
+    },
+    {
+        "id": "d8ea7c0d1d26e5fa",
+        "type": "link in",
+        "z": "1ccf8eefe9fc6980",
+        "name": "try trimming trailing non-seperated location data",
+        "links": [],
+        "x": 2615,
+        "y": 380,
+        "wires": [
+            [
+                "2e78edd97ea22b22"
+            ]
+        ]
+    },
+    {
+        "id": "2e78edd97ea22b22",
+        "type": "switch",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Ends with Edmonton, AB",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^.*[^0-9]{2,}.*(Edmonton|EDMONTON)\\s+AB$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 2770,
+        "y": 380,
+        "wires": [
+            [
+                "8ad7d21da08598c4"
+            ],
+            [
+                "28674bdf0d09819b"
+            ]
+        ]
+    },
+    {
+        "id": "8ad7d21da08598c4",
+        "type": "function",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Trim description",
+        "func": "const re = /(Edmonton|EDMONTON)\\s+AB$/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3000,
+        "y": 380,
+        "wires": [
+            [
+                "a606094d9693e414"
+            ]
+        ]
+    },
+    {
+        "id": "a606094d9693e414",
+        "type": "link out",
+        "z": "1ccf8eefe9fc6980",
+        "name": "return to caller",
+        "mode": "return",
+        "links": [],
+        "x": 3135,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "b9be1c3c2b494e3b",
+        "type": "link call",
+        "z": "1ccf8eefe9fc6980",
+        "name": "",
+        "links": [
+            "d8ea7c0d1d26e5fa"
+        ],
+        "linkType": "static",
+        "timeout": "30",
+        "x": 1240,
+        "y": 120,
+        "wires": [
+            [
+                "536ee95489c0ed11"
+            ]
+        ]
+    },
+    {
+        "id": "1f6d9e90fd4a3716",
+        "type": "link call",
+        "z": "1ccf8eefe9fc6980",
+        "name": "",
+        "links": [
+            "02570fdd04939917"
+        ],
+        "linkType": "static",
+        "timeout": "30",
+        "x": 980,
+        "y": 180,
+        "wires": [
+            [
+                "315a78f88aeab388"
+            ]
+        ]
+    },
+    {
+        "id": "315a78f88aeab388",
+        "type": "link out",
+        "z": "1ccf8eefe9fc6980",
+        "name": "finish with success",
+        "mode": "link",
+        "links": [
+            "aef8bcaec909662f"
+        ],
+        "x": 1175,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "28674bdf0d09819b",
+        "type": "switch",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Ends with Vancouver, BC",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^.*[^0-9]{2,}.*(Vancouver|VANCOUVER)\\s+BC$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 2770,
+        "y": 420,
+        "wires": [
+            [
+                "a3d3912029f98265"
+            ],
+            [
+                "468899a2f9e43a68"
+            ]
+        ]
+    },
+    {
+        "id": "a3d3912029f98265",
+        "type": "function",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Trim description",
+        "func": "const re = /(Vancouver|VANCOUVER)\\s+BC$/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3000,
+        "y": 420,
+        "wires": [
+            [
+                "a606094d9693e414"
+            ]
+        ]
+    },
+    {
+        "id": "58dbd5b0e3b7127c",
+        "type": "link in",
+        "z": "1ccf8eefe9fc6980",
+        "name": "try trimming location data with whitespace",
+        "links": [],
+        "x": 2615,
+        "y": 620,
+        "wires": [
+            [
+                "6fc08e44a30f008e"
+            ]
+        ]
+    },
+    {
+        "id": "6fc08e44a30f008e",
+        "type": "switch",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Ends with St. Albert, AB",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^.*[^0-9]{2,}.+?\\s+ST\\. ALBERT\\s+AB$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 2770,
+        "y": 620,
+        "wires": [
+            [
+                "856012413ba1ceaf"
+            ],
+            [
+                "30b8359c27656eca"
+            ]
+        ]
+    },
+    {
+        "id": "856012413ba1ceaf",
+        "type": "function",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Trim description",
+        "func": "const re = /\\s+ST\\. ALBERT\\s+AB$/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3040,
+        "y": 620,
+        "wires": [
+            [
+                "7997aefdaa6c2abf"
+            ]
+        ]
+    },
+    {
+        "id": "7997aefdaa6c2abf",
+        "type": "link out",
+        "z": "1ccf8eefe9fc6980",
+        "name": "return to caller",
+        "mode": "return",
+        "links": [],
+        "x": 3175,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "536ee95489c0ed11",
+        "type": "link call",
+        "z": "1ccf8eefe9fc6980",
+        "name": "",
+        "links": [
+            "58dbd5b0e3b7127c"
+        ],
+        "linkType": "static",
+        "timeout": "30",
+        "x": 1620,
+        "y": 120,
+        "wires": [
+            [
+                "764a6543f7cc23bd"
+            ]
+        ]
+    },
+    {
+        "id": "30b8359c27656eca",
+        "type": "switch",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Ends with Halifax, MID-HNS",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^.*[^0-9]{2,}.+?\\s+HALIFAX\\s+MID-HNS$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 2780,
+        "y": 660,
+        "wires": [
+            [
+                "eee9a409e54a2907"
+            ],
+            [
+                "d9992aeb2faf87cb"
+            ]
+        ]
+    },
+    {
+        "id": "eee9a409e54a2907",
+        "type": "function",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Trim description",
+        "func": "const re = /\\s+HALIFAX\\s+MID-HNS$/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3040,
+        "y": 660,
+        "wires": [
+            [
+                "7997aefdaa6c2abf"
+            ]
+        ]
+    },
+    {
+        "id": "468899a2f9e43a68",
+        "type": "switch",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Ends with Montreal, QC",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^.*[^0-9]{2,}.*(Montreal|MONTREAL)\\s+QC$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 2770,
+        "y": 460,
+        "wires": [
+            [
+                "4cbe49ff9b2bceb5"
+            ],
+            [
+                "5581fc0a4c2f94e0"
+            ]
+        ]
+    },
+    {
+        "id": "4cbe49ff9b2bceb5",
+        "type": "function",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Trim description",
+        "func": "const re = /(Montreal|MONTREAL)\\s+QC$/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3000,
+        "y": 460,
+        "wires": [
+            [
+                "a606094d9693e414"
+            ]
+        ]
+    },
+    {
+        "id": "d9992aeb2faf87cb",
+        "type": "switch",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Ends with San Francisco, CA",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^.*[^0-9]{2,}.+?\\s+SAN FRANCISCOCA$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 2780,
+        "y": 700,
+        "wires": [
+            [
+                "0833c8a149d8165f"
+            ],
+            [
+                "f9ca75bfbdaa396e"
+            ]
+        ]
+    },
+    {
+        "id": "0833c8a149d8165f",
+        "type": "function",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Trim description",
+        "func": "const re = /\\s+SAN FRANCISCOCA$$/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3040,
+        "y": 700,
+        "wires": [
+            [
+                "7997aefdaa6c2abf"
+            ]
+        ]
+    },
+    {
+        "id": "f9ca75bfbdaa396e",
+        "type": "switch",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Ends with West Edmonton, AB",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^.*[^0-9]{2,}.+?\\s+WEST EDMONTONAB$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 2790,
+        "y": 740,
+        "wires": [
+            [
+                "b453c6e25f38b515"
+            ],
+            [
+                "fc4f486a579e77e8"
+            ]
+        ]
+    },
+    {
+        "id": "b453c6e25f38b515",
+        "type": "function",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Trim description",
+        "func": "const re = /\\s+WEST EDMONTONAB$$/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3040,
+        "y": 740,
+        "wires": [
+            [
+                "7997aefdaa6c2abf"
+            ]
+        ]
+    },
+    {
+        "id": "fc4f486a579e77e8",
+        "type": "link out",
+        "z": "1ccf8eefe9fc6980",
+        "name": "return to caller",
+        "mode": "return",
+        "links": [],
+        "x": 2975,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "fb0503a797d3fb8c",
+        "type": "switch",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Is e-transfer",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^Internet Banking E-TRANSFER [0-9]+\\s+.*[A-Za-z]{2,}.*$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 590,
+        "y": 280,
+        "wires": [
+            [
+                "dc503c1aaab6fe6b"
+            ],
+            [
+                "a79533c475561b25"
+            ]
+        ]
+    },
+    {
+        "id": "dc503c1aaab6fe6b",
+        "type": "function",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Trim description",
+        "func": "const re = /^Internet Banking E-TRANSFER [0-9]+\\s+/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 920,
+        "y": 280,
+        "wires": [
+            [
+                "abcf6e573853d225"
+            ]
+        ]
+    },
+    {
+        "id": "abcf6e573853d225",
+        "type": "link out",
+        "z": "1ccf8eefe9fc6980",
+        "name": "finish with success",
+        "mode": "link",
+        "links": [
+            "aef8bcaec909662f"
+        ],
+        "x": 1095,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "549a94d282dec927",
+        "type": "switch",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Is ATM Fee",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^Electronic Funds Transfer NETWORK TRANSACTION FEE",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 590,
+        "y": 680,
+        "wires": [
+            [
+                "85f95b987b489300"
+            ],
+            [
+                "12fae16b9ff774a9"
+            ]
+        ]
+    },
+    {
+        "id": "85f95b987b489300",
+        "type": "function",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Trim description",
+        "func": "const re = /^Electronic Funds Transfer NETWORK TRANSACTION FEE\\s+/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 900,
+        "y": 680,
+        "wires": [
+            [
+                "b94f3e29c09e3899"
+            ]
+        ]
+    },
+    {
+        "id": "b94f3e29c09e3899",
+        "type": "link out",
+        "z": "1ccf8eefe9fc6980",
+        "name": "finish with success",
+        "mode": "link",
+        "links": [
+            "aef8bcaec909662f"
+        ],
+        "x": 1035,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "78ba0ab8a1c07c39",
+        "type": "switch",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Is Visa Debit Google Pay Purchase",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^Point of Sale - Visa Debit VISA DEBIT RETAIL PURCHASE GOOGLE \\*[0-9A-Za-z ]+ [0-9]{5,}$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 660,
+        "y": 240,
+        "wires": [
+            [
+                "ca945a22ab2eef2f"
+            ],
+            [
+                "fb0503a797d3fb8c"
+            ]
+        ]
+    },
+    {
+        "id": "ca945a22ab2eef2f",
+        "type": "function",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Remove \"GOOGLE\"",
+        "func": "msg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(\"GOOGLE *\", \"\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 240,
+        "wires": [
+            [
+                "8a1598a41f059031"
+            ]
+        ]
+    },
+    {
+        "id": "99b2f07d285ccee6",
+        "type": "link in",
+        "z": "1ccf8eefe9fc6980",
+        "name": "link in 1",
+        "links": [
+            "8a1598a41f059031"
+        ],
+        "x": 465,
+        "y": 320,
+        "wires": [
+            [
+                "a79533c475561b25"
+            ]
+        ]
+    },
+    {
+        "id": "8a1598a41f059031",
+        "type": "link out",
+        "z": "1ccf8eefe9fc6980",
+        "name": "link out 18",
+        "mode": "link",
+        "links": [
+            "99b2f07d285ccee6"
+        ],
+        "x": 1095,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "12fae16b9ff774a9",
+        "type": "switch",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Is deposit",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^Electronic Funds Transfer DEPOSIT",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 580,
+        "y": 720,
+        "wires": [
+            [
+                "0d695636ccf0d9fa"
+            ],
+            [
+                "d56acc2c5b24461e"
+            ]
+        ]
+    },
+    {
+        "id": "0d695636ccf0d9fa",
+        "type": "function",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Trim description",
+        "func": "const re = /^Electronic Funds Transfer DEPOSIT\\s+/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 900,
+        "y": 720,
+        "wires": [
+            [
+                "b33580ecffb48518"
+            ]
+        ]
+    },
+    {
+        "id": "b33580ecffb48518",
+        "type": "link out",
+        "z": "1ccf8eefe9fc6980",
+        "name": "finish with success",
+        "mode": "link",
+        "links": [
+            "aef8bcaec909662f"
+        ],
+        "x": 1035,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "d56acc2c5b24461e",
+        "type": "switch",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Is Paycheck",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^Electronic Funds Transfer PAY",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 590,
+        "y": 760,
+        "wires": [
+            [
+                "0cf8ab3b0409c688"
+            ],
+            [
+                "ea44cb9849b9e872"
+            ]
+        ]
+    },
+    {
+        "id": "0cf8ab3b0409c688",
+        "type": "function",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Trim description",
+        "func": "const re = /^Electronic Funds Transfer PAY\\s+/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 900,
+        "y": 760,
+        "wires": [
+            [
+                "096d48169914ee92"
+            ]
+        ]
+    },
+    {
+        "id": "096d48169914ee92",
+        "type": "link out",
+        "z": "1ccf8eefe9fc6980",
+        "name": "finish with success",
+        "mode": "link",
+        "links": [
+            "aef8bcaec909662f"
+        ],
+        "x": 1035,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "69eb438512e22737",
+        "type": "switch",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Is Visa debit purchase reversal",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^Point of Sale - Visa Debit VISA DEBIT PURCHASE REVERSAL ",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 650,
+        "y": 360,
+        "wires": [
+            [
+                "7a2e6f7473c64487"
+            ],
+            [
+                "dd3a51d742a94ec8"
+            ]
+        ]
+    },
+    {
+        "id": "7a2e6f7473c64487",
+        "type": "function",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Trim description",
+        "func": "const re = /^Point of Sale - Visa Debit VISA DEBIT PURCHASE REVERSAL\\s+/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 920,
+        "y": 360,
+        "wires": [
+            [
+                "23e98aae3187d150"
+            ]
+        ]
+    },
+    {
+        "id": "a78df71de07b6ecf",
+        "type": "link out",
+        "z": "1ccf8eefe9fc6980",
+        "name": "return to caller",
+        "mode": "return",
+        "links": [],
+        "x": 2935,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "378f48762153cc06",
+        "type": "link out",
+        "z": "1ccf8eefe9fc6980",
+        "name": "return to caller",
+        "mode": "return",
+        "links": [],
+        "x": 2955,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "5581fc0a4c2f94e0",
+        "type": "switch",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Ends with Leduc, AB",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^.*[^0-9]{2,}.*(Leduc|LEDUC)\\s+AB$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 2760,
+        "y": 500,
+        "wires": [
+            [
+                "4d2d703477d7e18e"
+            ],
+            [
+                "a78df71de07b6ecf"
+            ]
+        ]
+    },
+    {
+        "id": "4d2d703477d7e18e",
+        "type": "function",
+        "z": "1ccf8eefe9fc6980",
+        "name": "Trim description",
+        "func": "const re = /(Leduc|LEDUC)\\s+AB$/;\nmsg.spendless.context.parsedDescription = msg.payload.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3000,
+        "y": 500,
+        "wires": [
+            [
+                "a606094d9693e414"
+            ]
+        ]
+    },
+    {
+        "id": "1e1fbf9ff26bc644",
+        "type": "subflow:e650a01280df74d9",
+        "z": "463da193503067ee",
+        "name": "",
+        "env": [
+            {
+                "name": "ERROR_STATUS",
+                "value": "500",
+                "type": "str"
+            },
+            {
+                "name": "ERROR_MESSAGE",
+                "value": "Unexpected response retrieving data kvs",
+                "type": "str"
+            }
+        ],
+        "x": 780,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "64c4ebdfbfb6b6a5",
+        "type": "http request",
+        "z": "463da193503067ee",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "query",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 370,
+        "y": 40,
+        "wires": [
+            [
+                "0b25c5a0578357c4"
+            ]
+        ]
+    },
+    {
+        "id": "04ef9a0945917c06",
+        "type": "change",
+        "z": "463da193503067ee",
+        "name": "prepare request",
+        "rules": [
+            {
+                "t": "set",
+                "p": "url",
+                "pt": "msg",
+                "to": "$globalContext('spendless.configuration.spendLessApiUrl')\t    & \"api/kvs/mapping\"",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{ \"alias\": msg.spendless.kvs }",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 180,
+        "y": 40,
+        "wires": [
+            [
+                "64c4ebdfbfb6b6a5"
+            ]
+        ]
+    },
+    {
+        "id": "0b25c5a0578357c4",
+        "type": "switch",
+        "z": "463da193503067ee",
+        "name": "check status code",
+        "property": "statusCode",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "200",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "404",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 570,
+        "y": 40,
+        "wires": [
+            [
+                "a47ef07fdbcb21f1"
+            ],
+            [
+                "c92c92846b0d4c52"
+            ],
+            [
+                "1e1fbf9ff26bc644",
+                "8aeb9fa48819967f"
+            ]
+        ]
+    },
+    {
+        "id": "8aeb9fa48819967f",
+        "type": "debug",
+        "z": "463da193503067ee",
+        "name": "kvs lookup failure",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 790,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "a47ef07fdbcb21f1",
+        "type": "change",
+        "z": "463da193503067ee",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.kvs",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 800,
+        "y": 40,
+        "wires": [
+            [
+                "cc7f1701898a83a3"
+            ]
+        ]
+    },
+    {
+        "id": "cc7f1701898a83a3",
+        "type": "switch",
+        "z": "463da193503067ee",
+        "name": "parse json?",
+        "property": "parse json",
+        "propertyType": "env",
+        "rules": [
+            {
+                "t": "true"
+            },
+            {
+                "t": "false"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1010,
+        "y": 40,
+        "wires": [
+            [
+                "b16d0f869f5d3405"
+            ],
+            [
+                "439ac240c46053bd"
+            ]
+        ]
+    },
+    {
+        "id": "f05bded913cd0c79",
+        "type": "change",
+        "z": "463da193503067ee",
+        "name": "set default value",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.kvs.value",
+                "pt": "msg",
+                "to": "{}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1380,
+        "y": 80,
+        "wires": [
+            [
+                "0188f78dcd7a35f7"
+            ]
+        ]
+    },
+    {
+        "id": "041529325ed2ba70",
+        "type": "json",
+        "z": "463da193503067ee",
+        "name": "parse json",
+        "property": "spendless.kvs.value",
+        "action": "obj",
+        "pretty": false,
+        "x": 1370,
+        "y": 40,
+        "wires": [
+            [
+                "0188f78dcd7a35f7"
+            ]
+        ]
+    },
+    {
+        "id": "b16d0f869f5d3405",
+        "type": "switch",
+        "z": "463da193503067ee",
+        "name": "has value?",
+        "property": "spendless.kvs.value",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "nempty"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1190,
+        "y": 40,
+        "wires": [
+            [
+                "041529325ed2ba70"
+            ],
+            [
+                "f05bded913cd0c79"
+            ]
+        ]
+    },
+    {
+        "id": "44cb5aef5c3c2a60",
+        "type": "link in",
+        "z": "463da193503067ee",
+        "name": "link in 2",
+        "links": [
+            "0188f78dcd7a35f7",
+            "439ac240c46053bd"
+        ],
+        "x": 1655,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "0188f78dcd7a35f7",
+        "type": "link out",
+        "z": "463da193503067ee",
+        "name": "complete",
+        "mode": "link",
+        "links": [
+            "44cb5aef5c3c2a60"
+        ],
+        "x": 1515,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "439ac240c46053bd",
+        "type": "link out",
+        "z": "463da193503067ee",
+        "name": "complete",
+        "mode": "link",
+        "links": [
+            "44cb5aef5c3c2a60"
+        ],
+        "x": 1135,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "98a045dfd8f165b5",
+        "type": "link in",
+        "z": "463da193503067ee",
+        "name": "link in 3",
+        "links": [
+            "c92c92846b0d4c52"
+        ],
+        "x": 1655,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c92c92846b0d4c52",
+        "type": "link out",
+        "z": "463da193503067ee",
+        "name": "key not found",
+        "mode": "link",
+        "links": [
+            "98a045dfd8f165b5"
+        ],
+        "x": 715,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "f8ecc7e667299526",
+        "type": "switch",
+        "z": "1ce79c5fce6b8fe5",
+        "name": "Is Internet Banking INTERNET TRANSFER ?",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Unknown Internet Banking Transfer",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 290,
+        "y": 40,
+        "wires": [
+            [
+                "447cb9d790aea380"
+            ],
+            [
+                "fe6d45d481dfc430"
+            ]
+        ]
+    },
+    {
+        "id": "447cb9d790aea380",
+        "type": "change",
+        "z": "1ce79c5fce6b8fe5",
+        "name": "set result to default account",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.parsedAccount",
+                "pt": "msg",
+                "to": "{\t   \"id\": $globalContext('spendless.configuration.defaultAccountId')\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 620,
+        "y": 40,
+        "wires": [
+            [
+                "d4c012243fad690f"
+            ]
+        ]
+    },
+    {
+        "id": "fd1ac414dfb6e342",
+        "type": "link in",
+        "z": "1ce79c5fce6b8fe5",
+        "name": "link in 9",
+        "links": [
+            "f4ecb70a16ef02a5"
+        ],
+        "x": 1085,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "78f0f6e82dde2f0b",
+        "type": "link in",
+        "z": "1ce79c5fce6b8fe5",
+        "name": "link in 10",
+        "links": [
+            "d4c012243fad690f"
+        ],
+        "x": 1085,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d4c012243fad690f",
+        "type": "link out",
+        "z": "1ce79c5fce6b8fe5",
+        "name": "link out 28",
+        "mode": "link",
+        "links": [
+            "78f0f6e82dde2f0b"
+        ],
+        "x": 815,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "f4ecb70a16ef02a5",
+        "type": "link out",
+        "z": "1ce79c5fce6b8fe5",
+        "name": "link out 29",
+        "mode": "link",
+        "links": [
+            "fd1ac414dfb6e342"
+        ],
+        "x": 525,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "fe6d45d481dfc430",
+        "type": "switch",
+        "z": "1ce79c5fce6b8fe5",
+        "name": "Is SXSLX BNS PREAUTH PMT ?",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "SXSLX BNS PREAUTH PMT",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 320,
+        "y": 80,
+        "wires": [
+            [
+                "0157452e684891b1"
+            ],
+            [
+                "cd0593d02d2f3179"
+            ]
+        ]
+    },
+    {
+        "id": "0157452e684891b1",
+        "type": "change",
+        "z": "1ce79c5fce6b8fe5",
+        "name": "set result to transfers account",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.parsedAccount",
+                "pt": "msg",
+                "to": "{\t   \"id\": $globalContext('spendless.configuration.transfersAccountId')\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 630,
+        "y": 120,
+        "wires": [
+            [
+                "d4c012243fad690f"
+            ]
+        ]
+    },
+    {
+        "id": "cd0593d02d2f3179",
+        "type": "switch",
+        "z": "1ce79c5fce6b8fe5",
+        "name": "Is SCOTIABANK TRANSIT ?",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "SCOTIABANK TRANSIT",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 300,
+        "y": 120,
+        "wires": [
+            [
+                "0157452e684891b1"
+            ],
+            [
+                "f4ecb70a16ef02a5"
+            ]
+        ]
+    },
+    {
+        "id": "acad7c39e448dd04",
+        "type": "function",
+        "z": "b86a301c9c586c6c",
+        "name": "set amount",
+        "func": "let amountStr = msg.spendless.context.amountCents.toString();\nif (amountStr.length < 3) {\n        amountStr = amountStr.padStart(3, '0');\n}\nlet wholePart = amountStr.slice(0, -2);\nlet fractionalPart = amountStr.slice(-2); \nmsg.spendless.response.transaction.amount = wholePart + '.' + fractionalPart;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 170,
+        "y": 40,
+        "wires": [
+            [
+                "a5e71765970756a7"
+            ]
+        ]
+    },
+    {
+        "id": "a5e71765970756a7",
+        "type": "change",
+        "z": "b86a301c9c586c6c",
+        "name": "set import account",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.response.transaction.importAccount",
+                "pt": "msg",
+                "to": "spendless.account",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 190,
+        "y": 80,
+        "wires": [
+            [
+                "d8d190884fa47179"
+            ]
+        ]
+    },
+    {
+        "id": "d8d190884fa47179",
+        "type": "switch",
+        "z": "b86a301c9c586c6c",
+        "name": "has source account ?",
+        "property": "spendless.context",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "hask",
+                "v": "source",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 200,
+        "y": 120,
+        "wires": [
+            [
+                "5794db8da4cdc39c"
+            ],
+            [
+                "6d99e44eb15240a5"
+            ]
+        ]
+    },
+    {
+        "id": "5794db8da4cdc39c",
+        "type": "change",
+        "z": "b86a301c9c586c6c",
+        "name": "set source account",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.response.transaction.source",
+                "pt": "msg",
+                "to": "spendless.context.source",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 450,
+        "y": 120,
+        "wires": [
+            [
+                "6d99e44eb15240a5"
+            ]
+        ]
+    },
+    {
+        "id": "d5a019dabd4fc640",
+        "type": "link out",
+        "z": "b86a301c9c586c6c",
+        "name": "link out 21",
+        "mode": "link",
+        "links": [
+            "9c2a7410b0650875"
+        ],
+        "x": 315,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "9c2a7410b0650875",
+        "type": "link in",
+        "z": "b86a301c9c586c6c",
+        "name": "link in 5",
+        "links": [
+            "d5a019dabd4fc640"
+        ],
+        "x": 685,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8a3a8485453cd804",
+        "type": "change",
+        "z": "b86a301c9c586c6c",
+        "name": "set description",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.response.transaction.description",
+                "pt": "msg",
+                "to": "spendless.context.description",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 180,
+        "y": 200,
+        "wires": [
+            [
+                "b4e33874c8b6e410"
+            ]
+        ]
+    },
+    {
+        "id": "6d99e44eb15240a5",
+        "type": "switch",
+        "z": "b86a301c9c586c6c",
+        "name": "has destinationAccount ?",
+        "property": "spendless.context",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "hask",
+                "v": "destination",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 210,
+        "y": 160,
+        "wires": [
+            [
+                "71b2ab28358ca187"
+            ],
+            [
+                "8a3a8485453cd804"
+            ]
+        ]
+    },
+    {
+        "id": "71b2ab28358ca187",
+        "type": "change",
+        "z": "b86a301c9c586c6c",
+        "name": "set destination account",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.response.transaction.destination",
+                "pt": "msg",
+                "to": "spendless.context.destination",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 460,
+        "y": 160,
+        "wires": [
+            [
+                "8a3a8485453cd804"
+            ]
+        ]
+    },
+    {
+        "id": "c819bc8d8e12aae8",
+        "type": "change",
+        "z": "b86a301c9c586c6c",
+        "name": "set category",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.response.transaction.category",
+                "pt": "msg",
+                "to": "spendless.context.category",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 370,
+        "y": 280,
+        "wires": [
+            [
+                "8ef96c46933041c9"
+            ]
+        ]
+    },
+    {
+        "id": "bcfc5ba302f4fed7",
+        "type": "switch",
+        "z": "b86a301c9c586c6c",
+        "name": "has category ?",
+        "property": "spendless.context",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "hask",
+                "v": "category",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 180,
+        "y": 280,
+        "wires": [
+            [
+                "c819bc8d8e12aae8"
+            ],
+            [
+                "8ef96c46933041c9"
+            ]
+        ]
+    },
+    {
+        "id": "4ab264c172eaff5c",
+        "type": "change",
+        "z": "b86a301c9c586c6c",
+        "name": "set tags",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.response.transaction.tags",
+                "pt": "msg",
+                "to": "spendless.context.tags",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 360,
+        "y": 320,
+        "wires": [
+            [
+                "d5a019dabd4fc640"
+            ]
+        ]
+    },
+    {
+        "id": "8ef96c46933041c9",
+        "type": "switch",
+        "z": "b86a301c9c586c6c",
+        "name": "has tags ?",
+        "property": "spendless.context",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "hask",
+                "v": "tags",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 170,
+        "y": 320,
+        "wires": [
+            [
+                "4ab264c172eaff5c"
+            ],
+            [
+                "d5a019dabd4fc640"
+            ]
+        ]
+    },
+    {
+        "id": "b4e33874c8b6e410",
+        "type": "change",
+        "z": "b86a301c9c586c6c",
+        "name": "set date",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.response.transaction.timeStamp",
+                "pt": "msg",
+                "to": "spendless.context.date",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 160,
+        "y": 240,
+        "wires": [
+            [
+                "bcfc5ba302f4fed7"
+            ]
+        ]
+    },
+    {
+        "id": "603ab2ba9f1fa998",
+        "type": "function",
+        "z": "3b3449ca0b5f5b24",
+        "name": "throw error",
+        "func": "throw new Error(env.get('ERROR_MESSAGE'));",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 170,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "7bd4eca5f1910abc",
+        "type": "change",
+        "z": "1fd0f49415234d19",
+        "name": "prepare request",
+        "rules": [
+            {
+                "t": "set",
+                "p": "url",
+                "pt": "msg",
+                "to": "$globalContext('spendless.configuration.spendLessApiUrl')\t    & \"api/kvs/value\"",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{ \t    \"key\": msg.spendless.kvs.key, \t    \"value\": msg.spendless.kvs.value\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 180,
+        "y": 40,
+        "wires": [
+            [
+                "7fbb7258f4e7bf24"
+            ]
+        ]
+    },
+    {
+        "id": "7fbb7258f4e7bf24",
+        "type": "http request",
+        "z": "1fd0f49415234d19",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "query",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 370,
+        "y": 40,
+        "wires": [
+            [
+                "cf586b6e66370837"
+            ]
+        ]
+    },
+    {
+        "id": "cf586b6e66370837",
+        "type": "switch",
+        "z": "1fd0f49415234d19",
+        "name": "check status code",
+        "property": "statusCode",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "201",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 570,
+        "y": 40,
+        "wires": [
+            [],
+            [
+                "3c1d5a2c9eeb6eea",
+                "6816f48870785fe0"
+            ]
+        ]
+    },
+    {
+        "id": "6816f48870785fe0",
+        "type": "subflow:e650a01280df74d9",
+        "z": "1fd0f49415234d19",
+        "name": "",
+        "env": [
+            {
+                "name": "ERROR_STATUS",
+                "value": "500",
+                "type": "str"
+            },
+            {
+                "name": "ERROR_MESSAGE",
+                "value": "Unexpected response setting value kvs",
+                "type": "str"
+            }
+        ],
+        "x": 800,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "3c1d5a2c9eeb6eea",
+        "type": "debug",
+        "z": "1fd0f49415234d19",
+        "name": "kvs set value failure",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 820,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "486e62b9a069ea0a",
+        "type": "function",
+        "z": "90f2319c72a33bae",
+        "name": "determine opposing account",
+        "func": "const ctx = msg.spendless.context;\nif (!ctx.hasOwnProperty('source') && ctx.hasOwnProperty('destination'))\n    return [msg, null, null];\nif (ctx.hasOwnProperty('source') && !ctx.hasOwnProperty('destination'))\n    return [null, msg, null];\nreturn [null, null, msg];",
+        "outputs": 3,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 220,
+        "y": 40,
+        "wires": [
+            [],
+            [],
+            [
+                "cd21479bae126516"
+            ]
+        ],
+        "outputLabels": [
+            "source",
+            "destination",
+            "error"
+        ]
+    },
+    {
+        "id": "cd21479bae126516",
+        "type": "subflow:3b3449ca0b5f5b24",
+        "z": "90f2319c72a33bae",
+        "name": "",
+        "env": [
+            {
+                "name": "ERROR_MESSAGE",
+                "value": "unable to determine opposing account",
+                "type": "str"
+            }
+        ],
+        "x": 450,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "31d991ae290e2066",
+        "type": "switch",
+        "z": "0a0735a743fb5fc7",
+        "name": "Is Coke",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^C[0-9]+ COKE_[0-9]+$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 180,
+        "y": 40,
+        "wires": [
+            [
+                "340656f78a6f36d2"
+            ],
+            [
+                "8bd8a0d87c365a9a"
+            ]
+        ]
+    },
+    {
+        "id": "340656f78a6f36d2",
+        "type": "change",
+        "z": "0a0735a743fb5fc7",
+        "name": "set output to Coke",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.parsedDescription",
+                "pt": "msg",
+                "to": "Coke",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 550,
+        "y": 40,
+        "wires": [
+            [
+                "39ed0e6b8dd73f80"
+            ]
+        ]
+    },
+    {
+        "id": "39ed0e6b8dd73f80",
+        "type": "link out",
+        "z": "0a0735a743fb5fc7",
+        "name": "finish",
+        "mode": "link",
+        "links": [
+            "290a6abf9510954e"
+        ],
+        "x": 875,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "8bd8a0d87c365a9a",
+        "type": "switch",
+        "z": "0a0735a743fb5fc7",
+        "name": "Is Misumi",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^MISUMI USA",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 180,
+        "y": 80,
+        "wires": [
+            [
+                "f1cb95fe8739cc1b"
+            ],
+            [
+                "ee16f58e7d62a5c5"
+            ]
+        ]
+    },
+    {
+        "id": "f1cb95fe8739cc1b",
+        "type": "change",
+        "z": "0a0735a743fb5fc7",
+        "name": "set output to Misumi",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.parsedDescription",
+                "pt": "msg",
+                "to": "Misumi",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 560,
+        "y": 80,
+        "wires": [
+            [
+                "343a85767ce33601"
+            ]
+        ]
+    },
+    {
+        "id": "343a85767ce33601",
+        "type": "link out",
+        "z": "0a0735a743fb5fc7",
+        "name": "finish",
+        "mode": "link",
+        "links": [
+            "290a6abf9510954e"
+        ],
+        "x": 875,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "9448ed873c3bba74",
+        "type": "link out",
+        "z": "0a0735a743fb5fc7",
+        "name": "finish with fail",
+        "mode": "link",
+        "links": [
+            "290a6abf9510954e"
+        ],
+        "x": 875,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "ee16f58e7d62a5c5",
+        "type": "switch",
+        "z": "0a0735a743fb5fc7",
+        "name": "Is Namecheap",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^NAME-CHEAP\\.COM",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 200,
+        "y": 120,
+        "wires": [
+            [
+                "76ed9a3dffd6b6fe"
+            ],
+            [
+                "86cd48c5cf4aa977"
+            ]
+        ]
+    },
+    {
+        "id": "76ed9a3dffd6b6fe",
+        "type": "change",
+        "z": "0a0735a743fb5fc7",
+        "name": "set output to Namecheap",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.parsedDescription",
+                "pt": "msg",
+                "to": "Namecheap",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 570,
+        "y": 120,
+        "wires": [
+            [
+                "0495d7bc88c3fa94"
+            ]
+        ]
+    },
+    {
+        "id": "0495d7bc88c3fa94",
+        "type": "link out",
+        "z": "0a0735a743fb5fc7",
+        "name": "finish",
+        "mode": "link",
+        "links": [
+            "290a6abf9510954e"
+        ],
+        "x": 875,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "86cd48c5cf4aa977",
+        "type": "switch",
+        "z": "0a0735a743fb5fc7",
+        "name": "Is RedBubble",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^\\*REDBUBB ",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 200,
+        "y": 160,
+        "wires": [
+            [
+                "9361fdca2d19a3b5"
+            ],
+            [
+                "4b453f1f4712bfe9"
+            ]
+        ]
+    },
+    {
+        "id": "9361fdca2d19a3b5",
+        "type": "change",
+        "z": "0a0735a743fb5fc7",
+        "name": "Set output to RedBubble",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.parsedDescription",
+                "pt": "msg",
+                "to": "RedBubble",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 570,
+        "y": 160,
+        "wires": [
+            [
+                "b58f7b1f70714d7f"
+            ]
+        ]
+    },
+    {
+        "id": "b58f7b1f70714d7f",
+        "type": "link out",
+        "z": "0a0735a743fb5fc7",
+        "name": "finish",
+        "mode": "link",
+        "links": [
+            "290a6abf9510954e"
+        ],
+        "x": 875,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "4b453f1f4712bfe9",
+        "type": "switch",
+        "z": "0a0735a743fb5fc7",
+        "name": "Is Unknown Paypal Transaction",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^[0-9]+ PAYPAL PTE LTD$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 250,
+        "y": 200,
+        "wires": [
+            [
+                "631b677bd06dbd57"
+            ],
+            [
+                "aeffbe65f5855ae8"
+            ]
+        ]
+    },
+    {
+        "id": "631b677bd06dbd57",
+        "type": "change",
+        "z": "0a0735a743fb5fc7",
+        "name": "Set output to Unknown Paypal Transaction",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.parsedDescription",
+                "pt": "msg",
+                "to": "Unknown Paypal Transaction",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 630,
+        "y": 200,
+        "wires": [
+            [
+                "782d54a220f8d77e"
+            ]
+        ]
+    },
+    {
+        "id": "782d54a220f8d77e",
+        "type": "link out",
+        "z": "0a0735a743fb5fc7",
+        "name": "finish",
+        "mode": "link",
+        "links": [
+            "290a6abf9510954e"
+        ],
+        "x": 875,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "aeffbe65f5855ae8",
+        "type": "switch",
+        "z": "0a0735a743fb5fc7",
+        "name": "Is UPS",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^UPS\\*[0-9]+$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 180,
+        "y": 240,
+        "wires": [
+            [
+                "8eac60c8e44cd3ba"
+            ],
+            [
+                "0cf2507a4a772f9f"
+            ]
+        ]
+    },
+    {
+        "id": "8eac60c8e44cd3ba",
+        "type": "change",
+        "z": "0a0735a743fb5fc7",
+        "name": "Set output to UPS",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.parsedDescription",
+                "pt": "msg",
+                "to": "UPS",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 550,
+        "y": 240,
+        "wires": [
+            [
+                "d8e6c565d5e1691f"
+            ]
+        ]
+    },
+    {
+        "id": "d8e6c565d5e1691f",
+        "type": "link out",
+        "z": "0a0735a743fb5fc7",
+        "name": "finish",
+        "mode": "link",
+        "links": [
+            "290a6abf9510954e"
+        ],
+        "x": 875,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "0cf2507a4a772f9f",
+        "type": "switch",
+        "z": "0a0735a743fb5fc7",
+        "name": "Is Unknown Internet Banking Deposit",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^Internet Banking INTERNET DEPOSIT [0-9]+$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 270,
+        "y": 280,
+        "wires": [
+            [
+                "9d67fe53dd6296f3"
+            ],
+            [
+                "f056490a19957409"
+            ]
+        ]
+    },
+    {
+        "id": "9d67fe53dd6296f3",
+        "type": "change",
+        "z": "0a0735a743fb5fc7",
+        "name": "Set output to Unknown Internet Banking Deposit",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.parsedDescription",
+                "pt": "msg",
+                "to": "Unknown Internet Banking Deposit",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 640,
+        "y": 280,
+        "wires": [
+            [
+                "67f7cf7bf93998f1"
+            ]
+        ]
+    },
+    {
+        "id": "67f7cf7bf93998f1",
+        "type": "link out",
+        "z": "0a0735a743fb5fc7",
+        "name": "finish",
+        "mode": "link",
+        "links": [
+            "290a6abf9510954e"
+        ],
+        "x": 875,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "72f3fdb98a835177",
+        "type": "change",
+        "z": "0a0735a743fb5fc7",
+        "name": "Set output to Amazon",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.parsedDescription",
+                "pt": "msg",
+                "to": "Amazon",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 560,
+        "y": 320,
+        "wires": [
+            [
+                "e06bef2e98bb778a"
+            ]
+        ]
+    },
+    {
+        "id": "f056490a19957409",
+        "type": "switch",
+        "z": "0a0735a743fb5fc7",
+        "name": "Is Amazon",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^Amazon.ca\\*[A-Z0-9]+$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 190,
+        "y": 320,
+        "wires": [
+            [
+                "72f3fdb98a835177"
+            ],
+            [
+                "1103ac6b09df953f"
+            ]
+        ]
+    },
+    {
+        "id": "e06bef2e98bb778a",
+        "type": "link out",
+        "z": "0a0735a743fb5fc7",
+        "name": "finish",
+        "mode": "link",
+        "links": [
+            "290a6abf9510954e"
+        ],
+        "x": 875,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "1103ac6b09df953f",
+        "type": "switch",
+        "z": "0a0735a743fb5fc7",
+        "name": "Is Unknown Internet Banking Transfer",
+        "property": "spendless.context.parsedDescription",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^Internet Banking INTERNET TRANSFER [0-9]+$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 270,
+        "y": 360,
+        "wires": [
+            [
+                "97c1ea383705e4a3"
+            ],
+            [
+                "9356c02401107b9f"
+            ]
+        ]
+    },
+    {
+        "id": "97c1ea383705e4a3",
+        "type": "change",
+        "z": "0a0735a743fb5fc7",
+        "name": "Set output to Unknown Internet Banking Transfer",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.parsedDescription",
+                "pt": "msg",
+                "to": "Unknown Internet Banking Transfer",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 640,
+        "y": 360,
+        "wires": [
+            [
+                "9448ed873c3bba74"
+            ]
+        ]
+    },
+    {
+        "id": "9356c02401107b9f",
+        "type": "link out",
+        "z": "0a0735a743fb5fc7",
+        "name": "link out 30",
+        "mode": "link",
+        "links": [
+            "c8af21cb41c2d58e"
+        ],
+        "x": 475,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "290a6abf9510954e",
+        "type": "link in",
+        "z": "0a0735a743fb5fc7",
+        "name": "link in 11",
+        "links": [
+            "0495d7bc88c3fa94",
+            "343a85767ce33601",
+            "39ed0e6b8dd73f80",
+            "67f7cf7bf93998f1",
+            "782d54a220f8d77e",
+            "9448ed873c3bba74",
+            "b58f7b1f70714d7f",
+            "d8e6c565d5e1691f",
+            "e06bef2e98bb778a"
+        ],
+        "x": 1105,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c8af21cb41c2d58e",
+        "type": "link in",
+        "z": "0a0735a743fb5fc7",
+        "name": "link in 12",
+        "links": [
+            "9356c02401107b9f"
+        ],
+        "x": 1105,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "711ec9a86af3bbc8",
+        "type": "http in",
+        "z": "212ce6b191f48eaa",
+        "name": "",
+        "url": "/export",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 210,
+        "y": 80,
+        "wires": [
+            [
+                "0d8fa30e559949d5"
+            ]
+        ]
+    },
+    {
+        "id": "1d461187666a0bdf",
+        "type": "file in",
+        "z": "212ce6b191f48eaa",
+        "name": "",
+        "filename": "/data/flows.json",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 600,
+        "y": 80,
+        "wires": [
+            [
+                "434690bf6f111734"
+            ]
+        ]
+    },
+    {
+        "id": "60da8fab41c90d39",
+        "type": "file in",
+        "z": "212ce6b191f48eaa",
+        "name": "",
+        "filename": "/data/settings.js",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 600,
+        "y": 140,
+        "wires": [
+            [
+                "0398f5430fef0b8e"
+            ]
+        ]
+    },
+    {
+        "id": "434690bf6f111734",
+        "type": "change",
+        "z": "212ce6b191f48eaa",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "context[\"flows.json\"]",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 840,
+        "y": 80,
+        "wires": [
+            [
+                "60da8fab41c90d39"
+            ]
+        ]
+    },
+    {
+        "id": "0d8fa30e559949d5",
+        "type": "change",
+        "z": "212ce6b191f48eaa",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "context",
+                "pt": "msg",
+                "to": "{}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 400,
+        "y": 80,
+        "wires": [
+            [
+                "1d461187666a0bdf"
+            ]
+        ]
+    },
+    {
+        "id": "0398f5430fef0b8e",
+        "type": "change",
+        "z": "212ce6b191f48eaa",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "context[\"settings.js\"]",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 840,
+        "y": 140,
+        "wires": [
+            [
+                "3fb4ad9e0633b935"
+            ]
+        ]
+    },
+    {
+        "id": "3fb4ad9e0633b935",
+        "type": "change",
+        "z": "212ce6b191f48eaa",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "context",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 800,
+        "y": 200,
+        "wires": [
+            [
+                "9489f66f0b89efa9"
+            ]
+        ]
+    },
+    {
+        "id": "9489f66f0b89efa9",
+        "type": "http response",
+        "z": "212ce6b191f48eaa",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 970,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "759e9d5e93949d2c",
+        "type": "change",
+        "z": "054a92868304fee3",
+        "name": "set description",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.description",
+                "pt": "msg",
+                "to": "spendless.request.data[2]",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 200,
+        "y": 140,
+        "wires": [
+            [
+                "6b857ed001010434"
+            ]
+        ]
+    },
+    {
+        "id": "beb865deea0b0b7f",
+        "type": "function",
+        "z": "054a92868304fee3",
+        "name": "set date",
+        "func": "const parts = msg.spendless.request.data[1].split(\"-\");\nconst localDate = new Date(parts[0], parts[1]-1, parts[2]);\nmsg.spendless.context.date = Math.floor(localDate.getTime() / 1000);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 180,
+        "y": 100,
+        "wires": [
+            [
+                "759e9d5e93949d2c"
+            ]
+        ]
+    },
+    {
+        "id": "db14f7917ba164f2",
+        "type": "function",
+        "z": "054a92868304fee3",
+        "name": "set amount",
+        "func": "let dollarString = msg.spendless.request.data[6].trim();\n\nif (dollarString.includes('.')) {\n    const [dollars, cents] = dollarString.split('.');\n    let totalCents = Math.abs(parseInt(dollars) * 100);\n    totalCents += parseInt(cents);\n    msg.spendless.context.amountCents = totalCents;\n} else {\n    msg.spendless.context.amountCents = Math.abs(parseInt(dollarString) * 100);\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 690,
+        "y": 180,
+        "wires": [
+            [
+                "77683f08c0ea7a6e"
+            ]
+        ]
+    },
+    {
+        "id": "6b857ed001010434",
+        "type": "switch",
+        "z": "054a92868304fee3",
+        "name": "debit or credit",
+        "property": "spendless.request.data[5]",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Debit",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Credit",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 200,
+        "y": 200,
+        "wires": [
+            [
+                "f6b661adfca59422"
+            ],
+            [
+                "fcb2a98a91b3c73c"
+            ],
+            [
+                "36698e84e8c41b19"
+            ]
+        ]
+    },
+    {
+        "id": "f6b661adfca59422",
+        "type": "change",
+        "z": "054a92868304fee3",
+        "name": "set source account",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.source",
+                "pt": "msg",
+                "to": "{\t    \"id\": spendless.account\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 470,
+        "y": 180,
+        "wires": [
+            [
+                "db14f7917ba164f2"
+            ]
+        ]
+    },
+    {
+        "id": "fcb2a98a91b3c73c",
+        "type": "change",
+        "z": "054a92868304fee3",
+        "name": "set destination account",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.destination",
+                "pt": "msg",
+                "to": "{\t    \"id\": spendless.account\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 480,
+        "y": 220,
+        "wires": [
+            [
+                "db14f7917ba164f2"
+            ]
+        ]
+    },
+    {
+        "id": "36698e84e8c41b19",
+        "type": "subflow:e650a01280df74d9",
+        "z": "054a92868304fee3",
+        "name": "",
+        "env": [
+            {
+                "name": "ERROR_MESSAGE",
+                "value": "scotia-visa-infinite data was not in the expected format - missing debit and credit columns",
+                "type": "str"
+            }
+        ],
+        "x": 460,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "77683f08c0ea7a6e",
+        "type": "switch",
+        "z": "054a92868304fee3",
+        "name": "validate amount",
+        "property": "spendless.context.amountCents",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "gte",
+                "v": "0",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 900,
+        "y": 180,
+        "wires": [
+            [],
+            [
+                "1d34ca6a16e44635"
+            ]
+        ]
+    },
+    {
+        "id": "1d34ca6a16e44635",
+        "type": "subflow:e650a01280df74d9",
+        "z": "054a92868304fee3",
+        "name": "",
+        "env": [
+            {
+                "name": "ERROR_MESSAGE",
+                "value": "CIBC-Chequing data was not in the expected format - unable to parse amount",
+                "type": "str"
+            }
+        ],
+        "x": 900,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "3ca300be887c10fc",
+        "type": "link in",
+        "z": "054a92868304fee3",
+        "name": "link in 6",
+        "links": [
+            "574363aad1d4b71b"
+        ],
+        "x": 1045,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "574363aad1d4b71b",
+        "type": "link out",
+        "z": "054a92868304fee3",
+        "name": "link out 1",
+        "mode": "link",
+        "links": [
+            "3ca300be887c10fc"
+        ],
+        "x": 315,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "1e06f2c0cfd6baa1",
+        "type": "switch",
+        "z": "054a92868304fee3",
+        "name": "is first row?",
+        "property": "spendless.request.isFirstRow",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "true"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 190,
+        "y": 40,
+        "wires": [
+            [
+                "574363aad1d4b71b"
+            ],
+            [
+                "beb865deea0b0b7f"
+            ]
+        ]
+    },
+    {
+        "id": "ce5fb77c0cb573cc",
+        "type": "change",
+        "z": "842bf7ebdfb7fe6d",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 200,
+        "y": 40,
+        "wires": [
+            [
+                "280948b8cc201894"
+            ]
+        ]
+    },
+    {
+        "id": "280948b8cc201894",
+        "type": "http response",
+        "z": "842bf7ebdfb7fe6d",
+        "name": "",
+        "statusCode": "204",
+        "headers": {},
+        "x": 380,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "39d3e0623ca2f9fc",
+        "type": "inject",
+        "z": "e4616b5d8579dbd3",
+        "name": "On startup",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 170,
+        "y": 160,
+        "wires": [
+            [
+                "d4ff1b5dd8ae954e"
+            ]
+        ]
+    },
+    {
+        "id": "9063d96eb41941e3",
+        "type": "inject",
+        "z": "e4616b5d8579dbd3",
+        "name": "Log configuration",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 180,
+        "y": 80,
+        "wires": [
+            [
+                "9b42bdad7fb7d25d"
+            ]
+        ]
+    },
+    {
+        "id": "a046ef81a75748c0",
+        "type": "debug",
+        "z": "e4616b5d8579dbd3",
+        "name": "log configuration",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 580,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "9b42bdad7fb7d25d",
+        "type": "change",
+        "z": "e4616b5d8579dbd3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "spendless.configuration",
+                "tot": "global"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 380,
+        "y": 80,
+        "wires": [
+            [
+                "a046ef81a75748c0"
+            ]
+        ]
+    },
+    {
+        "id": "d4ff1b5dd8ae954e",
+        "type": "change",
+        "z": "e4616b5d8579dbd3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.configuration",
+                "pt": "global",
+                "to": "{    \t    \"spendLessApiUrl\": $env(\"SPEND_LESS_API_URL\"),\t    \"defaultAccountId\": \"00000000-0000-0000-0000-000000000000\",\t    \"transfersAccountId\": \"5a003b1f-3af7-4530-afe6-cb2b716d1c62\"\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 420,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "68b35bba8b3a7e1e",
+        "type": "subflow:99f384cef6a769fb",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "x": 70,
+        "y": 100,
+        "wires": [
+            [
+                "370a644bd6695574"
+            ]
+        ]
+    },
+    {
+        "id": "10e382e0334a13a3",
+        "type": "subflow:b2028b08979e589d",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "x": 420,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "2a63649dd3423e6c",
+        "type": "catch",
+        "z": "f6f2187d.f17ca8",
+        "name": "catch-all",
+        "scope": null,
+        "uncaught": false,
+        "x": 80,
+        "y": 40,
+        "wires": [
+            [
+                "5cf0861ec6b55810"
+            ]
+        ]
+    },
+    {
+        "id": "5cf0861ec6b55810",
+        "type": "subflow:e650a01280df74d9",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "env": [
+            {
+                "name": "ERROR_STATUS",
+                "value": "500",
+                "type": "str"
+            },
+            {
+                "name": "USE_ERROR_PROP",
+                "type": "bool",
+                "value": "true"
+            }
+        ],
+        "x": 420,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "5a5dfbb368ecd971",
+        "type": "subflow:e650a01280df74d9",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "env": [
+            {
+                "name": "ERROR_MESSAGE",
+                "value": "Unknown config",
+                "type": "str"
+            }
+        ],
+        "x": 460,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "47aae1b0b3c6e728",
+        "type": "subflow:9e3bf19c5e1acd5e",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "x": 480,
+        "y": 140,
+        "wires": [
+            [
+                "29e65eeeb746ae5c"
+            ]
+        ]
+    },
+    {
+        "id": "370a644bd6695574",
+        "type": "switch",
+        "z": "f6f2187d.f17ca8",
+        "name": "Check config name",
+        "property": "spendless.request.configuration",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "scotia-visa-infinite",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "cibc-visa",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "cibc-chequing",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "cibc-premium-growth",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 5,
+        "x": 240,
+        "y": 120,
+        "wires": [
+            [
+                "67237fbea2a1c1f2"
+            ],
+            [
+                "5a5dfbb368ecd971"
+            ],
+            [
+                "47aae1b0b3c6e728"
+            ],
+            [
+                "47aae1b0b3c6e728"
+            ],
+            [
+                "5a5dfbb368ecd971"
+            ]
+        ]
+    },
+    {
+        "id": "29e65eeeb746ae5c",
+        "type": "subflow:1ccf8eefe9fc6980",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "x": 830,
+        "y": 100,
+        "wires": [
+            [
+                "8595ee70895d7e0a"
+            ],
+            [
+                "7fdf889446c2a172"
+            ]
+        ]
+    },
+    {
+        "id": "ac5c1b947fa68cbe",
+        "type": "subflow:b86a301c9c586c6c",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "x": 230,
+        "y": 800,
+        "wires": [
+            [
+                "10e382e0334a13a3",
+                "6d7fb619ad0f7f05"
+            ]
+        ]
+    },
+    {
+        "id": "1dd0844ec4b005bc",
+        "type": "subflow:463da193503067ee",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "x": 370,
+        "y": 380,
+        "wires": [
+            [
+                "04d21e9ade194598"
+            ],
+            [
+                "4bd54e7c7dc7dd0a"
+            ]
+        ]
+    },
+    {
+        "id": "fd88824b2e16b798",
+        "type": "change",
+        "z": "f6f2187d.f17ca8",
+        "name": "set source account",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.source",
+                "pt": "msg",
+                "to": "{\t    \"name\": msg.spendless.kvs.key,\t    \"id\": msg.spendless.kvs.value.id\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 510,
+        "y": 680,
+        "wires": [
+            [
+                "7c0bdd0e154617bb"
+            ]
+        ]
+    },
+    {
+        "id": "30888a188ff2c064",
+        "type": "change",
+        "z": "f6f2187d.f17ca8",
+        "name": "set destination account",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.destination",
+                "pt": "msg",
+                "to": "{\t    \"name\": msg.spendless.kvs.key,\t    \"id\": msg.spendless.kvs.value.id\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 520,
+        "y": 720,
+        "wires": [
+            [
+                "7c0bdd0e154617bb"
+            ]
+        ]
+    },
+    {
+        "id": "6ab4de770590f69f",
+        "type": "link in",
+        "z": "f6f2187d.f17ca8",
+        "name": "link in 4",
+        "links": [
+            "7386451bd5ce1272",
+            "26a58a4805459d96",
+            "53a6a325fbc19bad"
+        ],
+        "x": 75,
+        "y": 800,
+        "wires": [
+            [
+                "ac5c1b947fa68cbe"
+            ]
+        ]
+    },
+    {
+        "id": "7386451bd5ce1272",
+        "type": "link out",
+        "z": "f6f2187d.f17ca8",
+        "name": "link out 19",
+        "mode": "link",
+        "links": [
+            "6ab4de770590f69f"
+        ],
+        "x": 1075,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "9e2b8b64bd0c76d7",
+        "type": "switch",
+        "z": "f6f2187d.f17ca8",
+        "name": "has an id ?",
+        "property": "spendless.kvs.value",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "hask",
+                "v": "id",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 750,
+        "y": 420,
+        "wires": [
+            [
+                "bc3dba53cbcc9e03"
+            ],
+            [
+                "f907d63aec1ed943"
+            ]
+        ]
+    },
+    {
+        "id": "04d21e9ade194598",
+        "type": "switch",
+        "z": "f6f2187d.f17ca8",
+        "name": "value is empty?",
+        "property": "spendless.kvs.value",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 560,
+        "y": 380,
+        "wires": [
+            [
+                "b77b39a4eafcc4bf"
+            ],
+            [
+                "9e2b8b64bd0c76d7"
+            ]
+        ]
+    },
+    {
+        "id": "b77b39a4eafcc4bf",
+        "type": "change",
+        "z": "f6f2187d.f17ca8",
+        "name": "Set to empty dict",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.kvs.value",
+                "pt": "msg",
+                "to": "{}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 770,
+        "y": 380,
+        "wires": [
+            [
+                "9e2b8b64bd0c76d7"
+            ]
+        ]
+    },
+    {
+        "id": "8ebcea41c9ebf31e",
+        "type": "link in",
+        "z": "f6f2187d.f17ca8",
+        "name": "link in 7",
+        "links": [
+            "bc3dba53cbcc9e03",
+            "911a513fcded1124"
+        ],
+        "x": 75,
+        "y": 680,
+        "wires": [
+            [
+                "2e54d199492a1826"
+            ]
+        ]
+    },
+    {
+        "id": "bc3dba53cbcc9e03",
+        "type": "link out",
+        "z": "f6f2187d.f17ca8",
+        "name": "link out 23",
+        "mode": "link",
+        "links": [
+            "8ebcea41c9ebf31e"
+        ],
+        "x": 875,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "9e2d909ca1b8a78e",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "serialize the value",
+        "func": "msg.spendless.kvs.unserializedKvsValue = msg.spendless.kvs.value;\nmsg.spendless.kvs.value = JSON.stringify(msg.spendless.kvs.value);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 970,
+        "y": 460,
+        "wires": [
+            [
+                "820ae71df6d380af"
+            ]
+        ]
+    },
+    {
+        "id": "f907d63aec1ed943",
+        "type": "uuid",
+        "z": "f6f2187d.f17ca8",
+        "uuidVersion": "v4",
+        "namespaceType": "",
+        "namespace": "",
+        "namespaceCustom": "",
+        "name": "generate an id",
+        "field": "spendless.kvs.value.id",
+        "fieldType": "msg",
+        "x": 760,
+        "y": 460,
+        "wires": [
+            [
+                "9e2d909ca1b8a78e"
+            ]
+        ]
+    },
+    {
+        "id": "ba25a72769404fe9",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "deserialize the value",
+        "func": "msg.spendless.kvs.value = msg.spendless.kvs.unserializedKvsValue;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 500,
+        "wires": [
+            [
+                "911a513fcded1124"
+            ]
+        ]
+    },
+    {
+        "id": "820ae71df6d380af",
+        "type": "subflow:1fd0f49415234d19",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "x": 1170,
+        "y": 460,
+        "wires": [
+            [
+                "ba25a72769404fe9"
+            ]
+        ]
+    },
+    {
+        "id": "911a513fcded1124",
+        "type": "link out",
+        "z": "f6f2187d.f17ca8",
+        "name": "link out 24",
+        "mode": "link",
+        "links": [
+            "8ebcea41c9ebf31e"
+        ],
+        "x": 935,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "6d7fb619ad0f7f05",
+        "type": "debug",
+        "z": "f6f2187d.f17ca8",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 420,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "c8a92e5b5d0cba2f",
+        "type": "change",
+        "z": "f6f2187d.f17ca8",
+        "name": "set source account name only",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.source",
+                "pt": "msg",
+                "to": "{\t    \"name\": msg.spendless.kvs\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 890,
+        "y": 560,
+        "wires": [
+            [
+                "26a58a4805459d96"
+            ]
+        ]
+    },
+    {
+        "id": "cd44e4746c87240d",
+        "type": "change",
+        "z": "f6f2187d.f17ca8",
+        "name": "set destination account name only",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.destination",
+                "pt": "msg",
+                "to": "{\t    \"name\": msg.spendless.kvs\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 900,
+        "y": 600,
+        "wires": [
+            [
+                "26a58a4805459d96"
+            ]
+        ]
+    },
+    {
+        "id": "26a58a4805459d96",
+        "type": "link out",
+        "z": "f6f2187d.f17ca8",
+        "name": "link out 25",
+        "mode": "link",
+        "links": [
+            "6ab4de770590f69f"
+        ],
+        "x": 1095,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "7c0bdd0e154617bb",
+        "type": "switch",
+        "z": "f6f2187d.f17ca8",
+        "name": "has category?",
+        "property": "spendless.kvs.value",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "hask",
+                "v": "category",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 740,
+        "y": 680,
+        "wires": [
+            [
+                "7987e726bb418ad3"
+            ],
+            [
+                "d2261f9abae686a4"
+            ]
+        ]
+    },
+    {
+        "id": "7987e726bb418ad3",
+        "type": "change",
+        "z": "f6f2187d.f17ca8",
+        "name": "set category",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.category",
+                "pt": "msg",
+                "to": "spendless.kvs.value.category",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 930,
+        "y": 680,
+        "wires": [
+            [
+                "d2261f9abae686a4"
+            ]
+        ]
+    },
+    {
+        "id": "d2261f9abae686a4",
+        "type": "switch",
+        "z": "f6f2187d.f17ca8",
+        "name": "has tags?",
+        "property": "spendless.kvs.value",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "hask",
+                "v": "tags",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 920,
+        "y": 720,
+        "wires": [
+            [
+                "b762ae11694e5c77"
+            ],
+            [
+                "7386451bd5ce1272"
+            ]
+        ]
+    },
+    {
+        "id": "b762ae11694e5c77",
+        "type": "change",
+        "z": "f6f2187d.f17ca8",
+        "name": "set tags",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.tags",
+                "pt": "msg",
+                "to": "spendless.kvs.value.tags",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1120,
+        "y": 720,
+        "wires": [
+            [
+                "7386451bd5ce1272"
+            ]
+        ]
+    },
+    {
+        "id": "2e54d199492a1826",
+        "type": "subflow:90f2319c72a33bae",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "x": 260,
+        "y": 680,
+        "wires": [
+            [
+                "fd88824b2e16b798"
+            ],
+            [
+                "30888a188ff2c064"
+            ]
+        ]
+    },
+    {
+        "id": "4bd54e7c7dc7dd0a",
+        "type": "subflow:90f2319c72a33bae",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "x": 600,
+        "y": 560,
+        "wires": [
+            [
+                "c8a92e5b5d0cba2f"
+            ],
+            [
+                "cd44e4746c87240d"
+            ]
+        ]
+    },
+    {
+        "id": "c020d93bcd8e6228",
+        "type": "subflow:90f2319c72a33bae",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "x": 540,
+        "y": 260,
+        "wires": [
+            [
+                "5be4aaaa04883666"
+            ],
+            [
+                "686a9b168267c9bc"
+            ]
+        ]
+    },
+    {
+        "id": "7b02348ad94c4e7d",
+        "type": "link in",
+        "z": "f6f2187d.f17ca8",
+        "name": "link in 8",
+        "links": [
+            "3306a716ee02987e"
+        ],
+        "x": 75,
+        "y": 260,
+        "wires": [
+            [
+                "9d5780282d881f2e"
+            ]
+        ]
+    },
+    {
+        "id": "3306a716ee02987e",
+        "type": "link out",
+        "z": "f6f2187d.f17ca8",
+        "name": "link out 26",
+        "mode": "link",
+        "links": [
+            "7b02348ad94c4e7d"
+        ],
+        "x": 1315,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "5be4aaaa04883666",
+        "type": "change",
+        "z": "f6f2187d.f17ca8",
+        "name": "set source account",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.source",
+                "pt": "msg",
+                "to": "spendless.context.parsedAccount",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 790,
+        "y": 260,
+        "wires": [
+            [
+                "53a6a325fbc19bad"
+            ]
+        ]
+    },
+    {
+        "id": "686a9b168267c9bc",
+        "type": "change",
+        "z": "f6f2187d.f17ca8",
+        "name": "set destination account",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.destination",
+                "pt": "msg",
+                "to": "spendless.context.parsedAccount",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 800,
+        "y": 300,
+        "wires": [
+            [
+                "53a6a325fbc19bad"
+            ]
+        ]
+    },
+    {
+        "id": "53a6a325fbc19bad",
+        "type": "link out",
+        "z": "f6f2187d.f17ca8",
+        "name": "link out 27",
+        "mode": "link",
+        "links": [
+            "6ab4de770590f69f"
+        ],
+        "x": 955,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "7fdf889446c2a172",
+        "type": "change",
+        "z": "f6f2187d.f17ca8",
+        "name": "set parsedDescription from description",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.context.parsedDescription",
+                "pt": "msg",
+                "to": "spendless.context.description",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 890,
+        "y": 140,
+        "wires": [
+            [
+                "8595ee70895d7e0a"
+            ]
+        ]
+    },
+    {
+        "id": "9d5780282d881f2e",
+        "type": "subflow:1ce79c5fce6b8fe5",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "x": 260,
+        "y": 260,
+        "wires": [
+            [
+                "c020d93bcd8e6228"
+            ],
+            [
+                "6daf4ab211c7f2cd"
+            ]
+        ]
+    },
+    {
+        "id": "6daf4ab211c7f2cd",
+        "type": "change",
+        "z": "f6f2187d.f17ca8",
+        "name": "set up kvs",
+        "rules": [
+            {
+                "t": "set",
+                "p": "spendless.kvs",
+                "pt": "msg",
+                "to": "spendless.context.parsedDescription",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 200,
+        "y": 380,
+        "wires": [
+            [
+                "1dd0844ec4b005bc"
+            ]
+        ]
+    },
+    {
+        "id": "8595ee70895d7e0a",
+        "type": "subflow:0a0735a743fb5fc7",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "x": 1130,
+        "y": 100,
+        "wires": [
+            [
+                "3306a716ee02987e"
+            ],
+            [
+                "3306a716ee02987e"
+            ]
+        ]
+    },
+    {
+        "id": "67237fbea2a1c1f2",
+        "type": "subflow:054a92868304fee3",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "x": 490,
+        "y": 100,
+        "wires": [
+            [
+                "29e65eeeb746ae5c"
+            ],
+            [
+                "7efc79b5c37a089f"
+            ]
+        ]
+    },
+    {
+        "id": "7efc79b5c37a089f",
+        "type": "subflow:842bf7ebdfb7fe6d",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "x": 800,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "ecab7f80c0df9d0f",
+        "type": "subflow:212ce6b191f48eaa",
+        "z": "61831238545f7697",
+        "name": "",
+        "x": 100,
+        "y": 40,
+        "wires": []
+    }
+]
