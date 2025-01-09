@@ -1,0 +1,27 @@
+﻿@code {
+    [Parameter, EditorRequired]
+    public required string JobId { get; set; }
+}
+
+<div class="panel is-link" style="max-width:var(--spendless-form-page-width);margin:auto;">
+    <p class="panel-heading">Takeout</p>
+    <div class="panel-block has-background-link-dark">
+        <div class="control">
+            <p class="is-size-5 is-family-monospace">@JobId</p>
+        </div>
+    </div>
+
+    <div class="panel-block">
+        <div class="control">
+            <progress class="progress is-small is-primary"></progress>
+            <p>Your takeout is still being prepared. Check back here later to see when it's ready.</p>
+        </div>
+        <div 
+            hx-trigger="load, every 250ms"
+            hx-target="closest .panel-block"
+            hx-swap="innerHTML"
+            hx-get="/admin/takeout/@JobId/poll"
+        ></div>
+    </div>
+</div>
+

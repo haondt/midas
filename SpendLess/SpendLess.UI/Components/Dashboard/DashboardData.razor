@@ -1,0 +1,231 @@
+﻿@using SpendLess.Core.Models
+@using SpendLess.Domain.Dashboard.Models
+@using SpendLess.UI.Components.Charts
+@using SpendLess.UI.Models.Charts
+@code {
+    [Parameter, EditorRequired]
+    public required decimal CashFlow { get; set; }
+    [Parameter, EditorRequired]
+    public required decimal NetWorth { get; set; }
+    [Parameter, EditorRequired]
+    public required decimal Income { get; set; }
+    [Parameter, EditorRequired]
+    public required decimal Spending { get; set; }
+    [Parameter, EditorRequired]
+    public required DashboardBalanceChartDataDto BalanceChartData { get; set; }
+    [Parameter, EditorRequired]
+    public required DashboardCategoricalSpendingChartDataDto CategoricalSpendingChartData { get; set; }
+}
+
+<div class="block">
+    <div class="hero is-primary is-small" style="border-radius:var(--bulma-radius-large);">
+        <div class="hero-body">
+            <p class="title">@StringFormatter.FormatCurrency(NetWorth, false)</p>
+            <p class="subtitle">Net Worth</p>
+        </div>
+
+    </div>
+</div>
+
+<div class="block">
+    <div class="columns is-desktop">
+        <div class="column">
+            <div class="notification">
+                @if (CashFlow == 0)
+                {
+                    <p class="is-size-4">@StringFormatter.FormatCurrency(CashFlow)</p>
+                }
+                else if(CashFlow > 0)
+                {
+                    <p class="is-size-4 has-text-success">+@StringFormatter.FormatCurrency(CashFlow)</p>
+                }
+                else
+                {
+                    <p class="is-size-4 has-text-danger">@StringFormatter.FormatCurrency(CashFlow, false)</p>
+                }
+                <p class="subtitle is-6">Cash flow</p>
+            </div>
+        </div>
+        <div class="column">
+            <div class="notification is-success">
+                <p class="is-size-4">@StringFormatter.FormatCurrency(Income)</p>
+                <p class="subtitle is-6">Income</p>
+            </div>
+        </div>
+        <div class="column">
+            <div class="notification is-danger">
+                <p class="is-size-4">@StringFormatter.FormatCurrency(Spending)</p>
+                <p class="subtitle is-6">Spending</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="block">
+    <style>
+        @@scope {
+            .chart-wrapper {
+                position: absolute;
+                width: calc(100% - 3em); /* based on --bulma-message-body-padding */
+                height: calc(100% - 2.5em);
+            }
+        }
+
+    </style>
+    <div class="columns is-desktop">
+        <div class="column">
+            <div class="message">
+                <div class="message-header">
+                    <p>Account Balances</p>
+                </div>
+                <div class="message-body"  style="position:relative;height:350px;">
+
+                @{
+                    var chartConfiguration = new LineConfiguration
+                    {
+                        Data = new()
+                        {
+                            Labels = BalanceChartData.TimeStamps.Select(t => StringFormatter.FormatDate(t)).ToList(),
+                            Datasets = BalanceChartData.Balances.Select((b, i) => new ChartDataSet
+                            {
+                                Label = BalanceChartData.AccountNames[i],
+                                Data = b.Cast<object>().ToList(),
+                                Fill = false,
+                                Tension = 0.5
+                            }).ToList()
+                        },
+                        Options = new()
+                        {
+                            Plugins = new()
+                            {
+                                Legend = new()
+                                {
+                                    Display = true,
+                                    Position = "top" 
+                                },
+                                Tooltip = new()
+                                {
+                                    Callbacks = new()
+                                    {
+                                        Label = new()
+                                        {
+                                            Function = @"function(context) { 
+                                                const rawValue = context.raw;
+                                                const formattedValue = Math.abs(rawValue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                                return rawValue < 0 ? `-$${formattedValue}` : `$${formattedValue}`;
+                                            }"
+                                        }
+                                    }
+                                }
+                            },
+                            Scales = new()
+                            {
+                                X = new()
+                                {
+                                    Ticks = new()
+                                    {
+                                        MaxRotation = 45,
+                                        MinRotation = 45
+                                    }
+                                },
+                                Y = new()
+                                {
+                                    Ticks = new()
+                                    {
+                                        Callback = new()
+                                        {
+                                            Function = @"function(value) { 
+                                                const formattedValue = Math.abs(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                                return value < 0 ? `-$${formattedValue}` : `$${formattedValue}`;
+                                            }"
+                                        }
+                                    },
+                                    BeginAtZero = true
+                                }
+                            }
+                        }
+                    };
+
+                    <div class="chart-wrapper">
+                        <Chart Configuration="@chartConfiguration"/>
+                    </div>
+
+                }
+                </div>
+            </div>
+
+        </div>
+        <div class="column">
+            <div class="message">
+                <div class="message-header">
+                    <p>Categorical Spending</p>
+                </div>
+                <div class="message-body"  style="position:relative;height:350px;">
+                @{
+                    var chartConfiguration2 = new BarConfiguration
+                    {
+                        Data = new()
+                        {
+                            Labels = CategoricalSpendingChartData.Categories,
+                            Datasets = new()
+                            {
+                                new ChartDataSet
+                                {
+                                    Data = CategoricalSpendingChartData.Spending.Cast<object>().ToList(),
+                                }
+                            }
+                        },
+                        Options = new()
+                        {
+                            Plugins = new()
+                            {
+                                Legend = new()
+                                {
+                                    Display = false,
+                                },
+                                Tooltip = new()
+                                {
+                                    Callbacks = new()
+                                    {
+                                        Label = new()
+                                        {
+                                            Function = @"function(context) { 
+                                                const rawValue = context.raw;
+                                                const formattedValue = Math.abs(rawValue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                                return rawValue < 0 ? `-$${formattedValue}` : `$${formattedValue}`;
+                                            }"
+                                        }
+                                    }
+                                }
+                            },
+                            Scales = new()
+                            {
+                                Y = new()
+                                {
+                                    Ticks = new()
+                                    {
+                                        Callback = new()
+                                        {
+                                            Function = @"function(value) { 
+                                                const formattedValue = Math.abs(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                                return value < 0 ? `-$${formattedValue}` : `$${formattedValue}`;
+                                            }"
+                                        }
+                                    },
+                                    BeginAtZero = true
+                                }
+                            }
+                        }
+                    };
+
+                    <div class="chart-wrapper">
+                        <Chart Configuration="@chartConfiguration2"/>
+                    </div>
+                }
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

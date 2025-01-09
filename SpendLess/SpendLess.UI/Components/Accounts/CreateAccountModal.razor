@@ -1,0 +1,60 @@
+﻿@code {
+    [Parameter]
+    public bool IncludeInNetWorth { get; set; } = false;
+}
+<div 
+    id="modal-container"
+    class="modal is-active is-justify-content-flex-start pt-6"
+    hx-swap-oob="true">
+    <div 
+        class="modal-background"
+        _="
+            on click
+                remove .is-active from #modal-container
+                set #modal-container's innerHTML to ''
+            end
+            on keydown(key) from elsewhere
+                if the key is 'Escape'
+                    send click to me
+                end
+            end
+        "></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Add Account</p>
+            <button class="delete" _="on click send click to the previous .modal-background"></button>
+        </header>
+        <section class="modal-card-body">
+            <form hx-post="/accounts/create" hx-target="#content">
+                <div class="field">
+                    <label class="label">Name</label>
+                    <div class="control">
+                        <input name="name" class="input" type="text" />
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <label class="checkbox">
+                            @if (IncludeInNetWorth)
+                            {
+                                <input type="checkbox" name="include-in-net-worth" checked>
+                            }
+                            else
+                            {
+                                <input type="checkbox" name="include-in-net-worth">
+                            }
+                            Include in Net Worth
+                        </label>
+                    </div>
+                </div>
+            </form>
+        </section>
+        <footer class="modal-card-foot">
+            <div class="buttons">
+                <button class="button is-success" _="on click send submit to the previous <form/>">Save changes</button>
+                <button class="button" _="on click send click to the previous .modal-background">Cancel</button>
+            </div>
+        </footer>
+    </div>
+</div>

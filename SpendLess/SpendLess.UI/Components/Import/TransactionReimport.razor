@@ -1,0 +1,16 @@
+@code{
+    [Parameter]
+    public SetupSelectTransactionsField? SelectTransactionsField { get; set; }
+}
+
+<div id="transaction-import" class="block" style="max-width:var(--spendless-form-page-width);margin:auto;">
+    <div class="panel is-link" >
+        <p class="panel-heading">Re-Import Transactions</p>
+        <div class="panel-block">
+            <div class="control">
+                <SetupReimport SelectTransactionsField="@SelectTransactionsField" />
+            </div>
+        </div>
+    </div>
+    <div id="dry-run-result"></div>
+</div>

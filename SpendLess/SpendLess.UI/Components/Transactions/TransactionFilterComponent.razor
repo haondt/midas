@@ -1,0 +1,23 @@
+﻿@code {
+    [Parameter, EditorRequired]
+    public required string Text { get; set; }
+}
+
+<div hx-swap-oob="beforeend:#filters">
+    <div class="filter-tag control">
+        <input type="hidden" name="filters" value="@Text" />
+        <div class="tags has-addons">
+            <span class="tag is-info">@Text</span>
+            <button
+                class="tag is-delete"
+                _="on click 
+                    remove the closest .filter-tag
+                    if #paginator-total-pages exists then
+                        set #paginator-total-pages's value to ''
+                    end
+                    then send submit to #filters
+            ">
+            </button>
+        </div>
+    </div>
+</div>

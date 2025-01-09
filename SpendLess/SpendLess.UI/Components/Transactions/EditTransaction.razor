@@ -1,0 +1,221 @@
+﻿@using Haondt.Core.Models
+@using SpendLess.Core.Constants
+@using SpendLess.Core.Models
+@using SpendLess.Domain.Transactions.Models
+@using SpendLess.UI.Models.Transactions
+@using SpendLess.UI.Shared.Components
+@code {
+    [Parameter]
+    public string SourceAccountName { get; set; } = "";
+    [Parameter]
+    public string SourceAccount { get; set; } = SpendLessConstants.DefaultAccount;
+    [Parameter]
+    public string DestinationAccountName { get; set; } = "";
+    [Parameter]
+    public string DestinationAccount { get; set; } = SpendLessConstants.DefaultAccount;
+    [Parameter]
+    public string Description { get; set; } = "";
+    [Parameter]
+    public decimal Amount { get; set; } = 0m;
+    [Parameter]
+    public AbsoluteDateTime TimeStamp { get; set; } = AbsoluteDateTime.Now;
+    [Parameter]
+    public string Category { get; set; } = "";
+    [Parameter]
+    public List<string> Tags { get; set; } = [];
+
+    [Parameter]
+    public Optional<long> Id { get; set; }
+
+    public static EditTransaction FromExtendedTransaction(Optional<long> id, ExtendedTransactionDto transaction)
+    {
+        return new EditTransaction
+        {
+            Amount = transaction.Amount,
+            Category = transaction.Category,
+            SourceAccount = transaction.SourceAccount,
+            SourceAccountName = transaction.SourceAccountName,
+            DestinationAccount = transaction.DestinationAccount,
+            DestinationAccountName = transaction.DestinationAccountName,
+            Description = transaction.Description,
+            Id = id,
+            Tags = transaction.Tags.ToList(),
+            TimeStamp = transaction.TimeStamp
+        };
+    }
+
+}
+
+<div id="edit-transaction" class="panel is-link" style="max-width:var(--spendless-form-page-width);margin:auto;">
+    <p class="panel-heading">@(Id.HasValue ? "Edit" : "Create New") Transaction</p>
+    <div class="panel-block">
+        <div class="control">
+            <form 
+                hx-swap="outerHTML"
+                hx-target="#edit-transaction"
+                class="column"
+                hx-rename="@($"{TransactionFilterTargets.SourceAccountName}-value"):source-account-name,@($"{TransactionFilterTargets.DestinationAccountName}-value"):destination-account-name"
+                hx-post="/transactions/edit@(Id.HasValue ? $"/{Id.Value}" : "")" >
+
+                <div class="control">
+                    <div class="field is-horizontal">
+                        <div class="field-label is-normal">
+                            <label class="label">Source Account</label>
+                        </div>
+                        <div class="field-body">
+                            <div class="field">
+                                <Autocomplete 
+                                    ChangedEvent="@("sourceAccountChanged")"
+                                    Placeholder="@SpendLessConstants.FallbackAccountName"
+                                    Value="@SourceAccountName"
+                                    Id="@("source-account")"
+                                    Name="@($"{TransactionFilterTargets.SourceAccountName}-value")"
+                                    SuggestionUri="@("/transactions/search/complete/source-account")"
+                                />
+                                <div class="mt-2"
+                                    hx-post="/transactions/search/account-id"
+                                    hx-trigger="sourceAccountChanged from:#source-account"
+                                    hx-rename="@($"{TransactionFilterTargets.SourceAccountName}-value"):name"
+                                    hx-swap="innerHTML"
+                                    hx-vals='{"inputName":"source-account-id"}'
+                                    hx-params="@($"{TransactionFilterTargets.SourceAccountName}-value"),inputName"
+                                    hx-target="this"
+                                    hx-include="#source-account">
+                                    <EditTransactionAccountId 
+                                        Id="@SourceAccount" 
+                                        IsExistingAccount="@(SourceAccount != SpendLessConstants.DefaultAccount)" 
+                                        InputName="@("source-account-id")"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field is-horizontal">
+                        <div class="field-label is-normal">
+                            <label class="label">Destination Account</label>
+                        </div>
+                        <div class="field-body">
+                            <div class="field">
+                                <Autocomplete 
+                                    ChangedEvent="@("destinationAccountChanged")"
+                                    Placeholder="@SpendLessConstants.FallbackAccountName"
+                                    Value="@DestinationAccountName"
+                                    Id="@("destination-account")"
+                                    Name="@($"{TransactionFilterTargets.DestinationAccountName}-value")"
+                                    SuggestionUri="@("/transactions/search/complete/destination-account")"
+                                />
+                                <div class="mt-2"
+                                    hx-post="/transactions/search/account-id"
+                                    hx-trigger="destinationAccountChanged from:#destination-account"
+                                    hx-rename="@($"{TransactionFilterTargets.DestinationAccountName}-value"):name"
+                                    hx-swap="innerHTML"
+                                    hx-vals='{"inputName":"destination-account-id"}'
+                                    hx-params="@($"{TransactionFilterTargets.DestinationAccountName}-value"),inputName"
+                                    hx-target="this"
+                                    hx-include="#destination-account">
+                                    <EditTransactionAccountId 
+                                        Id="@DestinationAccount" 
+                                        IsExistingAccount="@(DestinationAccount != SpendLessConstants.DefaultAccount)" 
+                                        InputName="@("destination-account-id")"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field is-horizontal">
+                        <div class="field-label is-normal">
+                            <label class="label">Description</label>
+                        </div>
+                        <div class="field-body">
+                            <div class="field">
+                                <input name="description" class="input" type="text" value="@Description" />
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="field is-horizontal">
+                        <div class="field-label is-normal">
+                            <label class="label">Amount</label>
+                        </div>
+                        <div class="field-body">
+                            <div class="field has-addons">
+                                <div class="control">
+                                    <a class="button is-static">$</a>
+                                </div>
+                                <div class="control">
+                                    <input name="amount" class="input" type="number" step=".01" value="@Amount" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field is-horizontal">
+                        <div class="field-label is-normal">
+                            <label class="label">Date</label>
+                        </div>
+                        <div class="field-body">
+                            <div class="field">
+                                <input name="date" class="input" type="date" value="@StringFormatter.FormatDate(TimeStamp)" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field is-horizontal">
+                        <div class="field-label is-normal">
+                            <label class="label">Category</label>
+                        </div>
+                        <div class="field-body">
+                            <div class="field">
+                                <input name="category" placeholder="@SpendLessConstants.DefaultCategory" class="input" type="text" value="@Category" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field is-horizontal">
+                        <div class="field-label is-normal">
+                            <label class="label">Tags</label>
+                        </div>
+                        <div class="field-body">
+                            <div class="field">
+                                <div class="field has-addons">
+                                    <div class="control">
+                                        <input id="add-tag-input" name="tag" class="input" type="text" />
+                                    </div>
+                                    <div class="control">
+                                        <button
+                                            hx-post="/transactions/edit/add-tag"
+                                            hx-include="#add-tag-input"
+                                            hx-params="tag"
+                                            hx-target="#tags"
+                                            hx-swap="beforeend"
+                                            class="button is-info">Add Tag</button>
+                                    </div>
+                                </div>
+                                <div id="tags" class="field is-grouped is-grouped-multiline mt-2"
+                                    _="on htmx:afterSwap set #add-tag-input's value to ''">
+                                    @foreach(var tag in @Tags)
+                                    {
+                                        <EditTransactionTag Text="@tag" />
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="control">
+                            @if (Id.HasValue)
+                            {
+                                <button class="button is-primary">Save Changes</button>
+                            }
+                            else
+                            {
+                                <button class="button is-primary">Create</button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

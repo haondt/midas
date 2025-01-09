@@ -1,0 +1,44 @@
+﻿@using Haondt.Core.Models
+@using Haondt.Web.Core.Http
+@code {
+
+    [Parameter, EditorRequired]
+    public required int ErrorCode { get; set; }
+    [Parameter, EditorRequired]
+    public required string Message { get; set; }
+    [Parameter]
+    public Optional<string> Title { get; set; }
+    [Parameter]
+    public Optional<string> Details { get; set; }
+
+    [CascadingParameter]
+    public IResponseData Response { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        Response.Status(ErrorCode);
+    }
+}
+
+<div id="page-container" hx-swap-oob="true">
+    <section class="hero is-danger is-medium">
+        <div class="hero-body">
+            <div class="title">@ErrorCode</div>
+            <div class="subtitle">@Message</div>
+        </div>
+    </section>
+    @if(Details.HasValue)
+    {
+        <section class="section">
+            <article class="message">
+                <div class="message-body">@Details.Value</div>
+            </article>
+        </section>
+    }
+
+    @if(Title.HasValue)
+    {
+        <title hx-swap-oob="outerHTML;title">@Title.Value</title>
+    }
+
+</div>

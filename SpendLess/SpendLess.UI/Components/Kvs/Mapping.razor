@@ -1,0 +1,40 @@
+﻿@code {
+
+    [Parameter]
+    public bool IsSwap { get; set; } = true;
+
+    [Parameter, EditorRequired]
+    public required string Key { get; set; }
+    [Parameter, EditorRequired]
+    public required string EncodedKey { get; set; }
+    [Parameter]
+    public string Value { get; set; } = "";
+    [Parameter]
+    public List<string> Aliases { get; set; } = [];
+
+    private Dictionary<string, object> _attributes = new();
+    protected override void OnInitialized()
+    {
+        if (IsSwap)
+            _attributes["hx-swap-oob"] = "outerHTML";
+    }
+
+}
+
+<div id="kvs-mapping" @attributes="_attributes">
+    <div class="panel-block has-background-link-dark">
+        <div class="control">
+            <KeyView IsSwap="false" Key="@Key" />
+        </div>
+    </div>
+    <div class="panel-block">
+        <div class="control">
+            <AliasList IsSwap="false" EncodedKey="@EncodedKey" Aliases="Aliases" />
+        </div>
+    </div>
+    <div class="panel-block">
+        <div class="control">
+            <ValueView EncodedKey="@EncodedKey" IsSwap="false" Value="@Value" />
+        </div>
+    </div>
+</div>

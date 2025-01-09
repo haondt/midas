@@ -1,0 +1,51 @@
+@using Haondt.Core.Models
+@code {
+    [Parameter]
+    public bool IsSuccessful { get; set; } = true;
+    [Parameter]
+    public List<string> Errors { get; set; } = [];
+    [Parameter]
+    public int TotalTransactions { get; set; }
+    [Parameter]
+    public Optional<string> ImportTag { get; set; }
+}
+
+<div class="box">
+    <div class="content">
+        <p class="title is-4">Import Summary</p>
+    </div>
+
+    <table class="table is-hoverable  is-fullwidth" >
+        <tbody>
+            <tr>
+                <th>Result</th>
+                @if (IsSuccessful)
+                {
+                    <td class="has-text-success">Success</td>
+                }
+                else
+                {
+                    <td class="has-text-danger">Failed</td>
+                }
+            </tr>
+            <tr>
+                <th>Total imported transactions</th>
+                <td>@TotalTransactions</td>
+            </tr>
+            @if (ImportTag.HasValue)
+            {
+                <tr>
+                    <th>Import tag</th>
+                    <td><span class="tag">@ImportTag.Value</span></td>
+                </tr>
+            }
+            @foreach(var error in Errors)
+            {
+                <tr class="is-danger">
+                    <th>Error</th>
+                    <td>@error</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

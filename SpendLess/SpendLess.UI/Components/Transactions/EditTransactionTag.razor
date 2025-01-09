@@ -1,0 +1,12 @@
+﻿@code {
+    [Parameter, EditorRequired]
+    public required string Text { get; set; }
+}
+
+<div class="control">
+    <div class="tags has-addons">
+        <span class="tag is-info">@Text</span>
+        <input name="tags" type="hidden" value="@Text"/>
+        <button _="on click remove the closest .control" class="tag is-delete"></button>
+    </div>
+</div>

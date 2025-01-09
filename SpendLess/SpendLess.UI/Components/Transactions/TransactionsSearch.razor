@@ -1,0 +1,135 @@
+﻿@using Haondt.Core.Models
+@using SpendLess.Domain.Transactions.Services
+@using SpendLess.UI.Models.Transactions
+@using SpendLess.UI.Shared.Components
+@inject ITransactionService TransactionService
+
+@code {
+
+    public abstract class FilterData { }
+    public class NumberFilterData : FilterData { }
+    public class SelectFilterData : FilterData { public required List<string> Options { get; set; } }
+    public class TextFilterData : FilterData { }
+    public class AutocompleteFilterData : FilterData { public required string AutocompleteUri { get; set; } }
+
+    [Parameter]
+    public string DivClass { get; set; } = "";
+    private Dictionary<string, FilterData> _targets = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var categories = await TransactionService.GetCategories();
+        var tags = await TransactionService.GetTags();
+        _targets = new()
+        {
+            { TransactionFilterTargets.Amount, new NumberFilterData() },
+            { TransactionFilterTargets.Category, new SelectFilterData{ Options = categories } },
+            { TransactionFilterTargets.Tags, new SelectFilterData { Options = tags } },
+            { TransactionFilterTargets.Description, new TextFilterData() },
+            { TransactionFilterTargets.SourceAccountName, new AutocompleteFilterData { AutocompleteUri = "/transactions/search/complete/source-account" } },
+            { TransactionFilterTargets.DestinationAccountName, new AutocompleteFilterData { AutocompleteUri = "/transactions/search/complete/destination-account" } },
+            { TransactionFilterTargets.EitherAccountName, new AutocompleteFilterData { AutocompleteUri = "/transactions/search/complete/either-account" } },
+        };
+    }
+
+    private List<string> _operators = new()
+    {
+        TransactionFilterOperators.IsEqualTo,
+        TransactionFilterOperators.IsNotEqualTo,
+        TransactionFilterOperators.Contains,
+        TransactionFilterOperators.StartsWith,
+        TransactionFilterOperators.IsGreaterThanOrEqualTo,
+        TransactionFilterOperators.IsLessThanOrEqualTo,
+    };
+
+}
+<div class="@DivClass">
+    <div class="is-flex is-flex-direction-column" style="width:100%">
+        <form class="mb-2 is-flex is-flex-direction-row is-flex-wrap-wrap" style="gap:1rem;"
+            hx-post="/transactions/search/filter"
+            hx-swap="none"
+            _="on htmx:afterSwap
+                if event.detail.xhr.status == 200 then
+                    set #paginator-total-pages's value to '' then
+                    send submit to #filters">
+            <div class="select ">
+                <select id="filter-target" name="target"
+                    _="on change
+                        set target to the first <option[value=$(my value)]/> in me
+                        set current_input to the next <.target-input:not(.is-hidden)/>
+                        set desired_input_id to `${my value}-input`
+                        set desired_input to #{desired_input_id}
+                        if current_input != desired_input
+                            if current_input != null
+                                add .is-hidden to current_input
+                            end
+                            if desired_input != null
+                                remove .is-hidden from desired_input
+                                ">
+                    @foreach(var target in _targets.Keys)
+                    {
+                        <option value="@target">@target</option>
+                    }
+                </select>
+            </div>
+            <div class="select">
+                <select id="filter-target" name="operator">
+                    @foreach(var op in _operators)
+                    {
+                        <option value="@op">@op</option>
+                    }
+                </select>
+            </div>
+            <div class="control is-flex-grow-1">
+            @{
+                var isFirst = true;
+                foreach(var (target, data) in _targets)
+                {
+                    var hiddenClass = isFirst ? "" : "is-hidden";
+                    @switch (data)
+                    {
+                        case NumberFilterData:
+                            <input name="@target-value" step=".01" id="@target-input" class="target-input input @hiddenClass" type="number"/>
+                            break;
+                        case SelectFilterData selectFilterData:
+                            <div id="@target-input" class="target-input is-fullwidth select @hiddenClass">
+                                <select name="@target-value">
+                                    @foreach(var option in selectFilterData.Options)
+                                    {
+                                        <option value="@option">@option</option>
+                                    }
+                                </select>
+                            </div>
+                            break;
+                        case AutocompleteFilterData autocompleteFilterData:
+                            <div id="@target-input" class="target-input @hiddenClass" _="on htmx:afterSwap halt the event">
+                                <Autocomplete 
+                                    Name="@($"{target}-value")" 
+                                    SuggestionUri="@autocompleteFilterData.AutocompleteUri"  
+                                />
+                            </div>
+                            break;
+                        case TextFilterData:
+                        default:
+                            <input id="@target-input" name="@target-value" class="target-input input @hiddenClass" type="text" />
+                            break;
+                    }
+                    isFirst = false;
+                }
+            }
+</div>
+            <button class="button">
+                Add filter
+            </button>
+        </form>
+        <form hx-post="/transactions/search"
+            class="field is-grouped is-grouped-multiline" id="filters"
+            hx-target="#search-results" hx-swap="innerHTML"
+            hx-include="#paginator"
+            _="on submit set #search-results's innerHTML to ''">
+        </form>
+    </div>
+</div>
+<div id="search-results" class="@DivClass">
+    <div _="on load send submit to #filters"></div>
+</div>
