@@ -35,7 +35,7 @@
         "type": "subflow",
         "name": "apply in",
         "info": "",
-        "category": "spendless",
+        "category": "midas",
         "in": [],
         "out": [
             {
@@ -51,8 +51,8 @@
         ],
         "env": [],
         "meta": {
-            "module": "node-red-contrib-haondt-spend-less-subflows",
-            "type": "haondt-spend-less-apply-in",
+            "module": "node-red-contrib-haondt-midas-subflows",
+            "type": "haondt-midas-apply-in",
             "version": "1.0.0"
         },
         "color": "#00ebc7",
@@ -63,7 +63,7 @@
         "type": "subflow",
         "name": "apply out",
         "info": "",
-        "category": "spendless",
+        "category": "midas",
         "in": [
             {
                 "x": 60,
@@ -78,8 +78,8 @@
         "out": [],
         "env": [],
         "meta": {
-            "module": "node-red-contrib-haondt-spend-less-subflows",
-            "type": "haondt-spend-less-apply-out",
+            "module": "node-red-contrib-haondt-midas-subflows",
+            "type": "haondt-midas-apply-out",
             "version": "1.0.0"
         },
         "color": "#00ebc7",
@@ -90,7 +90,7 @@
         "type": "subflow",
         "name": "error response",
         "info": "",
-        "category": "spendless",
+        "category": "midas",
         "in": [
             {
                 "x": 40,
@@ -166,8 +166,8 @@
             }
         ],
         "meta": {
-            "module": "node-red-contrib-haondt-spend-less-subflows",
-            "type": "haondt-spend-less-error-response",
+            "module": "node-red-contrib-haondt-midas-subflows",
+            "type": "haondt-midas-error-response",
             "version": "1.0.0"
         },
         "color": "#00ebc7",
@@ -257,8 +257,8 @@
         "id": "463da193503067ee",
         "type": "subflow",
         "name": "kvs lookup",
-        "info": "Try to look up the matching value from the key or alias set in `msg.spendless.kvs`.",
-        "category": "spendless",
+        "info": "Try to look up the matching value from the key or alias set in `msg.midas.kvs`.",
+        "category": "midas",
         "in": [
             {
                 "x": 40,
@@ -303,8 +303,8 @@
             }
         ],
         "meta": {
-            "module": "node-red-contrib-haondt-spend-less-subflows",
-            "type": "haondt-spend-less-kvs-lookup",
+            "module": "node-red-contrib-haondt-midas-subflows",
+            "type": "haondt-midas-kvs-lookup",
             "version": "1.0.0",
             "desc": "Look up value from kvs"
         },
@@ -400,7 +400,7 @@
         "type": "subflow",
         "name": "throw error",
         "info": "",
-        "category": "spendless",
+        "category": "midas",
         "in": [
             {
                 "x": 40,
@@ -432,8 +432,8 @@
             }
         ],
         "meta": {
-            "module": "node-red-contrib-haondt-spend-less-subflows",
-            "type": "haondt-spend-less-throw-error"
+            "module": "node-red-contrib-haondt-midas-subflows",
+            "type": "haondt-midas-throw-error"
         },
         "color": "#00ebc7",
         "icon": "font-awesome/fa-dollar"
@@ -442,8 +442,8 @@
         "id": "1fd0f49415234d19",
         "type": "subflow",
         "name": "kvs set value",
-        "info": "Set the value for `msg.spendless.kvs.key` to `msg.spendless.kvs.value`. Value must be a string.",
-        "category": "spendless",
+        "info": "Set the value for `msg.midas.kvs.key` to `msg.midas.kvs.value`. Value must be a string.",
+        "category": "midas",
         "in": [
             {
                 "x": 40,
@@ -469,8 +469,8 @@
         ],
         "env": [],
         "meta": {
-            "module": "node-red-contrib-haondt-spend-less-subflows",
-            "type": "haondt-spend-less-kvs-set-value",
+            "module": "node-red-contrib-haondt-midas-subflows",
+            "type": "haondt-midas-kvs-set-value",
             "version": "1.0.0",
             "desc": "Set value in kvs"
         },
@@ -572,13 +572,13 @@
         "type": "subflow",
         "name": "file export",
         "info": "Make the flow files available for download.",
-        "category": "spendless",
+        "category": "midas",
         "in": [],
         "out": [],
         "env": [],
         "meta": {
-            "module": "node-red-contrib-haondt-spend-less-subflows",
-            "type": "haondt-spend-less-file-export",
+            "module": "node-red-contrib-haondt-midas-subflows",
+            "type": "haondt-midas-file-export",
             "version": "1.0.0"
         },
         "color": "#00ebc7",
@@ -632,7 +632,7 @@
         "type": "subflow",
         "name": "apply skip",
         "info": "",
-        "category": "spendless",
+        "category": "midas",
         "in": [
             {
                 "x": 60,
@@ -647,8 +647,8 @@
         "out": [],
         "env": [],
         "meta": {
-            "module": "node-red-contrib-haondt-spend-less-subflows",
-            "type": "haondt-spend-less-apply-skip",
+            "module": "node-red-contrib-haondt-midas-subflows",
+            "type": "haondt-midas-apply-skip",
             "version": "1.0.0"
         },
         "color": "#00ebc7",
@@ -676,7 +676,7 @@
         "type": "function",
         "z": "99f384cef6a769fb",
         "name": "set up context",
-        "func": "msg.spendless = {\n    'response': {\n        'transaction': { }\n    },\n    'context': { }\n};\nreturn msg;",
+        "func": "msg.midas = {\n    'response': {\n        'transaction': { }\n    },\n    'context': { }\n};\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -699,7 +699,7 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.request",
+                "p": "midas.request",
                 "pt": "msg",
                 "to": "payload",
                 "tot": "msg"
@@ -726,9 +726,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.configuration",
+                "p": "midas.configuration",
                 "pt": "msg",
-                "to": "spendless.request.configuration",
+                "to": "midas.request.configuration",
                 "tot": "msg"
             }
         ],
@@ -753,9 +753,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.account",
+                "p": "midas.account",
                 "pt": "msg",
-                "to": "spendless.request.account",
+                "to": "midas.request.account",
                 "tot": "msg"
             }
         ],
@@ -780,9 +780,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.data",
+                "p": "midas.data",
                 "pt": "msg",
-                "to": "spendless.request.data",
+                "to": "midas.request.data",
                 "tot": "msg"
             }
         ],
@@ -802,7 +802,7 @@
         "type": "function",
         "z": "b2028b08979e589d",
         "name": "prepare response",
-        "func": "msg.payload = msg.spendless.response;\nreturn msg;",
+        "func": "msg.payload = msg.midas.response;\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -1049,12 +1049,12 @@
         "id": "2569c2ac569f40d1",
         "type": "debug",
         "z": "e650a01280df74d9",
-        "name": "SpendLess Error",
+        "name": "Midas Error",
         "active": true,
         "tosidebar": true,
         "console": true,
         "tostatus": false,
-        "complete": "{\t    'message': 'SpendLess encountered an error.',\t    'error': payload\t}",
+        "complete": "{\t    'message': 'Midas encountered an error.',\t    'error': payload\t}",
         "targetType": "jsonata",
         "statusVal": "",
         "statusType": "auto",
@@ -1072,7 +1072,7 @@
                 "t": "set",
                 "p": "payload.context",
                 "pt": "msg",
-                "to": "spendless",
+                "to": "midas",
                 "tot": "msg"
             }
         ],
@@ -1098,9 +1098,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.description",
+                "p": "midas.context.description",
                 "pt": "msg",
-                "to": "spendless.request.data[1]",
+                "to": "midas.request.data[1]",
                 "tot": "msg"
             }
         ],
@@ -1122,7 +1122,7 @@
         "type": "function",
         "z": "9e3bf19c5e1acd5e",
         "name": "set date",
-        "func": "msg.spendless.context.date = Math.floor(new Date(msg.spendless.request.data[0]).getTime() / 1000);\nreturn msg;",
+        "func": "msg.midas.context.date = Math.floor(new Date(msg.midas.request.data[0]).getTime() / 1000);\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -1142,7 +1142,7 @@
         "type": "function",
         "z": "9e3bf19c5e1acd5e",
         "name": "set amount",
-        "func": "let dollarString = msg.spendless.request.data[2].trim();\n\nif (dollarString.includes('.')) {\n    const [dollars, cents] = dollarString.split('.');\n    let totalCents = parseInt(dollars) * 100;\n    totalCents += parseInt(cents);\n    msg.spendless.context.amountCents = totalCents;\n} else {\n    msg.spendless.context.amountCents = parseInt(dollarString) * 100;\n}\nreturn msg;",
+        "func": "let dollarString = msg.midas.request.data[2].trim();\n\nif (dollarString.includes('.')) {\n    const [dollars, cents] = dollarString.split('.');\n    let totalCents = parseInt(dollars) * 100;\n    totalCents += parseInt(cents);\n    msg.midas.context.amountCents = totalCents;\n} else {\n    msg.midas.context.amountCents = parseInt(dollarString) * 100;\n}\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -1162,7 +1162,7 @@
         "type": "switch",
         "z": "9e3bf19c5e1acd5e",
         "name": "check for debit amount",
-        "property": "spendless.request.data[2]",
+        "property": "midas.request.data[2]",
         "propertyType": "msg",
         "rules": [
             {
@@ -1191,7 +1191,7 @@
         "type": "function",
         "z": "9e3bf19c5e1acd5e",
         "name": "set amount",
-        "func": "let dollarString = msg.spendless.request.data[3].trim();\n\nif (dollarString.includes('.')) {\n    const [dollars, cents] = dollarString.split('.');\n    let totalCents = parseInt(dollars) * 100;\n    totalCents += parseInt(cents);\n    msg.spendless.context.amountCents = totalCents;\n} else {\n    msg.spendless.context.amountCents = parseInt(dollarString) * 100;\n}\n\nreturn msg;",
+        "func": "let dollarString = msg.midas.request.data[3].trim();\n\nif (dollarString.includes('.')) {\n    const [dollars, cents] = dollarString.split('.');\n    let totalCents = parseInt(dollars) * 100;\n    totalCents += parseInt(cents);\n    msg.midas.context.amountCents = totalCents;\n} else {\n    msg.midas.context.amountCents = parseInt(dollarString) * 100;\n}\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -1211,7 +1211,7 @@
         "type": "switch",
         "z": "9e3bf19c5e1acd5e",
         "name": "check for credit amount",
-        "property": "spendless.request.data[3]",
+        "property": "midas.request.data[3]",
         "propertyType": "msg",
         "rules": [
             {
@@ -1243,9 +1243,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.source",
+                "p": "midas.context.source",
                 "pt": "msg",
-                "to": "{\t    \"id\": spendless.account\t}",
+                "to": "{\t    \"id\": midas.account\t}",
                 "tot": "jsonata"
             }
         ],
@@ -1270,9 +1270,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.destination",
+                "p": "midas.context.destination",
                 "pt": "msg",
-                "to": "{\t    \"id\": spendless.account\t}",
+                "to": "{\t    \"id\": midas.account\t}",
                 "tot": "jsonata"
             }
         ],
@@ -1310,7 +1310,7 @@
         "type": "switch",
         "z": "9e3bf19c5e1acd5e",
         "name": "validate amount",
-        "property": "spendless.context.amountCents",
+        "property": "midas.context.amountCents",
         "propertyType": "msg",
         "rules": [
             {
@@ -1358,9 +1358,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.parsedDescription",
+                "p": "midas.context.parsedDescription",
                 "pt": "msg",
-                "to": "spendless.context.description",
+                "to": "midas.context.description",
                 "tot": "msg"
             }
         ],
@@ -1419,7 +1419,7 @@
         "type": "switch",
         "z": "1ccf8eefe9fc6980",
         "name": "Is Visa debit purchase",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -1451,7 +1451,7 @@
         "type": "function",
         "z": "1ccf8eefe9fc6980",
         "name": "Trim description",
-        "func": "msg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(\"Point of Sale - Visa Debit VISA DEBIT RETAIL PURCHASE \", \"\");\nreturn msg;",
+        "func": "msg.midas.context.parsedDescription = msg.midas.context.parsedDescription.replace(\"Point of Sale - Visa Debit VISA DEBIT RETAIL PURCHASE \", \"\");\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -1471,7 +1471,7 @@
         "type": "switch",
         "z": "1ccf8eefe9fc6980",
         "name": "Is Interac Retail purchase",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -1503,7 +1503,7 @@
         "type": "switch",
         "z": "1ccf8eefe9fc6980",
         "name": "Is Paypal",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -1535,7 +1535,7 @@
         "type": "function",
         "z": "1ccf8eefe9fc6980",
         "name": "Trim description",
-        "func": "msg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(\"PAYPAL \", \"\");\nreturn msg;",
+        "func": "msg.midas.context.parsedDescription = msg.midas.context.parsedDescription.replace(\"PAYPAL \", \"\");\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -1555,7 +1555,7 @@
         "type": "function",
         "z": "1ccf8eefe9fc6980",
         "name": "Trim description",
-        "func": "msg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(\"Point of Sale - Interac RETAIL PURCHASE \", \"\");\nreturn msg;",
+        "func": "msg.midas.context.parsedDescription = msg.midas.context.parsedDescription.replace(\"Point of Sale - Interac RETAIL PURCHASE \", \"\");\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -1575,7 +1575,7 @@
         "type": "switch",
         "z": "1ccf8eefe9fc6980",
         "name": "Is Preauthorized debit transfer",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -1607,7 +1607,7 @@
         "type": "function",
         "z": "1ccf8eefe9fc6980",
         "name": "Trim description",
-        "func": "msg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(\"Electronic Funds Transfer PREAUTHORIZED DEBIT \", \"\");\nreturn msg;",
+        "func": "msg.midas.context.parsedDescription = msg.midas.context.parsedDescription.replace(\"Electronic Funds Transfer PREAUTHORIZED DEBIT \", \"\");\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -1627,7 +1627,7 @@
         "type": "switch",
         "z": "1ccf8eefe9fc6980",
         "name": "Is Visa international debit purchase",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -1659,7 +1659,7 @@
         "type": "function",
         "z": "1ccf8eefe9fc6980",
         "name": "Trim description",
-        "func": "msg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(\"Point of Sale - Visa Debit INTL VISA DEB RETAIL PURCHASE \", \"\");\nreturn msg;",
+        "func": "msg.midas.context.parsedDescription = msg.midas.context.parsedDescription.replace(\"Point of Sale - Visa Debit INTL VISA DEB RETAIL PURCHASE \", \"\");\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -1679,7 +1679,7 @@
         "type": "switch",
         "z": "1ccf8eefe9fc6980",
         "name": "Check config name 2",
-        "property": "spendless.configuration.name",
+        "property": "midas.configuration.name",
         "propertyType": "msg",
         "rules": [
             {
@@ -1760,7 +1760,7 @@
         "type": "switch",
         "z": "1ccf8eefe9fc6980",
         "name": "Has numeric code before vendor",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -1792,7 +1792,7 @@
         "type": "function",
         "z": "1ccf8eefe9fc6980",
         "name": "Trim description",
-        "func": "const re = /^Point of Sale - Interac RETAIL PURCHASE [0-9]+\\s+/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "func": "const re = /^Point of Sale - Interac RETAIL PURCHASE [0-9]+\\s+/;\nmsg.midas.context.parsedDescription = msg.midas.context.parsedDescription.replace(re, \"\");\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -1812,7 +1812,7 @@
         "type": "switch",
         "z": "1ccf8eefe9fc6980",
         "name": "Contains exchange rate information",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -1844,7 +1844,7 @@
         "type": "function",
         "z": "1ccf8eefe9fc6980",
         "name": "Trim description",
-        "func": "const re = / [0-9]+\\.[0-9]{2} (CAD|USD) @ [0-9]+\\.[0-9]+$/\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "func": "const re = / [0-9]+\\.[0-9]{2} (CAD|USD) @ [0-9]+\\.[0-9]+$/\nmsg.midas.context.parsedDescription = msg.midas.context.parsedDescription.replace(re, \"\");\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -1864,7 +1864,7 @@
         "type": "switch",
         "z": "1ccf8eefe9fc6980",
         "name": "Has trailing transaction number",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -1896,7 +1896,7 @@
         "type": "function",
         "z": "1ccf8eefe9fc6980",
         "name": "Trim description",
-        "func": "const re = / [0-9]+$/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "func": "const re = / [0-9]+$/;\nmsg.midas.context.parsedDescription = msg.midas.context.parsedDescription.replace(re, \"\");\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -1929,7 +1929,7 @@
         "type": "switch",
         "z": "1ccf8eefe9fc6980",
         "name": "Has trailing location data",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -1961,7 +1961,7 @@
         "type": "function",
         "z": "1ccf8eefe9fc6980",
         "name": "Trim description",
-        "func": "const re = / {2,}(([A-Za-z]+)|([0-9]{3}-?[0-9]{3}-?[0-9]{4})|([A-Za-z]+\\.[A-Za-z]+)) +[A-Za-z]{2}$/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "func": "const re = / {2,}(([A-Za-z]+)|([0-9]{3}-?[0-9]{3}-?[0-9]{4})|([A-Za-z]+\\.[A-Za-z]+)) +[A-Za-z]{2}$/;\nmsg.midas.context.parsedDescription = msg.midas.context.parsedDescription.replace(re, \"\");\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -1994,7 +1994,7 @@
         "type": "switch",
         "z": "1ccf8eefe9fc6980",
         "name": "Has trailing Google Pay flag?",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -2026,7 +2026,7 @@
         "type": "function",
         "z": "1ccf8eefe9fc6980",
         "name": "Trim description",
-        "func": "const re = /\\s+\\(GOOGLE PAY\\)$/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "func": "const re = /\\s+\\(GOOGLE PAY\\)$/;\nmsg.midas.context.parsedDescription = msg.midas.context.parsedDescription.replace(re, \"\");\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -2046,7 +2046,7 @@
         "type": "switch",
         "z": "1ccf8eefe9fc6980",
         "name": "Is Internet bill payment",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -2078,7 +2078,7 @@
         "type": "function",
         "z": "1ccf8eefe9fc6980",
         "name": "Trim description",
-        "func": "const re = /^Internet Banking INTERNET BILL PAY [0-9]+\\s+/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "func": "const re = /^Internet Banking INTERNET BILL PAY [0-9]+\\s+/;\nmsg.midas.context.parsedDescription = msg.midas.context.parsedDescription.replace(re, \"\");\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -2124,7 +2124,7 @@
         "type": "function",
         "z": "1ccf8eefe9fc6980",
         "name": "trim description (CIBC VISA format)",
-        "func": "// re with named groups to help u understand\n// ^(?P<message>.+?)\\s*(?P<company_number> [0-9]{10})?(?:(?P<city> [A-Z]+)|(?P<phone> [0-9]{3}-[0-9]{3}-?[0-9]{4}))?(?P<website> [^\\s]+\\.[^\\s]{2,})?(?P<state>, [A-Z]{2})(?P<currency>(?: [0-9]+\\.[0-9]+ USD|CAD) @ [0-9]+\\.[0-9]+$)?$\nconst re = /\\s*( [0-9]{10})?(( [A-Z]+)|( [0-9]{3}-[0-9]{3}-?[0-9]{4}))?( [^\\s]+\\.[^\\s]{2,})?(, [A-Z]{2})(( [0-9]+\\.[0-9]+ USD|CAD) @ [0-9]+\\.[0-9]+$)?$/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "func": "// re with named groups to help u understand\n// ^(?P<message>.+?)\\s*(?P<company_number> [0-9]{10})?(?:(?P<city> [A-Z]+)|(?P<phone> [0-9]{3}-[0-9]{3}-?[0-9]{4}))?(?P<website> [^\\s]+\\.[^\\s]{2,})?(?P<state>, [A-Z]{2})(?P<currency>(?: [0-9]+\\.[0-9]+ USD|CAD) @ [0-9]+\\.[0-9]+$)?$\nconst re = /\\s*( [0-9]{10})?(( [A-Z]+)|( [0-9]{3}-[0-9]{3}-?[0-9]{4}))?( [^\\s]+\\.[^\\s]{2,})?(, [A-Z]{2})(( [0-9]+\\.[0-9]+ USD|CAD) @ [0-9]+\\.[0-9]+$)?$/;\nmsg.midas.context.parsedDescription = msg.midas.context.parsedDescription.replace(re, \"\");\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -2158,7 +2158,7 @@
         "type": "switch",
         "z": "1ccf8eefe9fc6980",
         "name": "Has trailing store number",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -2190,7 +2190,7 @@
         "type": "function",
         "z": "1ccf8eefe9fc6980",
         "name": "Trim description",
-        "func": "const re = /(#|(\\s+(((#\\s?)|C|(#C)|(#R))?)))[0-9]+\\*?$/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "func": "const re = /(#|(\\s+(((#\\s?)|C|(#C)|(#R))?)))[0-9]+\\*?$/;\nmsg.midas.context.parsedDescription = msg.midas.context.parsedDescription.replace(re, \"\");\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -2307,7 +2307,7 @@
         "type": "switch",
         "z": "1ccf8eefe9fc6980",
         "name": "Ends with Edmonton, AB",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -2339,7 +2339,7 @@
         "type": "function",
         "z": "1ccf8eefe9fc6980",
         "name": "Trim description",
-        "func": "const re = /(Edmonton|EDMONTON)\\s+AB$/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "func": "const re = /(Edmonton|EDMONTON)\\s+AB$/;\nmsg.midas.context.parsedDescription = msg.midas.context.parsedDescription.replace(re, \"\");\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -2419,7 +2419,7 @@
         "type": "switch",
         "z": "1ccf8eefe9fc6980",
         "name": "Ends with Vancouver, BC",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -2451,7 +2451,7 @@
         "type": "function",
         "z": "1ccf8eefe9fc6980",
         "name": "Trim description",
-        "func": "const re = /(Vancouver|VANCOUVER)\\s+BC$/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "func": "const re = /(Vancouver|VANCOUVER)\\s+BC$/;\nmsg.midas.context.parsedDescription = msg.midas.context.parsedDescription.replace(re, \"\");\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -2485,7 +2485,7 @@
         "type": "switch",
         "z": "1ccf8eefe9fc6980",
         "name": "Ends with St. Albert, AB",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -2517,7 +2517,7 @@
         "type": "function",
         "z": "1ccf8eefe9fc6980",
         "name": "Trim description",
-        "func": "const re = /\\s+ST\\. ALBERT\\s+AB$/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "func": "const re = /\\s+ST\\. ALBERT\\s+AB$/;\nmsg.midas.context.parsedDescription = msg.midas.context.parsedDescription.replace(re, \"\");\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -2566,7 +2566,7 @@
         "type": "switch",
         "z": "1ccf8eefe9fc6980",
         "name": "Ends with Halifax, MID-HNS",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -2598,7 +2598,7 @@
         "type": "function",
         "z": "1ccf8eefe9fc6980",
         "name": "Trim description",
-        "func": "const re = /\\s+HALIFAX\\s+MID-HNS$/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "func": "const re = /\\s+HALIFAX\\s+MID-HNS$/;\nmsg.midas.context.parsedDescription = msg.midas.context.parsedDescription.replace(re, \"\");\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -2618,7 +2618,7 @@
         "type": "switch",
         "z": "1ccf8eefe9fc6980",
         "name": "Ends with Montreal, QC",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -2650,7 +2650,7 @@
         "type": "function",
         "z": "1ccf8eefe9fc6980",
         "name": "Trim description",
-        "func": "const re = /(Montreal|MONTREAL)\\s+QC$/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "func": "const re = /(Montreal|MONTREAL)\\s+QC$/;\nmsg.midas.context.parsedDescription = msg.midas.context.parsedDescription.replace(re, \"\");\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -2670,7 +2670,7 @@
         "type": "switch",
         "z": "1ccf8eefe9fc6980",
         "name": "Ends with San Francisco, CA",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -2702,7 +2702,7 @@
         "type": "function",
         "z": "1ccf8eefe9fc6980",
         "name": "Trim description",
-        "func": "const re = /\\s+SAN FRANCISCOCA$$/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "func": "const re = /\\s+SAN FRANCISCOCA$$/;\nmsg.midas.context.parsedDescription = msg.midas.context.parsedDescription.replace(re, \"\");\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -2722,7 +2722,7 @@
         "type": "switch",
         "z": "1ccf8eefe9fc6980",
         "name": "Ends with West Edmonton, AB",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -2754,7 +2754,7 @@
         "type": "function",
         "z": "1ccf8eefe9fc6980",
         "name": "Trim description",
-        "func": "const re = /\\s+WEST EDMONTONAB$$/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "func": "const re = /\\s+WEST EDMONTONAB$$/;\nmsg.midas.context.parsedDescription = msg.midas.context.parsedDescription.replace(re, \"\");\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -2785,7 +2785,7 @@
         "type": "switch",
         "z": "1ccf8eefe9fc6980",
         "name": "Is e-transfer",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -2817,7 +2817,7 @@
         "type": "function",
         "z": "1ccf8eefe9fc6980",
         "name": "Trim description",
-        "func": "const re = /^Internet Banking E-TRANSFER [0-9]+\\s+/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "func": "const re = /^Internet Banking E-TRANSFER [0-9]+\\s+/;\nmsg.midas.context.parsedDescription = msg.midas.context.parsedDescription.replace(re, \"\");\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -2850,7 +2850,7 @@
         "type": "switch",
         "z": "1ccf8eefe9fc6980",
         "name": "Is ATM Fee",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -2882,7 +2882,7 @@
         "type": "function",
         "z": "1ccf8eefe9fc6980",
         "name": "Trim description",
-        "func": "const re = /^Electronic Funds Transfer NETWORK TRANSACTION FEE\\s+/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "func": "const re = /^Electronic Funds Transfer NETWORK TRANSACTION FEE\\s+/;\nmsg.midas.context.parsedDescription = msg.midas.context.parsedDescription.replace(re, \"\");\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -2915,7 +2915,7 @@
         "type": "switch",
         "z": "1ccf8eefe9fc6980",
         "name": "Is Visa Debit Google Pay Purchase",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -2947,7 +2947,7 @@
         "type": "function",
         "z": "1ccf8eefe9fc6980",
         "name": "Remove \"GOOGLE\"",
-        "func": "msg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(\"GOOGLE *\", \"\");\nreturn msg;",
+        "func": "msg.midas.context.parsedDescription = msg.midas.context.parsedDescription.replace(\"GOOGLE *\", \"\");\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -2996,7 +2996,7 @@
         "type": "switch",
         "z": "1ccf8eefe9fc6980",
         "name": "Is deposit",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -3028,7 +3028,7 @@
         "type": "function",
         "z": "1ccf8eefe9fc6980",
         "name": "Trim description",
-        "func": "const re = /^Electronic Funds Transfer DEPOSIT\\s+/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "func": "const re = /^Electronic Funds Transfer DEPOSIT\\s+/;\nmsg.midas.context.parsedDescription = msg.midas.context.parsedDescription.replace(re, \"\");\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -3061,7 +3061,7 @@
         "type": "switch",
         "z": "1ccf8eefe9fc6980",
         "name": "Is Paycheck",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -3093,7 +3093,7 @@
         "type": "function",
         "z": "1ccf8eefe9fc6980",
         "name": "Trim description",
-        "func": "const re = /^Electronic Funds Transfer PAY\\s+/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "func": "const re = /^Electronic Funds Transfer PAY\\s+/;\nmsg.midas.context.parsedDescription = msg.midas.context.parsedDescription.replace(re, \"\");\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -3126,7 +3126,7 @@
         "type": "switch",
         "z": "1ccf8eefe9fc6980",
         "name": "Is Visa debit purchase reversal",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -3158,7 +3158,7 @@
         "type": "function",
         "z": "1ccf8eefe9fc6980",
         "name": "Trim description",
-        "func": "const re = /^Point of Sale - Visa Debit VISA DEBIT PURCHASE REVERSAL\\s+/;\nmsg.spendless.context.parsedDescription = msg.spendless.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "func": "const re = /^Point of Sale - Visa Debit VISA DEBIT PURCHASE REVERSAL\\s+/;\nmsg.midas.context.parsedDescription = msg.midas.context.parsedDescription.replace(re, \"\");\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -3200,7 +3200,7 @@
         "type": "switch",
         "z": "1ccf8eefe9fc6980",
         "name": "Ends with Leduc, AB",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -3232,7 +3232,7 @@
         "type": "function",
         "z": "1ccf8eefe9fc6980",
         "name": "Trim description",
-        "func": "const re = /(Leduc|LEDUC)\\s+AB$/;\nmsg.spendless.context.parsedDescription = msg.payload.context.parsedDescription.replace(re, \"\");\nreturn msg;",
+        "func": "const re = /(Leduc|LEDUC)\\s+AB$/;\nmsg.midas.context.parsedDescription = msg.payload.context.parsedDescription.replace(re, \"\");\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -3302,14 +3302,14 @@
                 "t": "set",
                 "p": "url",
                 "pt": "msg",
-                "to": "$globalContext('spendless.configuration.spendLessApiUrl')\t    & \"api/kvs/mapping\"",
+                "to": "$globalContext('midas.configuration.midasApiUrl')\t    & \"api/kvs/mapping\"",
                 "tot": "jsonata"
             },
             {
                 "t": "set",
                 "p": "payload",
                 "pt": "msg",
-                "to": "{ \"alias\": msg.spendless.kvs }",
+                "to": "{ \"alias\": msg.midas.kvs }",
                 "tot": "jsonata"
             }
         ],
@@ -3391,7 +3391,7 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.kvs",
+                "p": "midas.kvs",
                 "pt": "msg",
                 "to": "payload",
                 "tot": "msg"
@@ -3447,7 +3447,7 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.kvs.value",
+                "p": "midas.kvs.value",
                 "pt": "msg",
                 "to": "{}",
                 "tot": "json"
@@ -3471,7 +3471,7 @@
         "type": "json",
         "z": "463da193503067ee",
         "name": "parse json",
-        "property": "spendless.kvs.value",
+        "property": "midas.kvs.value",
         "action": "obj",
         "pretty": false,
         "x": 1370,
@@ -3487,7 +3487,7 @@
         "type": "switch",
         "z": "463da193503067ee",
         "name": "has value?",
-        "property": "spendless.kvs.value",
+        "property": "midas.kvs.value",
         "propertyType": "msg",
         "rules": [
             {
@@ -3584,7 +3584,7 @@
         "type": "switch",
         "z": "1ce79c5fce6b8fe5",
         "name": "Is Internet Banking INTERNET TRANSFER ?",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -3618,9 +3618,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.parsedAccount",
+                "p": "midas.context.parsedAccount",
                 "pt": "msg",
-                "to": "{\t   \"id\": $globalContext('spendless.configuration.defaultAccountId')\t}",
+                "to": "{\t   \"id\": $globalContext('midas.configuration.defaultAccountId')\t}",
                 "tot": "jsonata"
             }
         ],
@@ -3696,7 +3696,7 @@
         "type": "switch",
         "z": "1ce79c5fce6b8fe5",
         "name": "Is SXSLX BNS PREAUTH PMT ?",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -3730,9 +3730,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.parsedAccount",
+                "p": "midas.context.parsedAccount",
                 "pt": "msg",
-                "to": "{\t   \"id\": $globalContext('spendless.configuration.transfersAccountId')\t}",
+                "to": "{\t   \"id\": $globalContext('midas.configuration.transfersAccountId')\t}",
                 "tot": "jsonata"
             }
         ],
@@ -3754,7 +3754,7 @@
         "type": "switch",
         "z": "1ce79c5fce6b8fe5",
         "name": "Is SCOTIABANK TRANSIT ?",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -3785,7 +3785,7 @@
         "type": "function",
         "z": "b86a301c9c586c6c",
         "name": "set amount",
-        "func": "let amountStr = msg.spendless.context.amountCents.toString();\nif (amountStr.length < 3) {\n        amountStr = amountStr.padStart(3, '0');\n}\nlet wholePart = amountStr.slice(0, -2);\nlet fractionalPart = amountStr.slice(-2); \nmsg.spendless.response.transaction.amount = wholePart + '.' + fractionalPart;\nreturn msg;",
+        "func": "let amountStr = msg.midas.context.amountCents.toString();\nif (amountStr.length < 3) {\n        amountStr = amountStr.padStart(3, '0');\n}\nlet wholePart = amountStr.slice(0, -2);\nlet fractionalPart = amountStr.slice(-2); \nmsg.midas.response.transaction.amount = wholePart + '.' + fractionalPart;\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -3808,9 +3808,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.response.transaction.importAccount",
+                "p": "midas.response.transaction.importAccount",
                 "pt": "msg",
-                "to": "spendless.account",
+                "to": "midas.account",
                 "tot": "msg"
             }
         ],
@@ -3832,7 +3832,7 @@
         "type": "switch",
         "z": "b86a301c9c586c6c",
         "name": "has source account ?",
-        "property": "spendless.context",
+        "property": "midas.context",
         "propertyType": "msg",
         "rules": [
             {
@@ -3866,9 +3866,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.response.transaction.source",
+                "p": "midas.response.transaction.source",
                 "pt": "msg",
-                "to": "spendless.context.source",
+                "to": "midas.context.source",
                 "tot": "msg"
             }
         ],
@@ -3920,9 +3920,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.response.transaction.description",
+                "p": "midas.response.transaction.description",
                 "pt": "msg",
-                "to": "spendless.context.description",
+                "to": "midas.context.description",
                 "tot": "msg"
             }
         ],
@@ -3944,7 +3944,7 @@
         "type": "switch",
         "z": "b86a301c9c586c6c",
         "name": "has destinationAccount ?",
-        "property": "spendless.context",
+        "property": "midas.context",
         "propertyType": "msg",
         "rules": [
             {
@@ -3978,9 +3978,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.response.transaction.destination",
+                "p": "midas.response.transaction.destination",
                 "pt": "msg",
-                "to": "spendless.context.destination",
+                "to": "midas.context.destination",
                 "tot": "msg"
             }
         ],
@@ -4005,9 +4005,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.response.transaction.category",
+                "p": "midas.response.transaction.category",
                 "pt": "msg",
-                "to": "spendless.context.category",
+                "to": "midas.context.category",
                 "tot": "msg"
             }
         ],
@@ -4029,7 +4029,7 @@
         "type": "switch",
         "z": "b86a301c9c586c6c",
         "name": "has category ?",
-        "property": "spendless.context",
+        "property": "midas.context",
         "propertyType": "msg",
         "rules": [
             {
@@ -4063,9 +4063,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.response.transaction.tags",
+                "p": "midas.response.transaction.tags",
                 "pt": "msg",
-                "to": "spendless.context.tags",
+                "to": "midas.context.tags",
                 "tot": "msg"
             }
         ],
@@ -4087,7 +4087,7 @@
         "type": "switch",
         "z": "b86a301c9c586c6c",
         "name": "has tags ?",
-        "property": "spendless.context",
+        "property": "midas.context",
         "propertyType": "msg",
         "rules": [
             {
@@ -4121,9 +4121,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.response.transaction.timeStamp",
+                "p": "midas.response.transaction.timeStamp",
                 "pt": "msg",
-                "to": "spendless.context.date",
+                "to": "midas.context.date",
                 "tot": "msg"
             }
         ],
@@ -4168,14 +4168,14 @@
                 "t": "set",
                 "p": "url",
                 "pt": "msg",
-                "to": "$globalContext('spendless.configuration.spendLessApiUrl')\t    & \"api/kvs/value\"",
+                "to": "$globalContext('midas.configuration.midasApiUrl')\t    & \"api/kvs/value\"",
                 "tot": "jsonata"
             },
             {
                 "t": "set",
                 "p": "payload",
                 "pt": "msg",
-                "to": "{ \t    \"key\": msg.spendless.kvs.key, \t    \"value\": msg.spendless.kvs.value\t}",
+                "to": "{ \t    \"key\": msg.midas.kvs.key, \t    \"value\": msg.midas.kvs.value\t}",
                 "tot": "jsonata"
             }
         ],
@@ -4289,7 +4289,7 @@
         "type": "function",
         "z": "90f2319c72a33bae",
         "name": "determine opposing account",
-        "func": "const ctx = msg.spendless.context;\nif (!ctx.hasOwnProperty('source') && ctx.hasOwnProperty('destination'))\n    return [msg, null, null];\nif (ctx.hasOwnProperty('source') && !ctx.hasOwnProperty('destination'))\n    return [null, msg, null];\nreturn [null, null, msg];",
+        "func": "const ctx = msg.midas.context;\nif (!ctx.hasOwnProperty('source') && ctx.hasOwnProperty('destination'))\n    return [msg, null, null];\nif (ctx.hasOwnProperty('source') && !ctx.hasOwnProperty('destination'))\n    return [null, msg, null];\nreturn [null, null, msg];",
         "outputs": 3,
         "timeout": 0,
         "noerr": 0,
@@ -4332,7 +4332,7 @@
         "type": "switch",
         "z": "0a0735a743fb5fc7",
         "name": "Is Coke",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -4367,7 +4367,7 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.parsedDescription",
+                "p": "midas.context.parsedDescription",
                 "pt": "msg",
                 "to": "Coke",
                 "tot": "str"
@@ -4404,7 +4404,7 @@
         "type": "switch",
         "z": "0a0735a743fb5fc7",
         "name": "Is Misumi",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -4439,7 +4439,7 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.parsedDescription",
+                "p": "midas.context.parsedDescription",
                 "pt": "msg",
                 "to": "Misumi",
                 "tot": "str"
@@ -4489,7 +4489,7 @@
         "type": "switch",
         "z": "0a0735a743fb5fc7",
         "name": "Is Namecheap",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -4524,7 +4524,7 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.parsedDescription",
+                "p": "midas.context.parsedDescription",
                 "pt": "msg",
                 "to": "Namecheap",
                 "tot": "str"
@@ -4561,7 +4561,7 @@
         "type": "switch",
         "z": "0a0735a743fb5fc7",
         "name": "Is RedBubble",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -4596,7 +4596,7 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.parsedDescription",
+                "p": "midas.context.parsedDescription",
                 "pt": "msg",
                 "to": "RedBubble",
                 "tot": "str"
@@ -4633,7 +4633,7 @@
         "type": "switch",
         "z": "0a0735a743fb5fc7",
         "name": "Is Unknown Paypal Transaction",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -4668,7 +4668,7 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.parsedDescription",
+                "p": "midas.context.parsedDescription",
                 "pt": "msg",
                 "to": "Unknown Paypal Transaction",
                 "tot": "str"
@@ -4705,7 +4705,7 @@
         "type": "switch",
         "z": "0a0735a743fb5fc7",
         "name": "Is UPS",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -4740,7 +4740,7 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.parsedDescription",
+                "p": "midas.context.parsedDescription",
                 "pt": "msg",
                 "to": "UPS",
                 "tot": "str"
@@ -4777,7 +4777,7 @@
         "type": "switch",
         "z": "0a0735a743fb5fc7",
         "name": "Is Unknown Internet Banking Deposit",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -4812,7 +4812,7 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.parsedDescription",
+                "p": "midas.context.parsedDescription",
                 "pt": "msg",
                 "to": "Unknown Internet Banking Deposit",
                 "tot": "str"
@@ -4852,7 +4852,7 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.parsedDescription",
+                "p": "midas.context.parsedDescription",
                 "pt": "msg",
                 "to": "Amazon",
                 "tot": "str"
@@ -4876,7 +4876,7 @@
         "type": "switch",
         "z": "0a0735a743fb5fc7",
         "name": "Is Amazon",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -4921,7 +4921,7 @@
         "type": "switch",
         "z": "0a0735a743fb5fc7",
         "name": "Is Unknown Internet Banking Transfer",
-        "property": "spendless.context.parsedDescription",
+        "property": "midas.context.parsedDescription",
         "propertyType": "msg",
         "rules": [
             {
@@ -4956,7 +4956,7 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.parsedDescription",
+                "p": "midas.context.parsedDescription",
                 "pt": "msg",
                 "to": "Unknown Internet Banking Transfer",
                 "tot": "str"
@@ -5208,9 +5208,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.description",
+                "p": "midas.context.description",
                 "pt": "msg",
-                "to": "spendless.request.data[2]",
+                "to": "midas.request.data[2]",
                 "tot": "msg"
             }
         ],
@@ -5232,7 +5232,7 @@
         "type": "function",
         "z": "054a92868304fee3",
         "name": "set date",
-        "func": "const parts = msg.spendless.request.data[1].split(\"-\");\nconst localDate = new Date(parts[0], parts[1]-1, parts[2]);\nmsg.spendless.context.date = Math.floor(localDate.getTime() / 1000);\nreturn msg;",
+        "func": "const parts = msg.midas.request.data[1].split(\"-\");\nconst localDate = new Date(parts[0], parts[1]-1, parts[2]);\nmsg.midas.context.date = Math.floor(localDate.getTime() / 1000);\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -5252,7 +5252,7 @@
         "type": "function",
         "z": "054a92868304fee3",
         "name": "set amount",
-        "func": "let dollarString = msg.spendless.request.data[6].trim();\n\nif (dollarString.includes('.')) {\n    const [dollars, cents] = dollarString.split('.');\n    let totalCents = Math.abs(parseInt(dollars) * 100);\n    totalCents += parseInt(cents);\n    msg.spendless.context.amountCents = totalCents;\n} else {\n    msg.spendless.context.amountCents = Math.abs(parseInt(dollarString) * 100);\n}\nreturn msg;",
+        "func": "let dollarString = msg.midas.request.data[6].trim();\n\nif (dollarString.includes('.')) {\n    const [dollars, cents] = dollarString.split('.');\n    let totalCents = Math.abs(parseInt(dollars) * 100);\n    totalCents += parseInt(cents);\n    msg.midas.context.amountCents = totalCents;\n} else {\n    msg.midas.context.amountCents = Math.abs(parseInt(dollarString) * 100);\n}\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -5272,7 +5272,7 @@
         "type": "switch",
         "z": "054a92868304fee3",
         "name": "debit or credit",
-        "property": "spendless.request.data[5]",
+        "property": "midas.request.data[5]",
         "propertyType": "msg",
         "rules": [
             {
@@ -5314,9 +5314,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.source",
+                "p": "midas.context.source",
                 "pt": "msg",
-                "to": "{\t    \"id\": spendless.account\t}",
+                "to": "{\t    \"id\": midas.account\t}",
                 "tot": "jsonata"
             }
         ],
@@ -5341,9 +5341,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.destination",
+                "p": "midas.context.destination",
                 "pt": "msg",
-                "to": "{\t    \"id\": spendless.account\t}",
+                "to": "{\t    \"id\": midas.account\t}",
                 "tot": "jsonata"
             }
         ],
@@ -5381,7 +5381,7 @@
         "type": "switch",
         "z": "054a92868304fee3",
         "name": "validate amount",
-        "property": "spendless.context.amountCents",
+        "property": "midas.context.amountCents",
         "propertyType": "msg",
         "rules": [
             {
@@ -5453,7 +5453,7 @@
         "type": "switch",
         "z": "054a92868304fee3",
         "name": "is first row?",
-        "property": "spendless.request.isFirstRow",
+        "property": "midas.request.isFirstRow",
         "propertyType": "msg",
         "rules": [
             {
@@ -5580,7 +5580,7 @@
                 "t": "set",
                 "p": "payload",
                 "pt": "msg",
-                "to": "spendless.configuration",
+                "to": "midas.configuration",
                 "tot": "global"
             }
         ],
@@ -5605,9 +5605,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.configuration",
+                "p": "midas.configuration",
                 "pt": "global",
-                "to": "{    \t    \"spendLessApiUrl\": $env(\"SPEND_LESS_API_URL\"),\t    \"defaultAccountId\": \"00000000-0000-0000-0000-000000000000\",\t    \"transfersAccountId\": \"5a003b1f-3af7-4530-afe6-cb2b716d1c62\"\t}",
+                "to": "{    \t    \"midasApiUrl\": $env(\"MIDAS_API_URL\"),\t    \"defaultAccountId\": \"00000000-0000-0000-0000-000000000000\",\t    \"transfersAccountId\": \"5a003b1f-3af7-4530-afe6-cb2b716d1c62\"\t}",
                 "tot": "jsonata"
             }
         ],
@@ -5714,7 +5714,7 @@
         "type": "switch",
         "z": "f6f2187d.f17ca8",
         "name": "Check config name",
-        "property": "spendless.request.configuration",
+        "property": "midas.request.configuration",
         "propertyType": "msg",
         "rules": [
             {
@@ -5818,9 +5818,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.source",
+                "p": "midas.context.source",
                 "pt": "msg",
-                "to": "{\t    \"name\": msg.spendless.kvs.key,\t    \"id\": msg.spendless.kvs.value.id\t}",
+                "to": "{\t    \"name\": msg.midas.kvs.key,\t    \"id\": msg.midas.kvs.value.id\t}",
                 "tot": "jsonata"
             }
         ],
@@ -5845,9 +5845,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.destination",
+                "p": "midas.context.destination",
                 "pt": "msg",
-                "to": "{\t    \"name\": msg.spendless.kvs.key,\t    \"id\": msg.spendless.kvs.value.id\t}",
+                "to": "{\t    \"name\": msg.midas.kvs.key,\t    \"id\": msg.midas.kvs.value.id\t}",
                 "tot": "jsonata"
             }
         ],
@@ -5900,7 +5900,7 @@
         "type": "switch",
         "z": "f6f2187d.f17ca8",
         "name": "has an id ?",
-        "property": "spendless.kvs.value",
+        "property": "midas.kvs.value",
         "propertyType": "msg",
         "rules": [
             {
@@ -5931,7 +5931,7 @@
         "type": "switch",
         "z": "f6f2187d.f17ca8",
         "name": "value is empty?",
-        "property": "spendless.kvs.value",
+        "property": "midas.kvs.value",
         "propertyType": "msg",
         "rules": [
             {
@@ -5965,7 +5965,7 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.kvs.value",
+                "p": "midas.kvs.value",
                 "pt": "msg",
                 "to": "{}",
                 "tot": "json"
@@ -6019,7 +6019,7 @@
         "type": "function",
         "z": "f6f2187d.f17ca8",
         "name": "serialize the value",
-        "func": "msg.spendless.kvs.unserializedKvsValue = msg.spendless.kvs.value;\nmsg.spendless.kvs.value = JSON.stringify(msg.spendless.kvs.value);\nreturn msg;",
+        "func": "msg.midas.kvs.unserializedKvsValue = msg.midas.kvs.value;\nmsg.midas.kvs.value = JSON.stringify(msg.midas.kvs.value);\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -6043,7 +6043,7 @@
         "namespace": "",
         "namespaceCustom": "",
         "name": "generate an id",
-        "field": "spendless.kvs.value.id",
+        "field": "midas.kvs.value.id",
         "fieldType": "msg",
         "x": 760,
         "y": 460,
@@ -6058,7 +6058,7 @@
         "type": "function",
         "z": "f6f2187d.f17ca8",
         "name": "deserialize the value",
-        "func": "msg.spendless.kvs.value = msg.spendless.kvs.unserializedKvsValue;\nreturn msg;",
+        "func": "msg.midas.kvs.value = msg.midas.kvs.unserializedKvsValue;\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -6104,7 +6104,7 @@
         "type": "debug",
         "z": "f6f2187d.f17ca8",
         "name": "debug 2",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -6124,9 +6124,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.source",
+                "p": "midas.context.source",
                 "pt": "msg",
-                "to": "{\t    \"name\": msg.spendless.kvs\t}",
+                "to": "{\t    \"name\": msg.midas.kvs\t}",
                 "tot": "jsonata"
             }
         ],
@@ -6151,9 +6151,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.destination",
+                "p": "midas.context.destination",
                 "pt": "msg",
-                "to": "{\t    \"name\": msg.spendless.kvs\t}",
+                "to": "{\t    \"name\": msg.midas.kvs\t}",
                 "tot": "jsonata"
             }
         ],
@@ -6188,7 +6188,7 @@
         "type": "switch",
         "z": "f6f2187d.f17ca8",
         "name": "has category?",
-        "property": "spendless.kvs.value",
+        "property": "midas.kvs.value",
         "propertyType": "msg",
         "rules": [
             {
@@ -6222,9 +6222,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.category",
+                "p": "midas.context.category",
                 "pt": "msg",
-                "to": "spendless.kvs.value.category",
+                "to": "midas.kvs.value.category",
                 "tot": "msg"
             }
         ],
@@ -6246,7 +6246,7 @@
         "type": "switch",
         "z": "f6f2187d.f17ca8",
         "name": "has tags?",
-        "property": "spendless.kvs.value",
+        "property": "midas.kvs.value",
         "propertyType": "msg",
         "rules": [
             {
@@ -6280,9 +6280,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.tags",
+                "p": "midas.context.tags",
                 "pt": "msg",
-                "to": "spendless.kvs.value.tags",
+                "to": "midas.kvs.value.tags",
                 "tot": "msg"
             }
         ],
@@ -6384,9 +6384,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.source",
+                "p": "midas.context.source",
                 "pt": "msg",
-                "to": "spendless.context.parsedAccount",
+                "to": "midas.context.parsedAccount",
                 "tot": "msg"
             }
         ],
@@ -6411,9 +6411,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.destination",
+                "p": "midas.context.destination",
                 "pt": "msg",
-                "to": "spendless.context.parsedAccount",
+                "to": "midas.context.parsedAccount",
                 "tot": "msg"
             }
         ],
@@ -6451,9 +6451,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.context.parsedDescription",
+                "p": "midas.context.parsedDescription",
                 "pt": "msg",
-                "to": "spendless.context.description",
+                "to": "midas.context.description",
                 "tot": "msg"
             }
         ],
@@ -6494,9 +6494,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "spendless.kvs",
+                "p": "midas.kvs",
                 "pt": "msg",
-                "to": "spendless.context.parsedDescription",
+                "to": "midas.context.parsedDescription",
                 "tot": "msg"
             }
         ],
