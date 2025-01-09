@@ -20,8 +20,8 @@
 
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="33.0.1" />
-    <PackageReference Include="Haondt.Web" Version="0.0.16-alpha-20250109054423" />
-    <PackageReference Include="Haondt.Web.BulmaCSS" Version="0.0.16-alpha-20250109054423" />
+    <PackageReference Include="Haondt.Web" Version="0.1.4" />
+    <PackageReference Include="Haondt.Web.BulmaCSS" Version="0.1.4" />
   </ItemGroup>
 
   <ItemGroup>
