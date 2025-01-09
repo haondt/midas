@@ -48,6 +48,14 @@ namespace SpendLess.UI.Shared.Extensions
             {
                 Uri = $"/_asset/{assemblyPrefix}.wwwroot.hx-rename.js"
             });
+            services.AddScoped<IHeadEntryDescriptor>(_ => new IconDescriptor
+            {
+                Uri = $"/_asset/{assemblyPrefix}.wwwroot.favicon.ico"
+            });
+            services.AddScoped<IHeadEntryDescriptor>(_ => new TitleDescriptor
+            {
+                Title = "Midas",
+            });
             services.AddScoped<IHeadEntryDescriptor>(_ => new ScriptDescriptor
             {
                 Uri = "https://unpkg.com/htmx-ext-multi-swap@2.0.0/multi-swap.js"

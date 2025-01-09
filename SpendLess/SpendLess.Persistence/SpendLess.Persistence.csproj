@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Haondt.Persistence" Version="0.0.16-alpha-20250102142006" />
-    <PackageReference Include="Haondt.Persistence.Sqlite" Version="0.0.16-alpha-20250102142006" />
+    <PackageReference Include="Haondt.Persistence" Version="0.0.16-alpha-20250109054423" />
+    <PackageReference Include="Haondt.Persistence.Sqlite" Version="0.0.16-alpha-20250109054423" />
   </ItemGroup>
 
   <ItemGroup>

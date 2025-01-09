@@ -10,16 +10,18 @@
 
   <ItemGroup>
     <Content Remove="wwwroot\hx-rename.js" />
+    <Content Remove="wwwroot\favicon.ico" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="wwwroot\hx-rename.js" />
+    <EmbeddedResource Include="wwwroot\favicon.ico" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="33.0.1" />
-    <PackageReference Include="Haondt.Web" Version="0.0.16-alpha-20250102142006" />
-    <PackageReference Include="Haondt.Web.BulmaCSS" Version="0.0.16-alpha-20250102142006" />
+    <PackageReference Include="Haondt.Web" Version="0.0.16-alpha-20250109054423" />
+    <PackageReference Include="Haondt.Web.BulmaCSS" Version="0.0.16-alpha-20250109054423" />
   </ItemGroup>
 
   <ItemGroup>
