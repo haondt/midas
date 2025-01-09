@@ -1,8 +1,6 @@
 ## Short Term
 
 ## Medium Term
-- rename project (midas)
-- non-alpha haondt.net nugets
 
 ## Long term
 - configurable / last used reconcile options
@@ -10,3 +8,4 @@
 - fix everything on mobile
 -  account default import configuration
 - consitency with the label,title and subtitle casing
+- complete docs
