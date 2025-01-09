@@ -1,4 +1,5 @@
 ﻿using Haondt.Core.Extensions;
+using Haondt.Core.Models;
 using Haondt.Persistence.Services;
 using SpendLess.Core.Constants;
 using SpendLess.Core.Extensions;
@@ -12,6 +13,11 @@ namespace SpendLess.Domain.Transactions.Services
     public class TransactionService(ITransactionStorage transactionStorage,
         IStorage storage) : ITransactionService
     {
+        public async Task<long> CreateTransaction(TransactionDto transaction)
+        {
+            return (await CreateTransactions([transaction]))[0];
+        }
+
         public async Task<List<long>> CreateTransactions(List<TransactionDto> transactions)
         {
             if (transactions.Count == 0)
@@ -81,6 +87,32 @@ namespace SpendLess.Domain.Transactions.Services
             return transactionStorage.GetAmounts(filters);
         }
 
+        public async Task<Optional<ExtendedTransactionDto>> GetExtendedTransaction(
+            IAccountsService accountsService,
+            long id)
+        {
+            var transaction = await transactionStorage.GetTransaction(id);
+            if (!transaction.HasValue)
+                return new();
+
+            var accounts = await (transaction.Value.SourceAccount == transaction.Value.DestinationAccount
+                ? accountsService.GetMany([transaction.Value.DestinationAccount])
+                : accountsService.GetMany([transaction.Value.SourceAccount, transaction.Value.DestinationAccount]));
+
+
+            return new ExtendedTransactionDto
+            {
+                Amount = transaction.Value.Amount,
+                DestinationAccount = transaction.Value.DestinationAccount,
+                DestinationAccountName = accounts.GetValue(transaction.Value.DestinationAccount).As(k => k.Name).Or(SpendLessConstants.DefaultAccountName),
+                SourceAccount = transaction.Value.SourceAccount,
+                SourceAccountName = accounts.GetValue(transaction.Value.SourceAccount).As(k => k.Name).Or(SpendLessConstants.DefaultAccountName),
+                Category = transaction.Value.Category,
+                Description = transaction.Value.Description,
+                Tags = transaction.Value.Tags,
+                TimeStamp = transaction.Value.TimeStamp,
+            };
+        }
 
 
         public Task<List<string>> GetCategories()

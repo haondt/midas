@@ -72,20 +72,29 @@
                             </span>
                             <span>delete</span>
                         </button>
-                        <div>
-                            <button 
-                                class="dropdown-item"
-                                hx-target="#content"
-                                hx-swap="innerHTML"
-                                hx-push-url="true"
-                                hx-vals='{"t-@Id":"true"}'
-                                hx-get="/transaction-import/reimport">
-                                <span class="icon has-text-warning">
-                                    <i class="fa-solid fa-arrows-rotate"></i>
-                                </span>
-                                <span>re-import</span>
-                                </button>
-                        </div>
+						<button 
+							class="dropdown-item"
+							hx-target="#content"
+							hx-swap="innerHTML"
+							hx-push-url="true"
+							hx-vals='{"t-@Id":"true"}'
+							hx-get="/transaction-import/reimport">
+							<span class="icon has-text-warning">
+								<i class="fa-solid fa-arrows-rotate"></i>
+							</span>
+							<span>re-import</span>
+						</button>
+						<button 
+							class="dropdown-item"
+							hx-target="#content"
+							hx-swap="innerHTML"
+							hx-push-url="true"
+							hx-get="/transactions/edit/@Id">
+							<span class="icon has-text-info">
+								<i class="fa-solid fa-pencil"></i>
+							</span>
+							<span>edit</span>
+						</button>
                     </div>
                 </div>
             </div>

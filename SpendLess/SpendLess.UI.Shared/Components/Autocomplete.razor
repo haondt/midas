@@ -10,9 +10,13 @@
     [Parameter]
     public Optional<string> Placeholder { get; set; } = new();
     [Parameter]
+    public Optional<string> Value { get; set; } = new();
+    [Parameter]
     public Optional<string> HxInclude { get; set; } = new();
     [Parameter]
     public Optional<string> CompletionEvent { get; set; } = new();
+    [Parameter]
+    public Optional<string> ChangedEvent { get; set; } = new();
     [Parameter]
     public bool IsRight { get; set; } = false;
     [Parameter]
@@ -38,6 +42,8 @@
             InputAttributes["id"] = Id.Value;
         if (Placeholder.HasValue)
             InputAttributes["placeholder"] = Placeholder.Value;
+        if (Value.HasValue)
+            InputAttributes["value"] = Value.Value;
     }
 }
 <div class="control is-expanded autocomplete is-flex is-flex-direction-column @(Icon.HasValue ? $"has-icons-left" : "")">
@@ -46,10 +52,12 @@
         _="
             on input debounced at 200ms
                 send focus to me
+                @(ChangedEvent.HasValue ? $"then send {ChangedEvent.Value}" : "")
             end
             on selectionClicked
                 set my value to event.detail.text
                 @(CompletionEvent.HasValue ? $"then send {CompletionEvent.Value}" : "")
+                @(ChangedEvent.HasValue ? $"then send {ChangedEvent.Value}" : "")
             end
             on focus
                 add .is-active to the next .dropdown 
@@ -66,6 +74,7 @@
                         set my value to (the next <.dropdown-item.is-active/>)'s textContent
                         send focusout to me
                         @(CompletionEvent.HasValue ? $"then send {CompletionEvent.Value}" : "")
+						@(ChangedEvent.HasValue ? $"then send {ChangedEvent.Value}" : "")
                     end
                 end
                 if the event's key is 'ArrowDown'

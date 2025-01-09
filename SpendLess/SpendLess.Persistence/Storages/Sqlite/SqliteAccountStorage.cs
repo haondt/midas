@@ -186,16 +186,18 @@ namespace SpendLess.Persistence.Storages.Sqlite
 
             return Task.FromResult(result);
         }
-        public Task<List<string>> GetAccountIdsByName(string name)
+        public Task<List<string>> GetAccountIdsByName(string name, long? limit = null)
         {
             var result = WithConnection(connection =>
             {
                 List<string> ids = [];
-                using var searchCommand = new SqliteCommand(
-                    $@"
+                var query = $@"
                         SELECT id
                         FROM {_tableName}
-                        WHERE name = @name", connection);
+                        WHERE name = @name";
+                if (limit.HasValue)
+                    query += $"\nLIMIT {limit.Value}";
+                using var searchCommand = new SqliteCommand(query, connection);
 
                 searchCommand.Parameters.AddWithValue("@name", name);
 

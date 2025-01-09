@@ -1,4 +1,5 @@
-﻿using SpendLess.Domain.Accounts.Services;
+﻿using Haondt.Core.Models;
+using SpendLess.Domain.Accounts.Services;
 using SpendLess.Domain.Transactions.Models;
 using SpendLess.Persistence.Models;
 
@@ -19,5 +20,7 @@ namespace SpendLess.Domain.Transactions.Services
         Task<long> GetTransactionsCount(List<TransactionFilter> filters);
         Task<int> DeleteTransactions(List<TransactionFilter> filters);
         Task<List<long>> ReplaceTransactions(List<TransactionDto> newTransactions, List<long> oldTransacations);
+        Task<long> CreateTransaction(TransactionDto transaction);
+        Task<Optional<ExtendedTransactionDto>> GetExtendedTransaction(IAccountsService accountsService, long id);
     }
 }

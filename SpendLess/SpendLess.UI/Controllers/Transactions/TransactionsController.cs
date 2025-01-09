@@ -5,14 +5,18 @@ using Haondt.Web.Core.Services;
 using Haondt.Web.Middleware;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
+using SpendLess.Core.Constants;
 using SpendLess.Core.Exceptions;
 using SpendLess.Domain.Accounts.Services;
+using SpendLess.Domain.Transactions.Models;
 using SpendLess.Domain.Transactions.Services;
+using SpendLess.Persistence.Models;
 using SpendLess.UI.Components.Transactions;
 using SpendLess.UI.Models.Transactions;
 using SpendLess.UI.Services.Transactions;
 using SpendLess.UI.Shared.Components;
 using SpendLess.UI.Shared.Controllers;
+using SpendLess.UI.Shared.Exceptions;
 using SpendLess.UI.Shared.ModelBinders;
 using System.Text.RegularExpressions;
 
@@ -160,8 +164,133 @@ namespace SpendLess.UI.Controllers.Transactions
                 TotalPages = totalPages.Value,
                 PageSize = pageSize.Value,
             };
-
         }
 
+        [HttpGet("edit")]
+        [ServiceFilter(typeof(RenderPageFilter))]
+        public Task<IResult> GetCreatePage()
+        {
+            return componentFactory.RenderComponentAsync(new EditTransaction
+            {
+
+            });
+        }
+
+        [HttpGet("edit/{id}")]
+        [ServiceFilter(typeof(RenderPageFilter))]
+        public async Task<IResult> GetEditPage(long id)
+        {
+            var transaction = await transactionService.GetExtendedTransaction(accountsService, id);
+            if (!transaction.HasValue)
+                throw new NotFoundPageException();
+            return await componentFactory.RenderComponentAsync(EditTransaction.FromExtendedTransaction(id, transaction.Value));
+        }
+
+        [HttpPost("edit")]
+        public async Task<IResult> CreateTransaction([FromForm] UpsertTransactionRequestDto requestDto)
+        {
+            var (newAccounts, newTransaction) = await ProcessUpsertTransactionRequest(requestDto);
+            if (newAccounts.Count > 0)
+                await accountsService.CreateAccounts(newAccounts);
+
+            var transactionId = await transactionService.CreateTransaction(newTransaction);
+            Response.AsResponseData()
+                .HxPushUrl($"/transactions/edit/{transactionId}");
+            return await componentFactory.RenderComponentAsync(EditTransaction.FromExtendedTransaction(transactionId, newTransaction));
+        }
+
+        [HttpPost("edit/{id}")]
+        public async Task<IResult> UpdateTransaction([FromRoute] long id, [FromForm] UpsertTransactionRequestDto requestDto)
+        {
+            var (newAccounts, newTransaction) = await ProcessUpsertTransactionRequest(requestDto);
+            if (newAccounts.Count > 0)
+                await accountsService.CreateAccounts(newAccounts);
+
+            var newIds = await transactionService.ReplaceTransactions([newTransaction], [id]);
+            var transactionId = newIds[0];
+            Response.AsResponseData()
+                .HxPushUrl($"/transactions/edit/{transactionId}");
+            return await componentFactory.RenderComponentAsync(EditTransaction.FromExtendedTransaction(transactionId, newTransaction));
+        }
+
+        private async Task<(List<(string Id, AccountDto Account)> NewAccounts, ExtendedTransactionDto NewTransaction)> ProcessUpsertTransactionRequest(UpsertTransactionRequestDto requestDto)
+        {
+            var newAccounts = new List<(string, AccountDto)>();
+
+            if (requestDto.SourceAccount == SpendLessConstants.DefaultAccount)
+                throw new UserException($"Source account id must be provided.");
+            var account = await accountsService.TryGetAccount(requestDto.SourceAccount);
+            if (account.HasValue)
+                requestDto.SourceAccountName = account.Value.Name;
+            else
+            {
+                requestDto.SourceAccountName ??= SpendLessConstants.FallbackAccountName;
+                newAccounts.Add((requestDto.SourceAccount, new AccountDto
+                {
+                    IsMine = false,
+                    Name = requestDto.SourceAccountName
+                }));
+            }
+
+            if (requestDto.DestinationAccount == SpendLessConstants.DefaultAccount)
+                throw new UserException($"Destination account id must be provided.");
+            account = await accountsService.TryGetAccount(requestDto.DestinationAccount);
+            if (account.HasValue)
+                requestDto.DestinationAccountName = account.Value.Name;
+            else
+            {
+                requestDto.DestinationAccountName ??= SpendLessConstants.FallbackAccountName;
+                newAccounts.Add((requestDto.DestinationAccount, new AccountDto
+                {
+                    IsMine = false,
+                    Name = requestDto.DestinationAccountName
+                }));
+            }
+
+            var transaction = new ExtendedTransactionDto
+            {
+                SourceAccount = requestDto.SourceAccount,
+                DestinationAccount = requestDto.DestinationAccount,
+                Description = requestDto.Description ?? "",
+                Amount = requestDto.Amount,
+                Category = requestDto.Category ?? SpendLessConstants.DefaultCategory,
+                Tags = requestDto.Tags.ToHashSet(),
+                TimeStamp = requestDto.Date,
+                SourceAccountName = requestDto.SourceAccountName,
+                DestinationAccountName = requestDto.DestinationAccountName,
+            };
+            return (newAccounts, transaction);
+        }
+
+        [HttpPost("search/account-id")]
+        public async Task<IResult> SearchAccountId(
+            [FromForm(Name = "inputName")] string? inputName,
+            [FromForm(Name = "Name")] string? accountName)
+        {
+            var result = new EditTransactionAccountId();
+            if (!string.IsNullOrEmpty(inputName))
+                result.InputName = inputName;
+
+            if (string.IsNullOrEmpty(accountName))
+                return await componentFactory.RenderComponentAsync(result);
+
+            var accountId = await accountsService.GetAccountIdByName(accountName);
+            if (accountId.HasValue)
+            {
+                result.Id = accountId.Value;
+                result.IsExistingAccount = true;
+            }
+            else
+                result.Id = Guid.NewGuid().ToString();
+            return await componentFactory.RenderComponentAsync(result);
+        }
+
+        [HttpPost("edit/add-tag")]
+        public Task<IResult> AddTag([FromForm] string tag)
+        {
+            if (string.IsNullOrWhiteSpace(tag))
+                throw new UserException("Tag cannot be empty");
+            return componentFactory.RenderComponentAsync(new EditTransactionTag { Text = tag.Trim() });
+        }
     }
 }

@@ -70,6 +70,10 @@ namespace SpendLess.Domain.Accounts.Services
         {
             return accountStorage.Add(id, accountDto);
         }
+        public Task CreateAccounts(List<(string Id, AccountDto Account)> accounts)
+        {
+            return accountStorage.AddMany(accounts);
+        }
 
         public Task DeleteAccount(string id)
         {
@@ -84,9 +88,17 @@ namespace SpendLess.Domain.Accounts.Services
             return await accountStorage.SearchAccountsByName(partialName, 5); // todo: appsettings
         }
 
-        public async Task<List<string>> GetAccountIdsByName(string name)
+        public async Task<List<string>> GetAccountIdsByName(string name, long? limit = null)
         {
-            return await accountStorage.GetAccountIdsByName(name);
+            return await accountStorage.GetAccountIdsByName(name, limit);
+        }
+
+        public async Task<Optional<string>> GetAccountIdByName(string name)
+        {
+            var results = await accountStorage.GetAccountIdsByName(name, 1);
+            if (results.Count == 0)
+                return new();
+            return results[0];
         }
 
         public Task<long> GetNumberOfAccounts()
@@ -97,6 +109,10 @@ namespace SpendLess.Domain.Accounts.Services
         public Task UpsertAccount(string id, AccountDto accountDto)
         {
             return accountStorage.Set(id, accountDto);
+        }
+        public Task UpsertAccounts(List<(string Id, AccountDto Account)> accounts)
+        {
+            return accountStorage.SetMany(accounts);
         }
 
     }

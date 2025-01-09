@@ -19,7 +19,7 @@ namespace SpendLess.Persistence.Storages.Abstractions
         Task<long> GetCount();
         Task AddMany(List<(string AccountId, AccountDto Account)> values);
         Task Add(string accountId, AccountDto account);
-        Task<List<string>> GetAccountIdsByName(string name);
+        Task<List<string>> GetAccountIdsByName(string name, long? limit = null);
         Task<Dictionary<string, AccountDto>> GetMany(List<string> ids, long? limit = null, long? offset = null);
     }
 }

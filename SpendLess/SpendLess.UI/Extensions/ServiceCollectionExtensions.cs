@@ -35,6 +35,11 @@ namespace SpendLess.UI.Extensions
                     {
                         Title = "Search",
                         Slug = "transactions",
+                    },
+                    new NavigationLink
+                    {
+                        Title = "Create New",
+                        Slug = "transactions/edit"
                     }
                 }
             });

@@ -1,4 +1,5 @@
-﻿using Haondt.Persistence.Services;
+﻿using Haondt.Core.Models;
+using Haondt.Persistence.Services;
 using SpendLess.Persistence.Models;
 
 namespace SpendLess.Persistence.Storages.Abstractions
@@ -6,7 +7,7 @@ namespace SpendLess.Persistence.Storages.Abstractions
     public interface ITransactionStorage
     {
         Task<List<long>> AddTransactions(List<TransactionDto> transactions, List<long>? deleteTransactions = null);
-        Task<TransactionDto> GetTransaction(long key);
+        Task<Optional<TransactionDto>> GetTransaction(long key);
         (StorageOperation Operation, Func<List<long>> GetResult) CreateAddTransactionsOperation(List<TransactionDto> transactions);
         Task<Dictionary<long, TransactionDto>> GetTransactions(List<TransactionFilter> filters, long? limit = null, long? offset = null);
         Task<long> GetTransactionsCount(List<TransactionFilter> filters);

@@ -1,8 +1,10 @@
-﻿using Haondt.Identity.StorageKey;
+﻿using Haondt.Core.Models;
+using Haondt.Identity.StorageKey;
 using Haondt.Persistence.Services;
 using Haondt.Persistence.Sqlite.Services;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Options;
+using SpendLess.Core.Extensions;
 using SpendLess.Core.Models;
 using SpendLess.Persistence.Extensions;
 using SpendLess.Persistence.Models;
@@ -175,9 +177,14 @@ namespace SpendLess.Persistence.Storages.Sqlite
         }
 
 
-        public Task<TransactionDto> GetTransaction(long key)
+        public async Task<Optional<TransactionDto>> GetTransaction(long key)
         {
-            throw new NotImplementedException();
+            var result = await GetTransactions(new List<TransactionFilter>
+            {
+                TransactionFilter.TransactionIdIsOneOf([key])
+            });
+
+            return result.GetValue(key);
         }
 
         public async Task<bool> DeleteTransaction(long key) => (await DeleteTransactions([key])) > 0;
