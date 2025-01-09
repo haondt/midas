@@ -2,14 +2,16 @@
 
 A budgeting app built around the idea of using Node-Red to parse csv files.
 
+![](assets/midas.png)
+
 ## About
 
 
 ### Firefly III and the Post-Processor
 
-I've been using [Firefly III](https://github.com/firefly-iii/firefly-iii) for a couple of years now, and as much as I like it, I found the rule system for automatically updating transactions to be somewhat limiting. Just adding regular expressions would have made it so much stronger. I built [Firefly III PP](https://github.com/haondt/firefly-iii-pp) to solve this, which essentially executes rules built in [Node-Red](https://nodered.org/). Midas takes this idea to its logical conclusion, combining the two into a standalone application.
+I've been using [Firefly III](https://github.com/firefly-iii/firefly-iii) for a couple of years now, and as much as I like it, I found the rule system for automatically updating transactions to be somewhat limiting. Regular expressions and nested conditionals are must-haves for me. I built [Firefly III PP](https://github.com/haondt/firefly-iii-pp) to solve this, which essentially executes rules built in [Node-Red](https://nodered.org/). Midas takes this idea to its logical conclusion, combining the two into a standalone application.
 
-Firefly III also has a [standalone companion app](https://github.com/firefly-iii/data-importer) for importing data. I don't see why such a utility should be seperate, so Midas has this feature directly integrated.
+Firefly III also has a [companion app](https://github.com/firefly-iii/data-importer) for importing data. I don't see why such a utility should be seperate, so Midas has this feature directly integrated.
 
 ### Budgeting Philosophy
 
