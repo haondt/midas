@@ -8,7 +8,7 @@ using Midas.UI.Extensions;
 using Midas.UI.Shared.Extensions;
 using Midas.UI.Shared.ModelBinders;
 
-const string CORS_POLICY = "_spendLessPolicy";
+const string CORS_POLICY = "_midasPolicy";
 
 StorageKeyConvert.DefaultSerializerSettings = new StorageKeySerializerSettings
 {
