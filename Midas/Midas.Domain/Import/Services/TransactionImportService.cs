@@ -454,7 +454,7 @@ namespace Midas.Domain.Import.Services
                     response.Transaction.Source.Id = Guid.NewGuid().ToString();
                     context.Result.NewAccounts[response.Transaction.Source.Id] = response.Transaction.Source.Name;
                     if (await accountsService.HasAccountWithName(response.Transaction.Source.Name))
-                        resultDto.Warnings.Add($"{TransactionImportWarning.CreatingAccountWithSameNameAsExisting} Name: {response.Transaction.Source.Name}.");
+                        resultDto.Warnings.Add(TransactionImportWarning.CreatingAccountWithSameNameAsExisting);
                 }
             }
             // no id, no name, using defaults
@@ -496,7 +496,7 @@ namespace Midas.Domain.Import.Services
                     response.Transaction.Destination.Id = Guid.NewGuid().ToString();
                     context.Result.NewAccounts[response.Transaction.Destination.Id] = response.Transaction.Destination.Name;
                     if (await accountsService.HasAccountWithName(response.Transaction.Destination.Name))
-                        resultDto.Warnings.Add($"{TransactionImportWarning.CreatingAccountWithSameNameAsExisting} Name: {response.Transaction.Destination.Name}.");
+                        resultDto.Warnings.Add(TransactionImportWarning.CreatingAccountWithSameNameAsExisting);
                 }
             }
             // no id, no name, using defaults

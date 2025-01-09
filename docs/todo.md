@@ -1,4 +1,5 @@
 ## Short Term
+- dockerization
 
 ## Medium Term
 
