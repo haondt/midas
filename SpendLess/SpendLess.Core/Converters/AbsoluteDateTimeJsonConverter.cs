@@ -3,17 +3,32 @@ using SpendLess.Core.Models;
 
 namespace SpendLess.Core.Converters
 {
-    public class AbsoluteDateTimeJsonConverter : JsonConverter<AbsoluteDateTime>
+    public class AbsoluteDateTimeJsonConverter : JsonConverter
     {
-        public override AbsoluteDateTime ReadJson(JsonReader reader, Type objectType, AbsoluteDateTime existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override bool CanConvert(Type objectType)
         {
+            return objectType == typeof(AbsoluteDateTime) || Nullable.GetUnderlyingType(objectType) == typeof(AbsoluteDateTime);
+        }
+
+        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+        {
+            if (reader.TokenType == JsonToken.Null)
+                return null;
+
             var value = serializer.Deserialize<long>(reader);
             return AbsoluteDateTime.Create(value);
         }
 
-        public override void WriteJson(JsonWriter writer, AbsoluteDateTime value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
-            serializer.Serialize(writer, value.UnixTimeSeconds);
+            if (value == null)
+            {
+                writer.WriteNull();
+                return;
+            }
+
+            var absoluteDateTime = (AbsoluteDateTime)value;
+            serializer.Serialize(writer, absoluteDateTime.UnixTimeSeconds);
         }
     }
 }

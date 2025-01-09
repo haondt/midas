@@ -13,38 +13,6 @@ namespace SpendLess.UI.Extensions
         {
             services.AddSingleton(new NavigationSection
             {
-                Label = "Transactions",
-                Children = new List<NavigationItem>
-                {
-                    new NavigationLink
-                    {
-                        Title = "Import",
-                        Slug = "transaction-import",
-                    },
-                    new NavigationLink
-                    {
-                        Title = "Re-Import",
-                        Slug = "transaction-import/reimport",
-                    },
-                    new NavigationLink
-                    {
-                        Title = "Reconcile",
-                        Slug = "reconcile",
-                    },
-                    new NavigationLink
-                    {
-                        Title = "Search",
-                        Slug = "transactions",
-                    },
-                    new NavigationLink
-                    {
-                        Title = "Create New",
-                        Slug = "transactions/edit"
-                    }
-                }
-            });
-            services.AddSingleton(new NavigationSection
-            {
                 Label = "Reporting",
                 Children = new List<NavigationItem>
                 {
@@ -57,6 +25,55 @@ namespace SpendLess.UI.Extensions
                     {
                         Title = "Generate Report",
                         Slug = "reports",
+                    }
+                }
+            });
+            services.AddSingleton(new NavigationSection
+            {
+                Label = "Transactions",
+                Children = new List<NavigationItem>
+                {
+                    new NavigationLink
+                    {
+                        Title = "Search",
+                        Slug = "transactions",
+                    },
+                    new NavigationLink
+                    {
+                        Title = "Reconcile",
+                        Slug = "reconcile",
+                    },
+                    new NavigationLink
+                    {
+                        Title = "Import",
+                        Slug = "transaction-import",
+                    },
+                    new NavigationLink
+                    {
+                        Title = "Re-Import",
+                        Slug = "transaction-import/reimport",
+                    },
+                    new NavigationLink
+                    {
+                        Title = "Create New",
+                        Slug = "transactions/edit"
+                    }
+                }
+            });
+            services.AddSingleton(new NavigationSection
+            {
+                Label = "Accounts",
+                Children = new List<NavigationItem>
+                {
+                    new NavigationLink
+                    {
+                        Title = "My Accounts",
+                        Slug = "accounts/mine",
+                    },
+                    new NavigationLink
+                    {
+                        Title = "All Accounts",
+                        Slug = "accounts/all",
                     }
                 }
             });
@@ -81,23 +98,6 @@ namespace SpendLess.UI.Extensions
             {
                 Title = "Administration",
                 Slug = "admin",
-            });
-            services.AddSingleton(new NavigationSection
-            {
-                Label = "Accounts",
-                Children = new List<NavigationItem>
-                {
-                    new NavigationLink
-                    {
-                        Title = "My Accounts",
-                        Slug = "accounts/mine",
-                    },
-                    new NavigationLink
-                    {
-                        Title = "All Accounts",
-                        Slug = "accounts/all",
-                    }
-                }
             });
 
             services.Configure<TransactionImportSettings>(configuration.GetSection(nameof(TransactionImportSettings)));

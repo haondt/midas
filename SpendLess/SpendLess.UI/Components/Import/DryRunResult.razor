@@ -68,84 +68,92 @@
     </div>
 
     @CreateResultItem(("Account Balance Change", 
-    @<table class="table is-hoverable  is-fullwidth">
-        <tbody>
-            @foreach(var (accountName, isMine, amount) in BalanceChanges)
-            {
+    @<div class="table-container">
+        <table class="table is-hoverable  is-fullwidth">
+            <tbody>
+                @foreach(var (accountName, isMine, amount) in BalanceChanges)
+                {
 
-                <tr class="@(isMine? "has-background-info-dark" : "")">
-                    <td>
-                        @accountName
-                    </td>
-                    @if(amount < 0)
-                    {
-                        <td class="has-text-danger">@StringFormatter.FormatCurrency(amount)</td>
-                    }
-                    else
-                    {
-                        <td class="has-text-success">@StringFormatter.FormatCurrency(amount)</td>
-                    }
-                </tr>
-            }
-        </tbody>
-    </table>))
+                    <tr class="@(isMine? "has-background-info-dark" : "")">
+                        <td>
+                            @accountName
+                        </td>
+                        @if(amount < 0)
+                        {
+                            <td class="has-text-danger">@StringFormatter.FormatCurrency(amount)</td>
+                        }
+                        else
+                        {
+                            <td class="has-text-success">@StringFormatter.FormatCurrency(amount)</td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>))
 
     @if(NewCategories.Count > 0)
     {
         @CreateResultItem(("New Categories", 
-        @<table class="table is-hoverable  is-fullwidth" >
-            <thead>
-                <tr>
-                    <th>Category</th>
-                    <th>Transactions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach(var (name, transactions) in NewCategories)
-                {
+        @<div class="table-container">
+            <table class="table is-hoverable  is-fullwidth" >
+                <thead>
                     <tr>
-                        <td>@name</td>
-                        <td>@transactions</td>
+                        <th>Category</th>
+                        <th>Transactions</th>
                     </tr>
-                }
-            </tbody>
-        </table>))
+                </thead>
+                <tbody>
+                    @foreach(var (name, transactions) in NewCategories)
+                    {
+                        <tr>
+                            <td>@name</td>
+                            <td>@transactions</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>))
     }
 
         
     @if(NewTags.Count > 0)
     {
         @CreateResultItem(("New Tags", 
-        @<table class="table is-hoverable  is-fullwidth" >
-            <thead>
-                <tr>
-                    <th>New Tags</th>
-                    <th>Transactions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach(var (name, transactions) in NewTags)
-                {
+        @<div class="table-container">
+            <table class="table is-hoverable  is-fullwidth" >
+                <thead>
                     <tr>
-                        <td>@name</td>
-                        <td>@transactions</td>
+                        <th>New Tags</th>
+                        <th>Transactions</th>
                     </tr>
-                }
-            </tbody>
-        </table>))
+                </thead>
+                <tbody>
+                    @foreach(var (name, transactions) in NewTags)
+                    {
+                        <tr>
+                            <td>@name</td>
+                            <td>@transactions</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>))
     }
 
     @if (NewAccounts.Count > 0)
     {
         @CreateResultItem(("New Accounts", 
-        @<table class="table is-hoverable  is-fullwidth" >
-            <tbody>
-                @foreach(var name in NewAccounts)
-                {
-                    <tr><td>@name</td></tr>
-                }
-            </tbody>
-        </table>))
+        @<div class="table-container">
+            <table class="table is-hoverable  is-fullwidth" >
+                <tbody>
+                    @foreach(var name in NewAccounts)
+                    {
+                        <tr><td>@name</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>))
     }
 
     @if (Warnings.Count > 0)
@@ -153,30 +161,27 @@
         <p class="subtitle mb-2">Warnings</p>
         <div class="message is-warning">
             <div class="message-body">
-                <table class="table is-hoverable  is-fullwidth" >
-                    <thead>
-                        <tr>
-                            <th>Warning</th>
-                            <th>Affected Transactions</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach(var (message, count) in Warnings)
-                        {
-                            <tr class="is-warning">
-                                <td>
-                                    @message
-                                </td>
-                                <td>@count</td>
-                                <td>
-
-                                </td>
-
+                <div class="table-container">
+                    <table class="table is-hoverable  is-fullwidth" >
+                        <thead>
+                            <tr>
+                                <th>Warning</th>
+                                <th>Affected Transactions</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach(var (message, count) in Warnings)
+                            {
+                                <tr class="is-warning">
+                                    <td>
+                                        @message
+                                    </td>
+                                    <td>@count</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     }
@@ -186,43 +191,45 @@
         <p class="subtitle mb-2">Errors</p>
         <div class="message is-danger">
             <div class="message-body">
-                <table class="table is-hoverable  is-fullwidth" >
-                    <thead>
-                        <tr>
-                            <th>Error</th>
-                            <th>Affected Transactions</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach(var (message, count, samplePayload) in Errors)
-                        {
-                            <tr class="is-danger">
-                                <td>
-                                    @message
-                                </td>
-                                <td>
-                                    @count
-                                </td>
-                                <td><button 
-                                    class="button"
-                                    _="
-                                        on click
-                                            writeText('@samplePayload.Replace("'", "\\'")') into the navigator's clipboard
-                                            set target to the first .copy-button-text in me
-                                            set the target's innerHTML to 'Copied!'
-                                                then wait 1.3s
-                                                then set the target's innerHTML to 'Copy Request'
-                                    ">
-                                    <span class="icon is-small">
-                                        <i class="fas fa-copy"></i>
-                                    </span>
-                                    <span class="copy-button-text">Copy Request</span>
-                                </button></td>
+                <div class="table-container">
+                    <table class="table is-hoverable  is-fullwidth" >
+                        <thead>
+                            <tr>
+                                <th>Error</th>
+                                <th>Affected Transactions</th>
+                                <th></th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach(var (message, count, samplePayload) in Errors)
+                            {
+                                <tr class="is-danger">
+                                    <td>
+                                        @message
+                                    </td>
+                                    <td>
+                                        @count
+                                    </td>
+                                    <td><button 
+                                        class="button"
+                                        _="
+                                            on click
+                                                writeText('@samplePayload.Replace("'", "\\'")') into the navigator's clipboard
+                                                set target to the first .copy-button-text in me
+                                                set the target's innerHTML to 'Copied!'
+                                                    then wait 1.3s
+                                                    then set the target's innerHTML to 'Copy Request'
+                                        ">
+                                        <span class="icon is-small">
+                                            <i class="fas fa-copy"></i>
+                                        </span>
+                                        <span class="copy-button-text">Copy Request</span>
+                                    </button></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     }
