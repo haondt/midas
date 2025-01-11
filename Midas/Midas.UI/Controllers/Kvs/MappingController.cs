@@ -22,7 +22,7 @@ namespace Midas.Kvs.Controllers
         public async Task<IResult> Get(string encodedKey)
         {
             var key = StringFormatter.UrlBase64Decode(encodedKey);
-            var mapping = await kvs.GetExpandedMapping(key);
+            var mapping = await kvs.GetMapping(key);
             return await componentFactory.RenderComponentAsync(new Midas.UI.Components.Kvs.Kvs
             {
                 Mapping = new Mapping
@@ -42,7 +42,7 @@ namespace Midas.Kvs.Controllers
             [Required(AllowEmptyStrings = false)]
             string key)
         {
-            var mapping = await kvs.GetExpandedMapping(key);
+            var mapping = await kvs.GetMapping(key);
             var encodedKey = StringFormatter.UrlBase64Encode(key);
 
             Response.AsResponseData()
@@ -113,7 +113,7 @@ namespace Midas.Kvs.Controllers
             string alias)
         {
             var key = StringFormatter.UrlBase64Decode(encodedKey);
-            var aliases = await kvs.RemoveAlias(key, alias);
+            var aliases = await kvs.DeleteAlias(alias);
             return await componentFactory.RenderComponentAsync(new AppendComponentLayout
             {
                 Components = [

@@ -20,7 +20,7 @@ namespace Midas.Api.Controllers
             [Required(AllowEmptyStrings = false)]
             string alias)
         {
-            var result = await kvs.GetKeyFromKeyOrAlias(alias);
+            var result = await kvs.TryGetKeyFromKeyOrAlias(alias);
             if (result.HasValue)
                 return Ok(result.Value);
             return NotFound();
@@ -39,7 +39,7 @@ namespace Midas.Api.Controllers
         {
             var result = await kvs.GetValueFromKeyOrAlias(alias);
             if (result.HasValue)
-                return Ok(result.Value.Value);
+                return Ok(result.Value);
 
             return NotFound();
         }
@@ -72,7 +72,7 @@ namespace Midas.Api.Controllers
                 return Ok(new
                 {
                     key = result.Value.Key,
-                    value = result.Value.Value.Value
+                    value = result.Value.Value
                 });
 
             return NotFound();

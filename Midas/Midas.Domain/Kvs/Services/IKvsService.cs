@@ -6,11 +6,11 @@ namespace Midas.Domain.Kvs.Services
     public interface IKvsService
     {
         Task<List<string>> AddAlias(string key, string alias);
-        Task<ExpandedKvsMappingDto> GetExpandedMapping(string term);
-        Task<Optional<string>> GetKeyFromKeyOrAlias(string term);
-        Task<Optional<KvsMappingDto>> GetValueFromKeyOrAlias(string key);
-        Task<Optional<(string Key, KvsMappingDto Value)>> GetKeyAndValueFromKeyOrAlias(string key);
-        Task<List<string>> RemoveAlias(string key, string alias);
+        Task<KvsMapping> GetMapping(string term);
+        Task<Optional<string>> TryGetKeyFromKeyOrAlias(string term);
+        Task<Optional<string>> GetValueFromKeyOrAlias(string key);
+        Task<Optional<(string Key, string Value)>> GetKeyAndValueFromKeyOrAlias(string key);
+        Task<List<string>> DeleteAlias(string alias);
         Task<List<string>> Search(string term);
         Task UpsertValue(string key, string value);
         Task ImportKvsMappings(ExternalKvsMappingsDto mappings, bool overwriteExisting);
