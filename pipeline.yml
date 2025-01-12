@@ -1,0 +1,14 @@
+tasks:
+  - type: docker-build
+    image: midas
+    auto:
+      - source: push
+        has_tag: true
+        tag_source: tag
+      - source: push
+        has_tag: true
+        tag_source: latest
+    context: Midas
+    file: Midas/Midas/Dockerfile
+    registries:
+      - gitlab
