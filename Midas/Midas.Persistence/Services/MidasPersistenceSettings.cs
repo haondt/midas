@@ -11,6 +11,7 @@
         public string TransactionsTagsTableName { get; init; } = "transactionsTags";
         public string TransactionsImportDataTableName { get; init; } = "transactionsImportData";
         public string AccountsTableName { get; init; } = "accounts";
+        public string TransactionsImportConfigurationTableName { get; init; } = "importConfigurations";
         public bool UseConnectionPooling { get; init; } = true;
     }
 }

@@ -23,5 +23,6 @@ namespace Midas.Domain.Accounts.Services
         Task<Optional<string>> GetAccountIdByName(string name);
         Task UpsertAccounts(List<(string Id, AccountDto Account)> accounts);
         Task CreateAccounts(List<(string Id, AccountDto Account)> accounts);
+        Task<Dictionary<string, AccountDto>> GetPagedAccounts(int pageSize, int page);
     }
 }

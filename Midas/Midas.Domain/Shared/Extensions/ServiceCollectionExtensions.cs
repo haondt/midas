@@ -2,8 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Polly;
-using Polly.Timeout;
 using Midas.Domain.Accounts.Services;
 using Midas.Domain.Admin.Models;
 using Midas.Domain.Admin.Services;
@@ -17,6 +15,8 @@ using Midas.Domain.Reporting.Models;
 using Midas.Domain.Reporting.Services;
 using Midas.Domain.Shared.Services;
 using Midas.Domain.Transactions.Services;
+using Polly;
+using Polly.Timeout;
 
 namespace Midas.Domain.Shared.Extensions
 {
@@ -35,6 +35,7 @@ namespace Midas.Domain.Shared.Extensions
             services.AddSingleton<IDataService, DataService>();
             services.AddSingleton<IFileService, FileService>();
             services.Configure<FileSettings>(configuration.GetSection(nameof(FileSettings)));
+            services.Configure<TakeoutSettings>(configuration.GetSection(nameof(TakeoutSettings)));
 
             services.Configure<NodeRedSettings>(configuration.GetSection(nameof(NodeRedSettings)));
             services.AddHttpClient<INodeRedService, NodeRedService>((sp, client) =>

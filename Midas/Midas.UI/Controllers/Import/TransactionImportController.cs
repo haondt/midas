@@ -1,7 +1,6 @@
 ﻿using Haondt.Core.Extensions;
 using Haondt.Core.Models;
 using Haondt.Identity.StorageKey;
-using Haondt.Persistence.Services;
 using Haondt.Web.Components;
 using Haondt.Web.Core.Extensions;
 using Haondt.Web.Core.Services;
@@ -13,6 +12,7 @@ using Midas.Domain.Import.Models;
 using Midas.Domain.Import.Services;
 using Midas.Domain.Transactions.Services;
 using Midas.Persistence.Models;
+using Midas.Persistence.Storages.Abstractions;
 using Midas.UI.Components.Import;
 using Midas.UI.Services.Transactions;
 using Midas.UI.Shared.Components;
@@ -27,9 +27,9 @@ namespace Midas.TransactionImport.Controllers
     public class TransactionImportController(
         IComponentFactory componentFactory,
         IAccountsService accountsService,
-        IStorage storage,
         ITransactionFilterService transactionFilterService,
         ITransactionService transactionService,
+        ITransactionImportConfigurationStorage importConfigurationStorage,
         ITransactionImportService import) : MidasUIController
     {
         [HttpGet]
@@ -119,14 +119,11 @@ namespace Midas.TransactionImport.Controllers
         [HttpPost("configs")]
         public async Task<IResult> UpsertConfigs([FromForm(Name = "config-slug")] IEnumerable<string?> slugs)
         {
-            await storage.Set(StorageKey<TransactionImportConfigurationSlugsDto>.Empty, new TransactionImportConfigurationSlugsDto
-            {
-                Slugs = slugs
-                    .Select(s => s?.Trim())
-                    .Where(s => !string.IsNullOrWhiteSpace(s))
-                    .Cast<string>()
-                    .ToList()
-            });
+            await importConfigurationStorage.Synchronize(slugs
+                .Select(s => s?.Trim())
+                .Where(s => !string.IsNullOrWhiteSpace(s))
+                .Cast<string>()
+                .ToList());
 
             return await componentFactory.RenderComponentAsync(new AppendComponentLayout
             {

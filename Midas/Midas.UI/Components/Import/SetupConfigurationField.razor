@@ -4,8 +4,9 @@
 @using Midas.Domain.Import.Models
 @using Midas.Persistence.Services
 @using Midas.Persistence.Extensions
+@using Midas.Persistence.Storages.Abstractions
 
-@inject IStorage Storage
+@inject ITransactionImportConfigurationStorage ImportConfigurationStorage
 
 @code {
     [Parameter]
@@ -25,7 +26,7 @@
             _configurations = Configurations;
         else
         {
-            _configurations = (await Storage.GetDefault(StorageKey<TransactionImportConfigurationSlugsDto>.Empty)).Slugs;
+            _configurations = await ImportConfigurationStorage.GetAll();
         }
     }
 }

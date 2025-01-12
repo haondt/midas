@@ -4,13 +4,14 @@
 @using Midas.Persistence.Extensions
 @using Haondt.Core.Models
 @using Haondt.Persistence.Services
-@inject IStorage Storage
+@using Midas.Persistence.Storages.Abstractions
+@inject ITransactionImportConfigurationStorage ImportConfigurationStorage
 
 @code {
     private List<string> _configurations = default!;
     protected override async Task OnInitializedAsync()
     {
-        _configurations = (await Storage.GetDefault(StorageKey<TransactionImportConfigurationSlugsDto>.Empty)).Slugs;
+        _configurations = await ImportConfigurationStorage.GetAll();
     }
 }
 

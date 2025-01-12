@@ -6,9 +6,10 @@
 @using Midas.Domain.Import.Models
 @using Midas.Persistence.Services
 @using Midas.Persistence.Extensions
+@using Midas.Persistence.Storages.Abstractions
 
 @inject IAccountsService AccountsService
-@inject IStorage Storage 
+@inject ITransactionImportConfigurationStorage ImportConfigurationStorage
 @inject ISingleTypeMidasStorage<TransactionImportAccountMetadataDto> accountMetadataStorage
 
 @code {
@@ -28,7 +29,7 @@
             kvp => kvp.Value.Name);
 
 
-        _configurations = (await Storage.GetDefault(StorageKey<TransactionImportConfigurationSlugsDto>.Empty)).Slugs;
+        _configurations = await ImportConfigurationStorage.GetAll();
 
         var accountMetadatas = await accountMetadataStorage.GetAll();
         foreach(var (key, value) in accountMetadatas)

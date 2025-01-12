@@ -23,6 +23,8 @@ namespace Midas.Persistence.Extensions
 
             services.AddSingleton<ITransactionStorage, SqliteTransactionStorage>();
             services.AddSingleton<ITransactionImportDataStorage, SqliteTransactionImportDataStorage>();
+
+            services.AddSingleton<ITransactionImportConfigurationStorage, SqliteTransactionImportConfigurationStorage>();
             return services;
         }
     }

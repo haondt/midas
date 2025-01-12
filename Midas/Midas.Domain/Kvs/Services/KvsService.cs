@@ -1,12 +1,10 @@
 ﻿using Haondt.Core.Models;
-using Microsoft.Extensions.Logging;
 using Midas.Domain.Kvs.Models;
 using Midas.Persistence.Storages.Abstractions;
 
 namespace Midas.Domain.Kvs.Services
 {
-    public class KvsService(IKvsStorage kvsStorage,
-        ILogger<KvsService> logger) : IKvsService
+    public class KvsService(IKvsStorage kvsStorage) : IKvsService
     {
         public async Task<KvsMapping> GetMapping(string key)
         {

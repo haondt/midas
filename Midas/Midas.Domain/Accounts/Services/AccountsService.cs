@@ -42,6 +42,13 @@ namespace Midas.Domain.Accounts.Services
                     amounts.ByDestination.GetValue(kvp.Key).Or(0) - amounts.BySource.GetValue(kvp.Key).Or(0)));
         }
 
+        public Task<Dictionary<string, AccountDto>> GetPagedAccounts(int pageSize, int page)
+        {
+            var limit = pageSize;
+            var offset = (page - 1) * pageSize;
+            return accountStorage.GetAll(limit, offset);
+        }
+
         public Task<Optional<AccountDto>> TryGetAccount(string id)
         {
             return accountStorage.TryGet(id);
@@ -114,6 +121,8 @@ namespace Midas.Domain.Accounts.Services
         {
             return accountStorage.SetMany(accounts);
         }
+
+
 
     }
 }

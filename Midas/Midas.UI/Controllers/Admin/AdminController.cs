@@ -2,9 +2,8 @@
 using Haondt.Web.Core.Services;
 using Haondt.Web.Middleware;
 using Microsoft.AspNetCore.Mvc;
+using Midas.Domain.Admin.Models;
 using Midas.Domain.Admin.Services;
-using Midas.Domain.Kvs.Models;
-using Midas.Domain.Kvs.Services;
 using Midas.UI.Components.Admin;
 using Midas.UI.Shared.Components;
 using Midas.UI.Shared.Controllers;
@@ -16,8 +15,7 @@ namespace Midas.Admin.Controllers
 {
     [Route("[controller]")]
     public class AdminController(IComponentFactory componentFactory,
-        IDataService dataService,
-        IKvsService kvs) : MidasUIController
+        IDataService dataService) : MidasUIController
     {
         [ServiceFilter(typeof(RenderPageFilter))]
         public Task<IResult> Get()
@@ -29,13 +27,56 @@ namespace Midas.Admin.Controllers
         public async Task<IResult> ImportMappings([FromForm] IFormFile file,
             [FromForm(Name = "overwrite-existing"), ModelBinder(typeof(CheckboxModelBinder))] bool overwriteExisting)
         {
-            var parsedData = file.DeserializeFromJson<ExternalKvsMappingsDto>();
+            var parsedData = file.DeserializeFromJson<TakeoutKvsMappingsDto>();
 
-            await kvs.ImportKvsMappings(parsedData, overwriteExisting);
+            await dataService.ImportKvsMappings(parsedData, overwriteExisting);
 
             return await componentFactory.RenderComponentAsync(new Toast
             {
                 Message = "Imported mappings successfully!",
+                Severity = ToastSeverity.Success,
+            });
+        }
+
+        [HttpPost("import-accounts")]
+        public async Task<IResult> ImportAccounts([FromForm] IFormFile file,
+            [FromForm(Name = "overwrite-existing"), ModelBinder(typeof(CheckboxModelBinder))] bool overwriteExisting)
+        {
+            var parsedData = file.DeserializeFromJson<TakeoutAccountsDto>();
+
+            await dataService.ImportAccounts(parsedData, overwriteExisting);
+
+            return await componentFactory.RenderComponentAsync(new Toast
+            {
+                Message = "Imported accounts successfully!",
+                Severity = ToastSeverity.Success,
+            });
+        }
+
+        [HttpPost("import-transactions")]
+        public async Task<IResult> ImportTransactions([FromForm] IFormFile file)
+        {
+            var parsedData = file.DeserializeFromJson<TakeoutTransactionsDto>();
+
+            await dataService.ImportTransactions(parsedData);
+
+            return await componentFactory.RenderComponentAsync(new Toast
+            {
+                Message = "Imported transactions successfully!",
+                Severity = ToastSeverity.Success,
+            });
+        }
+
+        [HttpPost("import-import-configurations")]
+        public async Task<IResult> ImportTransactionImportConfigurations([FromForm] IFormFile file)
+        {
+            var parsedData = file.DeserializeFromJson<TakeoutImportConfigurationsDto>();
+
+            await dataService.ImportTransactionImportConfigurations(parsedData);
+
+            return await componentFactory.RenderComponentAsync(new Toast
+            {
+                Message = "Imported configurations successfully!",
                 Severity = ToastSeverity.Success,
             });
         }
