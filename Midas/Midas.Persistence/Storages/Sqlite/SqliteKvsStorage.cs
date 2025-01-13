@@ -37,7 +37,8 @@ namespace Midas.Persistence.Storages.Sqlite
                         id TEXT PRIMARY KEY NOT NULL,
                         isAliasFor TEXT, 
                         value TEXT,
-                        FOREIGN KEY (isAliasFor) REFERENCES {_kvsTableName}(id) ON DELETE CASCADE
+                        FOREIGN KEY (isAliasFor) REFERENCES {_kvsTableName}(id) ON DELETE CASCADE,
+                        CHECK (id <> isAliasFor)
                      );", connection, transaction);
                 createPrimaryTableCommand.ExecuteNonQuery();
             });
@@ -138,12 +139,20 @@ namespace Midas.Persistence.Storages.Sqlite
                 }
 
                 var insertAliasQuery = $@"
-                    INSERT INTO {_kvsTableName} (id, isAliasFor)
-                    VALUES (@alias, @key);";
+                INSERT INTO {_kvsTableName} (id, isAliasFor)
+                VALUES (@alias, @key);";
                 using var insertAliasCommand = new SqliteCommand(insertAliasQuery, connection, transaction);
                 insertAliasCommand.Parameters.AddWithValue("@alias", alias);
                 insertAliasCommand.Parameters.AddWithValue("@key", key);
-                insertAliasCommand.ExecuteNonQuery();
+                try
+                {
+                    insertAliasCommand.ExecuteNonQuery();
+                }
+                catch (SqliteException ex) when (ex.Message.Contains("CHECK constraint failed: id <> isAliasFor"))
+                {
+                    throw new StorageException("An alias cannot refer to itself.");
+                }
+
 
                 return InternalGetAliases(key, connection, transaction);
             });
@@ -432,7 +441,14 @@ namespace Midas.Persistence.Storages.Sqlite
                             // upsert the alias
                             insertOrUpdateAliasKeyParameter.Value = alias;
                             insertOrUpdateAliasIsAliasForParameter.Value = key;
-                            insertOrUpdateAliasCommand.ExecuteNonQuery();
+                            try
+                            {
+                                insertOrUpdateAliasCommand.ExecuteNonQuery();
+                            }
+                            catch (SqliteException ex) when (ex.Message.Contains("CHECK constraint failed: id <> isAliasFor"))
+                            {
+                                throw new StorageException("An alias cannot refer to itself.");
+                            }
                         }
                     }
                 }

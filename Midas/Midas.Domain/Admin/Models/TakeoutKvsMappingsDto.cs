@@ -8,7 +8,7 @@
 
     public class TakeoutKvsMappingDto
     {
-        public List<string>? Aiases { get; set; }
+        public List<string>? Aliases { get; set; }
         public string? Value { get; set; }
     }
 }

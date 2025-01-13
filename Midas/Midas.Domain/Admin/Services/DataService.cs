@@ -48,7 +48,7 @@ namespace Midas.Domain.Admin.Services
             var mappings = (await kvsService.ExportMappings()).Mappings
                 .ToDictionary(q => q.Key, q => new TakeoutKvsMappingDto
                 {
-                    Aiases = q.Value.Aliases,
+                    Aliases = q.Value.Aliases,
                     Value = q.Value.Value
                 });
 
@@ -195,7 +195,7 @@ namespace Midas.Domain.Admin.Services
             {
                 Mappings = mappings.Mappings.ToDictionary(q => q.Key, q => new ExternalKvsMappingDto
                 {
-                    Aliases = q.Value.Aiases,
+                    Aliases = q.Value.Aliases,
                     Value = q.Value.Value
                 })
 
