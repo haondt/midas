@@ -173,6 +173,46 @@ namespace Midas.Persistence.Storages.Sqlite
             return Task.FromResult(result);
         }
 
+        public Task MoveMapping(string oldKey, string newKey)
+        {
+            WithTransaction((connection, transaction) =>
+            {
+                var value = InternalGetValueFromKey(oldKey, connection, transaction);
+                if (value == null)
+                    throw new InvalidOperationException($"No such mapping: {oldKey}");
+
+                var existing = InternalGetKeyAndValue(newKey, connection, transaction);
+                if (existing.IsAliasFor != null || existing.Value != null)
+                    throw new InvalidOperationException($"Key {newKey} is already being used.");
+
+                var insertCommand = new SqliteCommand(
+                    $@"
+                    INSERT INTO {_kvsTableName} (id, isAliasFor, value)
+                    VALUES (@key, NULL, @value)", connection, transaction);
+                insertCommand.Parameters.AddWithValue("@key", newKey);
+                insertCommand.Parameters.AddWithValue("@value", value);
+                insertCommand.ExecuteNonQuery();
+
+                var updateAliasesCommand = new SqliteCommand($@"
+                    UPDATE {_kvsTableName}
+                    SET isAliasFor = @newKey
+                    WHERE isAliasFor = @oldKey;
+                ", connection, transaction);
+                updateAliasesCommand.Parameters.AddWithValue("@newKey", newKey);
+                updateAliasesCommand.Parameters.AddWithValue("@oldKey", oldKey);
+                updateAliasesCommand.ExecuteNonQuery();
+
+                var deleteCommand = new SqliteCommand($@"
+                    DELETE FROM {_kvsTableName}
+                    WHERE id = @key;
+                ", connection, transaction);
+                deleteCommand.Parameters.AddWithValue("@key", oldKey);
+                deleteCommand.ExecuteNonQuery();
+            });
+
+            return Task.CompletedTask;
+        }
+
         public Task DeleteKey(string key)
         {
             WithTransaction((connection, transaction) =>

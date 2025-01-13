@@ -1,7 +1,7 @@
 ﻿using Haondt.Persistence.Converters;
+using Midas.Core.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Midas.Core.Converters;
 
 namespace Midas.Core.Constants
 {
@@ -37,7 +37,14 @@ namespace Midas.Core.Constants
             PrettySerializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
             PrettySerializerSettings.Formatting = Formatting.Indented;
             PrettySerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-            PrettySerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            PrettySerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver
+            {
+                NamingStrategy = new CamelCaseNamingStrategy
+                {
+                    ProcessDictionaryKeys = false,
+                    OverrideSpecifiedNames = true
+                }
+            };
             PrettySerializerSettings.Converters.Add(new GenericStorageKeyJsonConverter());
             PrettySerializerSettings.Converters.Add(new GenericOptionalJsonConverter());
             PrettySerializerSettings.Converters.Add(new AbsoluteDateTimeJsonConverter());

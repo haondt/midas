@@ -79,6 +79,27 @@ namespace Midas.Kvs.Controllers
             });
         }
 
+        [HttpDelete("{encodedKey}")]
+        public async Task<IResult> DeleteMapping(
+            string encodedKey)
+        {
+            var key = StringFormatter.UrlBase64Decode(encodedKey);
+            await kvs.DeleteMapping(key);
+
+            return await componentFactory.RenderComponentAsync(new AppendComponentLayout
+            {
+                Components = new List<Microsoft.AspNetCore.Components.IComponent>
+                {
+                    new Toast
+                    {
+                        Message = $"Deleted mapping {key}.",
+                        Severity = ToastSeverity.Success
+                    },
+                    new Midas.UI.Components.Kvs.Kvs()
+                }
+            });
+        }
+
         [HttpPatch("{encodedKey}/aliases")]
         public async Task<IResult> AddAlias(
             string encodedKey,
@@ -125,6 +146,36 @@ namespace Midas.Kvs.Controllers
                     new AliasList {
                         Aliases = aliases,
                         EncodedKey = encodedKey
+                    }
+                ]
+            });
+        }
+
+        [HttpPost("{encodedKey}/move")]
+        public async Task<IResult> MoveMapping(
+            string encodedKey,
+            [FromForm(Name = "new-key")]
+            [Required(AllowEmptyStrings = false)]
+            string newKey)
+        {
+            var key = StringFormatter.UrlBase64Decode(encodedKey);
+            await kvs.MoveMapping(key, newKey);
+
+            var newEncodedKey = StringFormatter.UrlBase64Encode(newKey);
+            Response.AsResponseData()
+                .HxPushUrl($"/kvs/mapping/{newEncodedKey}");
+
+            return await componentFactory.RenderComponentAsync(new AppendComponentLayout
+            {
+                Components = [
+                    new Toast
+                    {
+                        Message = "Alias moved.",
+                        Severity = ToastSeverity.Success
+                    },
+                    new KeyView
+                    {
+                        Key = new((newEncodedKey, newKey))
                     }
                 ]
             });

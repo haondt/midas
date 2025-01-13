@@ -15,5 +15,7 @@ namespace Midas.Domain.Kvs.Services
         Task UpsertValue(string key, string value);
         Task ImportKvsMappings(ExternalKvsMappingsDto mappings, bool overwriteExisting);
         Task<ExternalKvsMappingsDto> ExportMappings();
+        Task DeleteMapping(string key);
+        Task MoveMapping(string oldKey, string newKey);
     }
 }

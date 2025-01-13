@@ -24,7 +24,29 @@
 <div id="kvs-mapping" @attributes="_attributes">
     <div class="panel-block has-background-link-dark">
         <div class="control">
-            <KeyView IsSwap="false" Key="@Key" />
+            <KeyView IsSwap="false" Key="@((EncodedKey, Key))" />
+        </div>
+    </div>
+    <div class="panel-block">
+
+        <div class="control">
+            <p class="title is-4">Key</p>
+            <div class="field">
+            </div>
+            <div class="field">
+            <form hx-post="/kvs/mapping/@EncodedKey/move" hx-swap="none">
+                <div class="control">
+                    <div class="field has-addons">
+                        <div class="control is-expanded">
+                            <input class="input" name="new-key" placeholder="New key" />
+                        </div>
+                        <div class="control">
+                            <button class="button is-primary">Move Mapping</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
         </div>
     </div>
     <div class="panel-block">

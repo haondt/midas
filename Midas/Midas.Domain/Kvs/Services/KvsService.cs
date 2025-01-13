@@ -47,6 +47,15 @@ namespace Midas.Domain.Kvs.Services
         {
             return kvsStorage.DeleteAlias(alias);
         }
+        public Task DeleteMapping(string key)
+        {
+            return kvsStorage.DeleteKey(key);
+        }
+
+        public Task MoveMapping(string oldKey, string newKey)
+        {
+            return kvsStorage.MoveMapping(oldKey, newKey);
+        }
 
         public Task ImportKvsMappings(ExternalKvsMappingsDto mappings, bool overwriteExisting)
         {

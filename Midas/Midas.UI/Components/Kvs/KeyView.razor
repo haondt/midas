@@ -4,7 +4,7 @@
     public bool IsSwap { get; set; } = true;
 
     [Parameter]
-    public Optional<string> Key { get; set; } = new();
+    public Optional<(string Encoded, string Unencoded)> Key { get; set; } = new();
 
 
     private Dictionary<string, object> _attributes = new();
@@ -20,12 +20,20 @@
  <div id="key-view" @attributes="_attributes">
     @if(Key.HasValue)
     {
-        <div class="is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between">
-            <p class="is-size-5 is-family-monospace">@Key.Value</p>
+        <div class="is-flex is-flex-direction-row is-align-items-center is-flex-wrap-wrap" style="gap:10px;">
+            <p class="is-size-5 is-family-monospace is-flex-grow-1">@Key.Value.Unencoded</p>
+            <button class="button has-text-danger"
+                hx-delete="/kvs/mapping/@Key.Value.Encoded"
+                hx-confirm="are you sure?"
+                hx-target="#kvs"
+                hx-swap="outerhtml">
+                Delete Mapping
+            </button>
+
             <button class="button"
                 hx-get="/kvs/mappings"
                 hx-swap="none">
-                Select Mapping
+                Select Different Mapping
             </button>
         </div>
     }
