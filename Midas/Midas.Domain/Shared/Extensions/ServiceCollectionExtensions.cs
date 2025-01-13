@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Haondt.Core.Extensions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -42,7 +43,7 @@ namespace Midas.Domain.Shared.Extensions
             {
                 var settings = sp.GetRequiredService<IOptions<NodeRedSettings>>().Value;
                 client.BaseAddress = new Uri(settings.BaseUrl);
-            }).AddPolicyHandler(GetNodeRedPolicy());
+            }).AddPolicyHandler(GetNodeRedPolicy(configuration));
             services.AddSingleton<IKvsService, KvsService>();
             services.AddSingleton<IDashboardService, DashboardService>();
 
@@ -50,15 +51,16 @@ namespace Midas.Domain.Shared.Extensions
             return services;
         }
 
-        private static AsyncTimeoutPolicy<HttpResponseMessage> GetNodeRedPolicy()
+        private static AsyncTimeoutPolicy<HttpResponseMessage> GetNodeRedPolicy(IConfiguration configuration)
         {
+            var settings = configuration.GetRequiredSection<NodeRedSettings>();
             var logger = LoggerFactory.Create(builder =>
             {
                 builder.ClearProviders();
                 builder.AddConsole();
             }).CreateLogger<Policy>();
             var timeoutPolicy = Policy
-                .TimeoutAsync<HttpResponseMessage>(1, (ct, ts, t) =>
+                .TimeoutAsync<HttpResponseMessage>(settings.TimeoutSeconds, (ct, ts, t) =>
                 {
                     logger.LogInformation("Timed out NodeRed request.");
                     return Task.CompletedTask;
