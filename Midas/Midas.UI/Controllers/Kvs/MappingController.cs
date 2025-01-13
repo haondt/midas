@@ -124,7 +124,7 @@ namespace Midas.Kvs.Controllers
                     },
                     new AliasList {
                         Aliases = aliases,
-                        EncodedKey = key
+                        EncodedKey = encodedKey
                     }
                 ]
             });
