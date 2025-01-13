@@ -17,5 +17,6 @@ namespace Midas.Persistence.Storages.Abstractions
         Task UpsertKeyAndValue(string key, string value);
         Task<Optional<(string Key, string Value)>> TryGetKeyAndValueFromKeyOrAlias(string keyOrAlias);
         Task MoveMapping(string oldKey, string newKey);
+        Task<int> DeleteAll();
     }
 }

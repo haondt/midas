@@ -141,5 +141,17 @@ namespace Midas.Admin.Controllers
                 Message = $"Deleted {deleted} accounts."
             });
         }
+
+        [HttpDelete("bulk/mappings")]
+        public async Task<IResult> DeleteAllMappings()
+        {
+            var deleted = await dataService.DeleteAllMappings();
+
+            return await componentFactory.RenderComponentAsync(new Toast
+            {
+                Severity = ToastSeverity.Success,
+                Message = $"Deleted {deleted} mappings."
+            });
+        }
     }
 }

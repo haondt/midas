@@ -231,6 +231,19 @@ namespace Midas.Persistence.Storages.Sqlite
 
             return Task.CompletedTask;
         }
+        public Task<int> DeleteAll()
+        {
+            var result = WithTransaction((connection, transaction) =>
+            {
+                var query = $@"
+                    DELETE FROM {_kvsTableName}";
+                using var command = new SqliteCommand(query, connection, transaction);
+
+                return command.ExecuteNonQuery();
+            });
+
+            return Task.FromResult(result);
+        }
 
         public Task<Optional<string>> TryGetValueFromKeyOrAlias(string keyOrAlias)
         {

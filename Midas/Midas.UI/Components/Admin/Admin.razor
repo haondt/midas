@@ -132,6 +132,18 @@
                     </button>
                 </div>
             </div>
+            <div class="block">
+                <label class="label">Delete all key-value store mappings.</label>
+                <div class="control" data-loading-states>
+                    <button
+                        hx-confirm="are you sure?"
+                        data-loading-class="is-loading"
+                        hx-swap="none" 
+                        hx-delete="admin/bulk/mappings" class="button has-text-danger">
+                        Delete All Mappings
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

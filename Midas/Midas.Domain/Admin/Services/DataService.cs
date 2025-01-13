@@ -37,6 +37,11 @@ namespace Midas.Domain.Admin.Services
             return accountsService.DeleteAllAccounts();
         }
 
+        public Task<int> DeleteAllMappings()
+        {
+            return kvsService.DeleteAllMappings();
+        }
+
         private async Task AddKvsMappingsToTakeout(string workDir)
         {
             var version = 1;

@@ -17,5 +17,6 @@ namespace Midas.Domain.Kvs.Services
         Task<ExternalKvsMappingsDto> ExportMappings();
         Task DeleteMapping(string key);
         Task MoveMapping(string oldKey, string newKey);
+        Task<int> DeleteAllMappings();
     }
 }
