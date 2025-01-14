@@ -1,28 +1,87 @@
+@using Haondt.Core.Extensions
 @using Haondt.Core.Models
 @using Midas.Domain.Import.Models
+@using Midas.Domain.Import.Services
+@using Midas.Domain.Shared.Services
+@using Midas.Domain.Transactions.Services
+@using Midas.UI.Shared.Components
+
+@inject ITransactionService TransactionService
+@inject IAsyncJobRegistry AsyncJobRegistry
+@inject ITransactionImportService TransactionImportService
+
 @code {
+    public abstract class FilterData { }
+    public class NumberFilterData : FilterData { }
+    public class SelectFilterData : FilterData { public required List<string> Options { get; set; } }
+    public class TextFilterData : FilterData { }
+    public class AutocompleteFilterData : FilterData { public required string AutocompleteUri { get; set; } }
+
     [Parameter, EditorRequired]
     public required string JobId { get; set; }
 
-    private Dictionary<string, (string Type, Optional<List<string>> Options)> _targets = new()
+    private Dictionary<string, FilterData> _targets = default!;
+
+
+
+    protected override async Task OnInitializedAsync()
     {
-        { TransactionImportFilterTargets.Amount, ("number", new()) },
-        { TransactionImportFilterTargets.Category, ("string", new()) },
-        { TransactionImportFilterTargets.Description, ("text", new()) },
-        { TransactionImportFilterTargets.Status, ("select", new([
-            TransactionImportStatus.Success,
-            TransactionImportStatus.Warning,
-            TransactionImportStatus.Error,
-        ]))},
-        { TransactionImportFilterTargets.Warning, ("select", new([
-            TransactionImportWarning.MissingSourceAccount,
-            TransactionImportWarning.MissingDestinationAccount,
-            TransactionImportWarning.CreatingAccountWithSameNameAsExisting,
-            TransactionImportWarning.MissingCategory,
-            TransactionImportWarning.SourceDataHashExists,
-            TransactionImportWarning.WillUpdateExisting
-        ]))}
-    };
+        var result = TransactionImportService.GetDryRunResult(JobId);
+        var categories = new List<string>();
+        var tags = new List<string>();
+
+        if (result.IsSuccessful)
+        {
+            var tagsAndCategories = result.Value.Transactions
+                .Select(q => q.TransactionData)
+                .Where(q => q.HasValue)
+                .Select(q => (q.Value.Category, q.Value.Tags));
+
+            categories = tagsAndCategories
+                .Select(q => q.Category)
+                .Distinct()
+                .Order()
+                .ToList();
+            tags = tagsAndCategories
+                .SelectMany(q => q.Tags)
+                .Distinct()
+                .Order()
+                .ToList();
+
+            
+        }
+
+        _targets = new()
+        {
+            { TransactionImportFilterTargets.Amount, new NumberFilterData() },
+            { TransactionImportFilterTargets.Category, new SelectFilterData{ Options = categories } },
+            { TransactionImportFilterTargets.Tags, new SelectFilterData { Options = tags } },
+            { TransactionImportFilterTargets.Description, new TextFilterData() },
+            { TransactionImportFilterTargets.Status, new SelectFilterData
+            {
+                Options = [
+                    TransactionImportStatus.Success,
+                    TransactionImportStatus.Warning,
+                    TransactionImportStatus.Error,
+                ]
+            } },
+            { TransactionImportFilterTargets.Warning, new SelectFilterData
+            {
+                Options = [
+                    TransactionImportWarning.MissingSourceAccount,
+                    TransactionImportWarning.MissingDestinationAccount,
+                    TransactionImportWarning.CreatingAccountWithSameNameAsExisting,
+                    TransactionImportWarning.MissingCategory,
+                    TransactionImportWarning.SourceDataHashExists,
+                    TransactionImportWarning.WillUpdateExisting
+                ]
+            } },
+            { TransactionImportFilterTargets.SourceAccountName, new AutocompleteFilterData { AutocompleteUri = $"/transaction-import/dry-run/{JobId}/search/complete/source-account" } },
+            { TransactionImportFilterTargets.DestinationAccountName, new AutocompleteFilterData { AutocompleteUri = $"/transaction-import/dry-run/{JobId}/search/complete/destination-account" } },
+            { TransactionImportFilterTargets.EitherAccountName, new AutocompleteFilterData { AutocompleteUri = $"/transaction-import/dry-run/{JobId}/search/complete/either-account" } },
+        };
+
+    }
 
     private List<string> _operators = new()
     {
@@ -109,26 +168,33 @@
                 </div>
                 @{
                     var isFirst = true;
-                    foreach(var (target, (type, options)) in _targets)
+                    foreach(var (target, data) in _targets)
                     {
                         var hiddenClass = isFirst ? "" : "is-hidden";
-                        @switch (type)
+                        @switch (data)
                         {
-                            case "number":
+                            case NumberFilterData:
                                 <input name="@target-value" step=".01" id="@target-input" class="target-input input @hiddenClass" type="number"/>
                                 break;
-                            case "select":
-                                <div id="@target-input" class="target-input select is-fullwidth @hiddenClass">
+                            case SelectFilterData selectFilterData:
+                                <div id="@target-input" class="target-input is-fullwidth select @hiddenClass">
                                     <select name="@target-value">
-                                        @if(options.HasValue)
-                                            @foreach(var option in options.Value)
-                                            {
-                                                <option value="@option">@option</option>
-                                            }
+                                        @foreach(var option in selectFilterData.Options)
+                                        {
+                                            <option value="@option">@option</option>
+                                        }
                                     </select>
                                 </div>
                                 break;
-                            case "text":
+                            case AutocompleteFilterData autocompleteFilterData:
+                                <div id="@target-input" class="target-input is-flex-grow-1 @hiddenClass" _="on htmx:afterSwap halt the event">
+                                    <Autocomplete 
+                                        Name="@($"{target}-value")" 
+                                        SuggestionUri="@autocompleteFilterData.AutocompleteUri"  
+                                    />
+                                </div>
+                                break;
+                            case TextFilterData:
                             default:
                                 <input id="@target-input" name="@target-value" class="target-input input @hiddenClass" type="text" />
                                 break;
@@ -138,9 +204,6 @@
                 }
                 <button class="button">
                     Add filter
-                </button>
-                <button class="button is-primary" _="on click halt the event then send submit to #filters">
-                    Search
                 </button>
             </form>
             <form hx-post="/transaction-import/dry-run/@JobId/transactions"
@@ -162,8 +225,7 @@
                         <th>Copy source request</th>
                     </tr>
                 </thead>
-                <tbody id="transactions-list">
-                    <tr id="paginator"></tr>
+                <tbody id="transactions-list" _="on load send submit to #filters">
                 </tbody>
             </table>
             <div 

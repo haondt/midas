@@ -247,15 +247,15 @@ namespace Midas.TransactionImport.Controllers
             var balanceChangesTasks = balanceChanges
                 .Where(kvp => kvp.Value != 0)
                 .Select(async kvp =>
-            {
-                var isMine = myAccounts.ContainsKey(kvp.Key);
-                if (result.Value.NewAccounts.TryGetValue(kvp.Key, out var accountName))
-                    return (accountName, isMine, kvp.Value);
+                {
+                    var isMine = myAccounts.ContainsKey(kvp.Key);
+                    if (result.Value.NewAccounts.TryGetValue(kvp.Key, out var accountName))
+                        return (accountName, isMine, kvp.Value);
 
-                if (!pulledAccounts.TryGetValue(kvp.Key, out accountName))
-                    pulledAccounts[kvp.Key] = (await accountsService.GetAccount(kvp.Key)).Name;
-                return (pulledAccounts[kvp.Key], isMine, kvp.Value);
-            });
+                    if (!pulledAccounts.TryGetValue(kvp.Key, out accountName))
+                        pulledAccounts[kvp.Key] = (await accountsService.GetAccount(kvp.Key)).Name;
+                    return (pulledAccounts[kvp.Key], isMine, kvp.Value);
+                });
             var balanceChangesList = await Task.WhenAll(balanceChangesTasks);
 
 
@@ -277,6 +277,65 @@ namespace Midas.TransactionImport.Controllers
                 NewTags = result.Value.NewTags,
                 JobId = id
             });
+        }
+
+        [HttpGet("dry-run/{id}/search/complete/{target}")]
+        public async Task<IResult> SearchAutocomplete(string id, string target)
+        {
+            var result = import.GetDryRunResult(id);
+            if (!result.IsSuccessful)
+                return await componentFactory.RenderComponentAsync<AutocompleteSuggestions>();
+
+            switch (target)
+            {
+                case "source-account":
+                case "destination-account":
+                case "either-account":
+                    {
+
+                        var suggestions = new List<string>();
+                        switch (target)
+                        {
+                            case "source-account":
+                                {
+                                    var partialText = Request.Query.GetValueOrDefault($"{TransactionImportFilterTargets.SourceAccountName}-value", "");
+                                    suggestions = result.Value.SupplementalData.AllSourceAccountNames
+                                            .Where(q => q.Contains(partialText, StringComparison.OrdinalIgnoreCase))
+                                            .Take(5) // todo: appsettings or consts
+                                            .ToList();
+                                    break;
+                                }
+                            case "destination-account":
+                                {
+                                    var partialText = Request.Query.GetValueOrDefault($"{TransactionImportFilterTargets.DestinationAccountName}-value", "");
+                                    suggestions = result.Value.SupplementalData.AllDestinationAccountNames
+                                            .Where(q => q.Contains(partialText, StringComparison.OrdinalIgnoreCase))
+                                            .Take(5) // todo: appsettings or consts
+                                            .ToList();
+                                    break;
+                                }
+                            case "either-account":
+                                {
+                                    var partialText = Request.Query.GetValueOrDefault($"{TransactionImportFilterTargets.EitherAccountName}-value", "");
+                                    suggestions = result.Value.SupplementalData.AllSourceAccountNames
+                                            .Concat(result.Value.SupplementalData.AllDestinationAccountNames)
+                                            .Distinct()
+                                            .Where(q => q.Contains(partialText, StringComparison.OrdinalIgnoreCase))
+                                            .Take(5) // todo: appsettings or consts
+                                            .ToList();
+                                    break;
+                                }
+
+                        }
+
+                        return await componentFactory.RenderComponentAsync(new AutocompleteSuggestions
+                        {
+                            Suggestions = suggestions
+                        });
+                    }
+            }
+
+            throw new InvalidOperationException($"Unknown autocomplete target: {target}");
         }
 
         [HttpGet("dry-run/{id}/transactions")]
@@ -319,6 +378,10 @@ namespace Midas.TransactionImport.Controllers
                 TransactionImportFilterTargets.Warning => value.Value,
                 TransactionImportFilterTargets.Description => value.Or(""),
                 TransactionImportFilterTargets.Category => value.Or(""),
+                TransactionImportFilterTargets.Tags => value.Or(""),
+                TransactionImportFilterTargets.SourceAccountName => value.Or(""),
+                TransactionImportFilterTargets.DestinationAccountName => value.Or(""),
+                TransactionImportFilterTargets.EitherAccountName => value.Or(""),
                 _ => new()
             };
 
@@ -346,7 +409,7 @@ namespace Midas.TransactionImport.Controllers
                 var splitFilter = filter.Split(' ');
                 var target = splitFilter[0];
                 var op = splitFilter[1];
-                var value = splitFilter[2];
+                var value = string.Join(' ', splitFilter[2..]);
 
                 switch (target)
                 {
@@ -366,7 +429,7 @@ namespace Midas.TransactionImport.Controllers
                                 filteredTransactions = filteredTransactions.Where(t => t.Status.StartsWith(value));
                                 break;
                             default:
-                                throw new InvalidOperationException($"unknown operator {op}");
+                                throw new InvalidOperationException($"Target {target} does not support operator {op}.");
                         }
                         break;
                     case TransactionImportFilterTargets.Warning:
@@ -385,7 +448,7 @@ namespace Midas.TransactionImport.Controllers
                                 filteredTransactions = filteredTransactions.Where(t => t.Warnings.Any(w => w.StartsWith(value, StringComparison.CurrentCultureIgnoreCase)));
                                 break;
                             default:
-                                throw new InvalidOperationException($"unknown operator {op}");
+                                throw new InvalidOperationException($"Target {target} does not support operator {op}.");
                         }
                         break;
                     case TransactionImportFilterTargets.Error:
@@ -404,7 +467,7 @@ namespace Midas.TransactionImport.Controllers
                                 filteredTransactions = filteredTransactions.Where(t => t.Errors.Any(e => e.StartsWith(value, StringComparison.CurrentCultureIgnoreCase)));
                                 break;
                             default:
-                                throw new InvalidOperationException($"unknown operator {op}");
+                                throw new InvalidOperationException($"Target {target} does not support operator {op}.");
                         }
                         break;
                     case TransactionImportFilterTargets.Description:
@@ -423,7 +486,7 @@ namespace Midas.TransactionImport.Controllers
                                 filteredTransactions = filteredTransactions.Where(t => t.TransactionData.As(t => t.Description.StartsWith(value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
                                 break;
                             default:
-                                throw new InvalidOperationException($"unknown operator {op}");
+                                throw new InvalidOperationException($"Target {target} does not support operator {op}.");
                         }
                         break;
                     case TransactionImportFilterTargets.Category:
@@ -442,7 +505,74 @@ namespace Midas.TransactionImport.Controllers
                                 filteredTransactions = filteredTransactions.Where(t => t.TransactionData.As(t => t.Category.StartsWith(value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
                                 break;
                             default:
-                                throw new InvalidOperationException($"unknown operator {op}");
+                                throw new InvalidOperationException($"Target {target} does not support operator {op}.");
+                        }
+                        break;
+                    case TransactionImportFilterTargets.Tags:
+                        switch (op)
+                        {
+                            case TransactionImportFilterOperators.Contains:
+                                filteredTransactions = filteredTransactions.Where(t => t.TransactionData.As(t => t.Tags.Contains(value)).Or(false));
+                                break;
+                            default:
+                                throw new InvalidOperationException($"Target {target} does not support operator {op}.");
+                        }
+                        break;
+                    case TransactionImportFilterTargets.SourceAccountName:
+                        switch (op)
+                        {
+                            case TransactionImportFilterOperators.IsEqualTo:
+                                filteredTransactions = filteredTransactions.Where(t => t.TransactionData.As(t => string.Equals(t.Source.Name, value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
+                                break;
+                            case TransactionImportFilterOperators.IsNotEqualTo:
+                                filteredTransactions = filteredTransactions.Where(t => t.TransactionData.As(t => !string.Equals(t.Source.Name, value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
+                                break;
+                            case TransactionImportFilterOperators.Contains:
+                                filteredTransactions = filteredTransactions.Where(t => t.TransactionData.As(t => t.Source.Name.Contains(value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
+                                break;
+                            case TransactionImportFilterOperators.StartsWith:
+                                filteredTransactions = filteredTransactions.Where(t => t.TransactionData.As(t => t.Source.Name.StartsWith(value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
+                                break;
+                            default:
+                                throw new InvalidOperationException($"Target {target} does not support operator {op}.");
+                        }
+                        break;
+                    case TransactionImportFilterTargets.DestinationAccountName:
+                        switch (op)
+                        {
+                            case TransactionImportFilterOperators.IsEqualTo:
+                                filteredTransactions = filteredTransactions.Where(t => t.TransactionData.As(t => string.Equals(t.Destination.Name, value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
+                                break;
+                            case TransactionImportFilterOperators.IsNotEqualTo:
+                                filteredTransactions = filteredTransactions.Where(t => t.TransactionData.As(t => !string.Equals(t.Destination.Name, value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
+                                break;
+                            case TransactionImportFilterOperators.Contains:
+                                filteredTransactions = filteredTransactions.Where(t => t.TransactionData.As(t => t.Destination.Name.Contains(value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
+                                break;
+                            case TransactionImportFilterOperators.StartsWith:
+                                filteredTransactions = filteredTransactions.Where(t => t.TransactionData.As(t => t.Destination.Name.StartsWith(value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
+                                break;
+                            default:
+                                throw new InvalidOperationException($"Target {target} does not support operator {op}.");
+                        }
+                        break;
+                    case TransactionImportFilterTargets.EitherAccountName:
+                        switch (op)
+                        {
+                            case TransactionImportFilterOperators.IsEqualTo:
+                                filteredTransactions = filteredTransactions.Where(t => t.TransactionData.As(t => string.Equals(t.Source.Name, value, StringComparison.CurrentCultureIgnoreCase) || string.Equals(t.Destination.Name, value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
+                                break;
+                            case TransactionImportFilterOperators.IsNotEqualTo:
+                                filteredTransactions = filteredTransactions.Where(t => t.TransactionData.As(t => !string.Equals(t.Source.Name, value, StringComparison.CurrentCultureIgnoreCase) && !string.Equals(t.Destination.Name, value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
+                                break;
+                            case TransactionImportFilterOperators.Contains:
+                                filteredTransactions = filteredTransactions.Where(t => t.TransactionData.As(t => t.Source.Name.Contains(value, StringComparison.CurrentCultureIgnoreCase) || t.Destination.Name.Contains(value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
+                                break;
+                            case TransactionImportFilterOperators.StartsWith:
+                                filteredTransactions = filteredTransactions.Where(t => t.TransactionData.As(t => t.Source.Name.StartsWith(value, StringComparison.CurrentCultureIgnoreCase) || t.Destination.Name.StartsWith(value, StringComparison.CurrentCultureIgnoreCase)).Or(false));
+                                break;
+                            default:
+                                throw new InvalidOperationException($"Target {target} does not support operator {op}.");
                         }
                         break;
                     case TransactionImportFilterTargets.Amount:
@@ -458,7 +588,7 @@ namespace Midas.TransactionImport.Controllers
                             case TransactionImportFilterOperators.StartsWith:
                                 break;
                             default:
-                                throw new InvalidOperationException($"unknown operator {op}");
+                                throw new InvalidOperationException($"Target {target} does not support operator {op}.");
                         }
                         break;
                     default:

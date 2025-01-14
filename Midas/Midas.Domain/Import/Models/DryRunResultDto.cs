@@ -12,6 +12,13 @@ namespace Midas.Domain.Import.Models
         public Dictionary<string, int> NewTags { get; set; } = [];
         public decimal BalanceChange { get; set; } = 0;
         public Optional<string> ImportTag { get; set; }
+        public DryRunSupplementalDataDto SupplementalData { get; set; } = new();
+    }
+
+    public class DryRunSupplementalDataDto
+    {
+        public List<string> AllSourceAccountNames { get; set; } = [];
+        public List<string> AllDestinationAccountNames { get; set; } = [];
     }
 
     public class DryRunTransactionDto

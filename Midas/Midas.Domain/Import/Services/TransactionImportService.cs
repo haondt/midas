@@ -25,8 +25,6 @@ namespace Midas.Domain.Import.Services
         ITransactionService transactionService) : ITransactionImportService
     {
 
-
-
         public Result<DryRunResultDto, (double, Optional<string>)> GetDryRunResult(string jobId)
         {
             return jobRegistry.GetJobResultOrProgress<DryRunResultDto>(jobId);
@@ -123,6 +121,7 @@ namespace Midas.Domain.Import.Services
             _ = Task.Run(async () =>
             {
                 var result = new DryRunResultDto();
+
                 try
                 {
                     if (addImportTag)
@@ -218,6 +217,19 @@ namespace Midas.Domain.Import.Services
                         page++;
                         transactions = (await transactionService.GetPagedTransactions(filters, pageSize, page)).ToList();
                     }
+
+                    var sourceAccountNames = new HashSet<string>();
+                    var destinationAccountNames = new HashSet<string>();
+                    foreach (var transaction in result.Transactions)
+                    {
+                        if (!transaction.TransactionData.HasValue)
+                            continue;
+                        sourceAccountNames.Add(transaction.TransactionData.Value.Source.Name);
+                        destinationAccountNames.Add(transaction.TransactionData.Value.Destination.Name);
+                    }
+                    result.SupplementalData.AllSourceAccountNames = sourceAccountNames.ToList();
+                    result.SupplementalData.AllDestinationAccountNames = destinationAccountNames.ToList();
+
 
                     jobRegistry.CompleteJob(jobId, result);
                 }
@@ -373,6 +385,18 @@ namespace Midas.Domain.Import.Services
                                 .Select(zipped => zipped.First))
                                 resultDto.Warnings.Add(TransactionImportWarning.SourceDataHashExists);
                         }
+
+                    var sourceAccountNames = new HashSet<string>();
+                    var destinationAccountNames = new HashSet<string>();
+                    foreach (var transaction in result.Transactions)
+                    {
+                        if (!transaction.TransactionData.HasValue)
+                            continue;
+                        sourceAccountNames.Add(transaction.TransactionData.Value.Source.Name);
+                        destinationAccountNames.Add(transaction.TransactionData.Value.Destination.Name);
+                    }
+                    result.SupplementalData.AllSourceAccountNames = sourceAccountNames.ToList();
+                    result.SupplementalData.AllDestinationAccountNames = destinationAccountNames.ToList();
 
                     jobRegistry.CompleteJob(jobId, result);
                 }

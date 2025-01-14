@@ -107,7 +107,6 @@ namespace Midas.Kvs.Controllers
             [Required(AllowEmptyStrings = false)]
             string alias)
         {
-
             var key = StringFormatter.UrlBase64Decode(encodedKey);
             var aliases = await kvs.AddAlias(key, alias);
             return await componentFactory.RenderComponentAsync(new AppendComponentLayout
