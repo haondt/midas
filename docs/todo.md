@@ -9,3 +9,4 @@
 -  account default import configuration
 - consitency with the label,title and subtitle casing
 - complete docs
+- extract the midas subflows to an npm package

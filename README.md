@@ -105,13 +105,25 @@ Coming Soon!
 
 ## Deployment
 
-Coming Soon!
+### Deploy with Docker
+
+- Spin up an instance using [`docker-compose.yml`](./docker-compose.yml)
+- I would recommend using the `midas` subflows in the [`flows.json`](./node-red/data/flows.json) inside this repo. It will give you at least a good starting point for configuring your flow to play nice with Midas.
+
+### Deploy for development
+
+- Start [`docker-compose.dev.yml`](./docker-compose.dev.yml) to start the node red flow.
+  - Navigate to http://localhost:1880
+- Open the project in Visual Studio and run with `http` launch settings, or using the `dotnet` CLI.
+  - In the latter case, I prefer using the following command to allow the Node-Red flows to access it from Docker in WSL: `dotnet watch --project .\Midas\Midas.csproj --no-hot-reload --urls http://0.0.0.0:5190`.
+  - Navigate to http://localhost:5190
 
 ## Tech Stack
 
-- The application is built entirely in C# (.NET 8).
+- The application is mostly built with C# (.NET 8).
 - The UI is done with [Blazor Static Server-Side Rendering](https://learn.microsoft.com/en-us/aspnet/core/blazor/?view=aspnetcore-9.0). [htmx](https://htmx.org/) provides interactivity.
 - Client-side scripting is done with [hyperscript](https://hyperscript.org/).
 - Charts are built with [Chart.js](https://www.chartjs.org/docs/latest/).
 - Styling is provided by [Bulma](https://bulma.io/).
 - Currently the only option for data persistence is [Sqlite](https://www.sqlite.org/).
+- File import processing is done with [Node-Red](https://nodered.org/)
