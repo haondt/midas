@@ -1,0 +1,32 @@
+﻿@using Midas.Domain.Transactions.Services
+@inject ITransactionService TransactionService
+@code {
+    private List<string> _categories = default!;
+    protected override async Task OnInitializedAsync()
+    {
+        _categories = await TransactionService.GetCategories();
+    }
+
+}
+<div class="panel is-link" style="max-width:var(--midas-form-page-width);margin:auto;">
+    <p class="panel-heading">Categories</p>
+    <div class="panel-block">
+        <div class="control is-flex is-flex-direction-column" style="gap:1rem;">
+            <table class="table is-striped is-fullwidth">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach(var category in _categories)
+                    {
+                        <tr>
+                            <td>@category</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

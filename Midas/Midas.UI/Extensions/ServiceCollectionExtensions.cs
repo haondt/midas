@@ -31,6 +31,16 @@ namespace Midas.UI.Extensions
                         Title = "Supercategories",
                         Slug = "supercategories",
                     },
+                    new NavigationLink
+                    {
+                        Title = "Categories",
+                        Slug = "categories",
+                    },
+                    new NavigationLink
+                    {
+                        Title = "Tags",
+                        Slug = "tags",
+                    },
                 }
             });
             services.AddSingleton(new NavigationSection
