@@ -5,6 +5,7 @@ namespace Midas.UI.Models.Charts
     public class ChartDataSet
     {
         public string? Label { get; set; }
+        public string? Axis { get; set; }
         public string? Type { get; set; }
         public List<object> Data { get; set; } = [];
         public double? BorderWidth { get; set; }

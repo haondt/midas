@@ -81,6 +81,21 @@ namespace Midas.Admin.Controllers
             });
         }
 
+        [HttpPost("import-supercategories")]
+        public async Task<IResult> ImportSupercategories([FromForm] IFormFile file,
+            [FromForm(Name = "overwrite-existing"), ModelBinder(typeof(CheckboxModelBinder))] bool overwriteExisting)
+        {
+            var parsedData = file.DeserializeFromJson<TakeoutSupercategoriesDto>();
+
+            await dataService.ImportSupercategories(parsedData, overwriteExisting);
+
+            return await componentFactory.RenderComponentAsync(new Toast
+            {
+                Message = "Imported supercategories successfully!",
+                Severity = ToastSeverity.Success,
+            });
+        }
+
         [HttpPost("takeout")]
         public async Task<IResult> ImportMappings()
         {

@@ -8,6 +8,7 @@ namespace Midas.Core.Constants
     public static class MidasConstants
     {
         public const string DefaultCategory = "Uncategorized";
+        public const string DefaultSupercategory = "Other";
         public const string DefaultAccount = "00000000-0000-0000-0000-000000000000";
         public const string DefaultAccountName = "Unknown";
         public const string FallbackAccountName = "No name";

@@ -1,0 +1,118 @@
+﻿@using Midas.Domain.Supercategories.Services
+@using Midas.UI.Shared.Components
+@inject ISupercategoryService SuperCategoryService
+
+@code {
+
+    [Parameter]
+    public bool IsSwap { get; set; } = true;
+
+    private List<string> _unmappedCategories = default!;
+    private Dictionary<string, List<string>> _supercategories = default!;
+
+    private Dictionary<string, object> _attributes = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        if (IsSwap)
+            _attributes["hx-swap-oob"] = "outerHTML";
+
+        _unmappedCategories = await SuperCategoryService.GetUnmappedCategories();
+        _supercategories = await SuperCategoryService.GetSupercategories();
+    }
+}
+
+<div id="supercategories" @attributes="_attributes">
+    <div class="panel-block">
+        <div class="control is-flex is-flex-direction-column" style="gap:1rem;">
+            <form class="mb-2 is-flex is-flex-direction-row is-flex-wrap-wrap is-align-items-center" style="gap:1rem;"
+                hx-post="/supercategories/map"
+                hx-swap="none">
+                <div class="select">
+                    <select name="category">
+                        @foreach(var category in _unmappedCategories)
+                        {
+                            <option value="@category">@category</option>
+                        }
+                    </select>
+                </div>
+                <label class="label is-normal mb-0">belongs to</label>
+                <Autocomplete
+                    Name="@("supercategory")"
+                    SuggestionUri="@("/supercategories/search/supercategory")"
+                    Placeholder="@("Supercategory")"/>
+                <button class="button is-primary">Map category</button>
+            </form>
+        </div>
+    </div>
+    <div class="panel-block">
+        <table class="table is-fullwidth is-striped">
+            <thead>
+                <tr>
+                    <th>Supercategory</th>
+                    <th>Categories</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var (supercategory, categories) in _supercategories)
+                {
+                    <tr>
+                        <td>@supercategory</td>
+                        <td>
+                            <div class="field is-grouped is-grouped-multiline">
+                                @foreach(var category in categories)
+                                {
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-info">@category</span>
+                                            <button
+                                                class="tag is-delete"
+                                                hx-delete="/supercategories/map/@category"
+                                                ></button> 
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </td>
+                        <td>
+                            <div class="is-flex is-flex-direction-column is-align-items-flex-end">
+                                <div>
+                                    <button class="button is-small"
+                                        _="
+                                            set :dd to the next .dropdown
+                                            on click toggle .is-active on :dd
+                                            on click from elsewhere
+                                                if the event's target is not in :dd
+                                                    remove .is-active from :dd">
+                                        <span>actions</span>
+                                        <span class="icon">
+                                            <i class="fa-solid fa-caret-down"></i>
+                                        </span>
+                                    </button>
+                                </div>
+                                <div class="dropdown is-right">
+                                    <div class="dropdown-menu">
+                                        <div class="dropdown-content">
+                                            <button 
+                                                class="dropdown-item"
+                                                hx-swap="none"
+                                                hx-confirm="are you sure?"
+                                                hx-delete="/supercategory/@supercategory">
+                                                <span class="icon has-text-danger">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </span>
+                                                <span>delete</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

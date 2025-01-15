@@ -12,6 +12,7 @@
         public string TransactionsImportDataTableName { get; init; } = "transactionsImportData";
         public string AccountsTableName { get; init; } = "accounts";
         public string TransactionsImportConfigurationTableName { get; init; } = "importConfigurations";
+        public string SupercategoryTableName { get; init; } = "supercategories";
         public bool UseConnectionPooling { get; init; } = true;
     }
 }

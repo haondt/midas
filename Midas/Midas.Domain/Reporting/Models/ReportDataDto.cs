@@ -16,6 +16,7 @@ namespace Midas.Domain.Reporting.Models
         public required List<(string AccountName, decimal Income, decimal Spending, decimal CashFlow)> AccountSpending { get; set; }
         public required (decimal Income, decimal Spending, decimal CashFlow) TotalSpending { get; set; }
         public required List<(string CategoryName, decimal Amount)> CategoricalSpending { get; set; }
+        public required List<(string SupercategoryName, decimal Amount)> SupercategoricalSpending { get; set; }
 
         public required List<(string AccountName, decimal Amount, int TransactionsCount, decimal AverageAmountPerTransaction)> TopIncomeSources { get; set; }
         public required List<(string AccountName, decimal Amount, int TransactionsCount, decimal AverageAmountPerTransaction)> TopSpendingDestinations { get; set; }

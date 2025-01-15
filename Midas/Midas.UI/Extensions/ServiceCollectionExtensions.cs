@@ -25,7 +25,12 @@ namespace Midas.UI.Extensions
                     {
                         Title = "Generate Report",
                         Slug = "reports",
-                    }
+                    },
+                    new NavigationLink
+                    {
+                        Title = "Supercategories",
+                        Slug = "supercategories",
+                    },
                 }
             });
             services.AddSingleton(new NavigationSection

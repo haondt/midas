@@ -22,6 +22,7 @@ namespace Midas.Domain.Admin.Services
         IFileService fileService,
         IAccountsService accountsService,
         ITransactionImportDataStorage importDataStorage,
+        ISupercategoryStorage supercategoryStorage,
         IKvsService kvsService,
         ITransactionService transactionService,
         ITransactionImportConfigurationStorage importConfigurationStorage,
@@ -134,6 +135,14 @@ namespace Midas.Domain.Admin.Services
             await fileService.CreateTakeoutFileAsync(workDir, "importConfigurations.json", configurationsDataString);
         }
 
+        private async Task AddSupercategoriesToTakeout(string workDir)
+        {
+            var version = 1;
+            var supercategories = await supercategoryStorage.GetAllSupercategories();
+            var supercategoriesDataString = JsonConvert.SerializeObject(new TakeoutSupercategoriesDto { Version = version, Supercategories = supercategories }, MidasConstants.PrettySerializerSettings);
+            await fileService.CreateTakeoutFileAsync(workDir, "supercategories.json", supercategoriesDataString);
+        }
+
         public string StartCreateTakeout()
         {
             var (jobId, cancellationToken) = jobRegistry.RegisterJob();
@@ -155,6 +164,7 @@ namespace Midas.Domain.Admin.Services
                     await AddAccountsToTakeout(workDir);
                     await AddTransactionsToTakeout(workDir);
                     await AddImportConfigurationsToTakeout(workDir);
+                    await AddSupercategoriesToTakeout(workDir);
 
                     var zipPath = fileService.ZipTakeoutDirectory(workDir);
                     result.ZipPath = zipPath;
@@ -252,6 +262,19 @@ namespace Midas.Domain.Admin.Services
             if (configurations.Version != 1)
                 throw new InvalidOperationException($"Unable to import version {configurations.Version}");
             return importConfigurationStorage.AddMany(configurations.Slugs);
+        }
+
+        public Task ImportSupercategories(TakeoutSupercategoriesDto supercategories, bool overwriteExisting)
+        {
+            if (supercategories.Version != 1)
+                throw new InvalidOperationException($"Unable to import version {supercategories.Version}");
+
+            var supercategoriesEnumerable = supercategories.Supercategories
+                .SelectMany(kvp => kvp.Value.Select(s => (s, kvp.Key)));
+
+            if (overwriteExisting)
+                return supercategoryStorage.SetManySupercategories(supercategoriesEnumerable);
+            return supercategoryStorage.AddManySupercategories(supercategoriesEnumerable);
         }
     }
 }

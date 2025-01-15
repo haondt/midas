@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Options;
+using Midas.Core.Constants;
 using Midas.Core.Models;
 using Midas.Domain.Accounts.Services;
 using Midas.Domain.Reporting.Models;
+using Midas.Domain.Supercategories.Services;
 using Midas.Domain.Transactions.Services;
 using Midas.Persistence.Models;
 
@@ -9,6 +11,7 @@ namespace Midas.Domain.Reporting.Services
 {
     public class ReportService(ITransactionService transactionService,
         IAccountsService accountsService,
+        ISupercategoryService supercategoryService,
         IOptions<ReportingSettings> options) : IReportService
     {
         public async Task<ReportDataDto> GenerateReportData(AbsoluteDateTime start, AbsoluteDateTime end)
@@ -102,6 +105,7 @@ namespace Midas.Domain.Reporting.Services
                 AccountSpending = [],
                 TotalSpending = (0, 0, 0),
                 CategoricalSpending = [],
+                SupercategoricalSpending = [],
                 TopIncomeSources = [],
                 TopSpendingDestinations = [],
             };
@@ -183,6 +187,17 @@ namespace Midas.Domain.Reporting.Services
 
             reportData.CategoricalSpending = categoricalSpending
                 .Select(kvp => (kvp.Key, kvp.Value))
+                .OrderByDescending(grp => grp.Value)
+                .ToList();
+
+            var supercategoryMap = new Dictionary<string, string>();
+            foreach (var (supercategory, supercategoryCategories) in await supercategoryService.GetSupercategories())
+                foreach (var category in supercategoryCategories)
+                    supercategoryMap[category] = supercategory;
+            reportData.SupercategoricalSpending = categoricalSpending
+                .GroupBy(kvp => supercategoryMap.GetValueOrDefault(kvp.Key, MidasConstants.DefaultSupercategory))
+                .Select(grp => (grp.Key, grp.Select(kvp => kvp.Value).Sum()))
+                .OrderByDescending(q => q.Item2)
                 .ToList();
 
             reportData.TopIncomeSources = amountPerIncomeSource

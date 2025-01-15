@@ -20,6 +20,7 @@ namespace Midas.Persistence.Extensions
             services.AddSingleton(typeof(ISingleTypeMidasStorage<>), typeof(SingleTypeMidasStorage<>));
             services.AddSingleton<IKvsStorage, SqliteKvsStorage>();
             services.AddSingleton<IAccountStorage, SqliteAccountStorage>();
+            services.AddSingleton<ISupercategoryStorage, SqliteSupercategoryStorage>();
 
             services.AddSingleton<ITransactionStorage, SqliteTransactionStorage>();
             services.AddSingleton<ITransactionImportDataStorage, SqliteTransactionImportDataStorage>();

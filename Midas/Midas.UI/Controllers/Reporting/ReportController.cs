@@ -30,6 +30,7 @@ namespace Midas.UI.Controllers.Reporting
                 TotalSpending = report.TotalSpending,
                 AccountSpending = report.AccountSpending,
                 CategoricalSpending = report.CategoricalSpending,
+                SupercategoricalSpending = report.SupercategoricalSpending,
                 TopIncomeSources = report.TopIncomeSources,
                 TopSpendingDestinations = report.TopSpendingDestinations,
                 CategoricalSpendingPerTimeStep = report.CategoricalSpendingPerTimeStep

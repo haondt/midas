@@ -15,6 +15,7 @@ using Midas.Domain.Reconcile.Services;
 using Midas.Domain.Reporting.Models;
 using Midas.Domain.Reporting.Services;
 using Midas.Domain.Shared.Services;
+using Midas.Domain.Supercategories.Services;
 using Midas.Domain.Transactions.Services;
 using Polly;
 using Polly.Timeout;
@@ -48,6 +49,7 @@ namespace Midas.Domain.Shared.Extensions
             services.AddSingleton<IDashboardService, DashboardService>();
 
             services.AddSingleton<IAccountsService, AccountsService>();
+            services.AddSingleton<ISupercategoryService, SupercategoryService>();
             return services;
         }
 

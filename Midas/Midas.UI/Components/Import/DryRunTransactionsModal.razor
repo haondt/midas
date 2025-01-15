@@ -24,7 +24,7 @@
 
 
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         var result = TransactionImportService.GetDryRunResult(JobId);
         var categories = new List<string>();

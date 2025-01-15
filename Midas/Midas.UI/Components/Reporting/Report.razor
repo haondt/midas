@@ -25,6 +25,8 @@
     public required (decimal Income, decimal Spending, decimal CashFlow) TotalSpending { get; set; }
     [Parameter, EditorRequired]
     public required List<(string CategoryName, decimal Amount)> CategoricalSpending { get; set; }
+    [Parameter, EditorRequired]
+    public required List<(string SupercategoryName, decimal Amount)> SupercategoricalSpending { get; set; }
 
     [Parameter, EditorRequired]
     public required List<(string AccountName, decimal Amount, int TransactionsCount, decimal AverageAmountPerTransaction)> TopIncomeSources { get; set; }
@@ -181,44 +183,117 @@
     </div>
 </div>
 
+
+<div class="block">
+    <div class="box">
+        <div class="control">
+            <p class="title is-4">Account Balance Breakdown</p>
+            <table class="table is-fullwidth is-hoverable">
+                <thead>
+                    <tr>
+                        <th>Account</th>
+                        <th>Income</th>
+                        <th>Spending</th>
+                        <th style="white-space:nowrap;">Cash flow</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach(var (name, income, spending, cashFlow) in AccountSpending)
+                    {
+                        <tr>
+                            <td>@name</td>
+                            <td>@StringFormatter.FormatCurrency(income)</td>
+                            <td>@StringFormatter.FormatCurrency(spending)</td>
+                            @if(cashFlow > 0)
+                            {
+                                <td class="has-text-success">+@StringFormatter.FormatCurrency(cashFlow)</td>
+                            }
+                            else if(cashFlow < 0)
+                            {
+                                <td class="has-text-danger">@StringFormatter.FormatCurrency(cashFlow, false)</td>
+                            }
+                            else
+                            {
+                                <td>@StringFormatter.FormatCurrency(cashFlow)</td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 <div class="block">
     <div class="columns is-multiline">
         <div class="column">
-            <div class="box">
-                <div class="control">
-                    <p class="title is-4">Account Balance Breakdown</p>
-                    <table class="table is-fullwidth is-hoverable">
-                        <thead>
-                            <tr>
-                                <th>Account</th>
-                                <th>Income</th>
-                                <th>Spending</th>
-                                <th style="white-space:nowrap;">Cash flow</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach(var (name, income, spending, cashFlow) in AccountSpending)
+            <div class="message">
+                <div class="message-header">
+                    <p>Supercategorical Spending</p>
+                </div>
+                <div class="message-body" style="position:relative;height:350px;">
+                    @{
+                        var supercategoricalSpendingChartConfiguration = new BarConfiguration
+                        {
+                            Data = new()
                             {
-                                <tr>
-                                    <td>@name</td>
-                                    <td>@StringFormatter.FormatCurrency(income)</td>
-                                    <td>@StringFormatter.FormatCurrency(spending)</td>
-                                    @if(cashFlow > 0)
-                                    {
-                                        <td class="has-text-success">+@StringFormatter.FormatCurrency(cashFlow)</td>
+                                Labels = SupercategoricalSpending.Select(q => q.SupercategoryName).ToList(),
+                                Datasets = [
+                                    new() {
+                                        Axis = "y",
+                                        Data = SupercategoricalSpending.Select(q => q.Amount).Cast<object>().ToList(),
                                     }
-                                    else if(cashFlow < 0)
+                                ]
+                            },
+                            Options = new()
+                            {
+                                IndexAxis = "y",
+                                Plugins = new()
+                                {
+                                    Legend = new()
                                     {
-                                        <td class="has-text-danger">@StringFormatter.FormatCurrency(cashFlow, false)</td>
-                                    }
-                                    else
+                                        Display = false
+                                    },
+                                    Tooltip = new()
                                     {
-                                        <td>@StringFormatter.FormatCurrency(cashFlow)</td>
+                                        Callbacks = new()
+                                        {
+                                            Label = new()
+                                            {
+                                                Function = @"function(context) { 
+                                                    const rawValue = context.raw;
+                                                    const formattedValue = Math.abs(rawValue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                                    return rawValue < 0 ? `-$${formattedValue}` : `$${formattedValue}`;
+                                                }"
+                                            }
+                                        }
                                     }
-                                </tr>
+                                },
+                                Scales = new()
+                                {
+                                    X = new()
+                                    {
+                                        Ticks = new()
+                                        {
+                                            Callback = new()
+                                            {
+                                                Function = @"function(value) { 
+                                                    const formattedValue = Math.abs(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                                    return value < 0 ? `-$${formattedValue}` : `$${formattedValue}`;
+                                                }"
+                                            }
+                                        },
+                                    }
+                                }
                             }
-                        </tbody>
-                    </table>
+                        };
+
+                    }
+
+                    <div class="chart-wrapper">
+                        <Chart Configuration="@supercategoricalSpendingChartConfiguration"/>
+                    </div>
+
                 </div>
             </div>
         </div>

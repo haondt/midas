@@ -16,11 +16,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Midas.UI", "Midas.UI\Midas.UI.csproj", "{3691774B-B5EE-4A2D-B2FB-FB49A416D80C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Midas.UI", "Midas.UI\Midas.UI.csproj", "{3691774B-B5EE-4A2D-B2FB-FB49A416D80C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Midas.UI.Shared", "Midas.UI.Shared\Midas.UI.Shared.csproj", "{E109C23A-5320-435B-9D5F-65E82E877F30}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Midas.UI.Shared", "Midas.UI.Shared\Midas.UI.Shared.csproj", "{E109C23A-5320-435B-9D5F-65E82E877F30}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Midas.Api", "Midas.Api\Midas.Api.csproj", "{012FB656-0031-44FB-8B63-74C669588435}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Midas.Api", "Midas.Api\Midas.Api.csproj", "{012FB656-0031-44FB-8B63-74C669588435}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
