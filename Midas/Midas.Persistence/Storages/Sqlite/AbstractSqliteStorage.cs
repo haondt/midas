@@ -1,9 +1,9 @@
 ﻿using Haondt.Persistence.Converters;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using Midas.Core.Converters;
 using Midas.Persistence.Services;
+using Newtonsoft.Json;
 
 namespace Midas.Persistence.Storages.Sqlite
 {
@@ -51,14 +51,50 @@ namespace Midas.Persistence.Storages.Sqlite
             var connection = new SqliteConnection(_connectionString);
             connection.Open();
 
-            using var walCommand = connection.CreateCommand();
-            walCommand.CommandText = "PRAGMA journal_mode=WAL;";
-            walCommand.ExecuteNonQuery();
+            try
+            {
+                using var walCommand = connection.CreateCommand();
+                walCommand.CommandText = "PRAGMA journal_mode=WAL;";
+                walCommand.ExecuteNonQuery();
 
-            using var enableForeignKeysCommand = new SqliteCommand("PRAGMA foreign_keys = ON;", connection);
-            enableForeignKeysCommand.ExecuteNonQuery();
+                using var enableForeignKeysCommand = new SqliteCommand("PRAGMA foreign_keys = ON;", connection);
+                enableForeignKeysCommand.ExecuteNonQuery();
+            }
+            catch
+            {
+                connection.Close();
+                throw;
+            }
 
             return connection;
+        }
+        protected virtual (SqliteConnection, SqliteTransaction) GetTransactionalConnection()
+        {
+            var connection = new SqliteConnection(_connectionString);
+            connection.Open();
+            var transaction = connection.BeginTransaction();
+            try
+            {
+                using var walCommand = new SqliteCommand("PRAGMA journal_mode=WAL;", connection, transaction);
+                walCommand.ExecuteNonQuery();
+
+                using var enableForeignKeysCommand = new SqliteCommand("PRAGMA foreign_keys = ON;", connection, transaction);
+                enableForeignKeysCommand.ExecuteNonQuery();
+
+                return (connection, transaction);
+            }
+            catch
+            {
+                try
+                {
+                    transaction.Rollback();
+                }
+                finally
+                {
+                    connection.Dispose();
+                }
+                throw;
+            }
         }
 
         protected void WithConnection(Action<SqliteConnection> action)
@@ -75,8 +111,7 @@ namespace Midas.Persistence.Storages.Sqlite
 
         protected void WithTransaction(Action<SqliteConnection, SqliteTransaction> action)
         {
-            using var connection = GetConnection();
-            using var transaction = connection.BeginTransaction();
+            var (connection, transaction) = GetTransactionalConnection();
             try
             {
                 action(connection, transaction);
@@ -84,14 +119,28 @@ namespace Midas.Persistence.Storages.Sqlite
             }
             catch
             {
-                transaction.Rollback();
+                try
+                {
+                    transaction.Rollback();
+                }
+                finally
+                {
+                    try
+                    {
+                        transaction.Dispose();
+                    }
+                    finally
+                    {
+                        connection.Dispose();
+                    }
+                }
                 throw;
             }
         }
+
         protected T WithTransaction<T>(Func<SqliteConnection, SqliteTransaction, T> action)
         {
-            using var connection = GetConnection();
-            using var transaction = connection.BeginTransaction();
+            var (connection, transaction) = GetTransactionalConnection();
             try
             {
                 var result = action(connection, transaction);
@@ -100,7 +149,21 @@ namespace Midas.Persistence.Storages.Sqlite
             }
             catch
             {
-                transaction.Rollback();
+                try
+                {
+                    transaction.Rollback();
+                }
+                finally
+                {
+                    try
+                    {
+                        transaction.Dispose();
+                    }
+                    finally
+                    {
+                        connection.Dispose();
+                    }
+                }
                 throw;
             }
         }
