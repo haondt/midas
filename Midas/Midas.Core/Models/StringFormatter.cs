@@ -1,5 +1,6 @@
-﻿using System.Text;
-using System.Text.Json;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Text;
 
 namespace Midas.Core.Models
 {
@@ -9,11 +10,8 @@ namespace Midas.Core.Models
         {
             try
             {
-                var jsonDocument = JsonDocument.Parse(text);
-                return JsonSerializer.Serialize(jsonDocument.RootElement, new JsonSerializerOptions
-                {
-                    WriteIndented = true,
-                });
+                var parsed = JToken.Parse(text);
+                return parsed.ToString(Formatting.Indented);
             }
             catch
             {
