@@ -65,7 +65,7 @@ namespace Midas.Domain.Reconcile.Services
                         pairs = pairs.Where(pair => pair.First.Value.Description == pair.Second.Value.Description);
 
                     if (options.PairingMatchDate)
-                        pairs = pairs.Where(pair => (pair.First.Value.TimeStamp - pair.Second.Value.TimeStamp).TotalDays <= options.PairingDateToleranceInDays);
+                        pairs = pairs.Where(pair => Math.Abs((pair.First.Value.TimeStamp - pair.Second.Value.TimeStamp).TotalDays) <= options.PairingDateToleranceInDays);
 
                     var appearances = new Dictionary<long, int>();
                     foreach (var pair in pairs)
