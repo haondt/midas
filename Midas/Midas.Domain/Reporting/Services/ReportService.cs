@@ -186,6 +186,8 @@ namespace Midas.Domain.Reporting.Services
                 .ToList();
 
             reportData.CategoricalSpending = categoricalSpending
+                //.Where(c => categoricalSpending[c] > 0)
+                .Where(kvp => kvp.Value > 0)
                 .Select(kvp => (kvp.Key, kvp.Value))
                 .OrderByDescending(grp => grp.Value)
                 .ToList();
@@ -197,6 +199,7 @@ namespace Midas.Domain.Reporting.Services
             reportData.SupercategoricalSpending = categoricalSpending
                 .GroupBy(kvp => supercategoryMap.GetValueOrDefault(kvp.Key, MidasConstants.DefaultSupercategory))
                 .Select(grp => (grp.Key, grp.Select(kvp => kvp.Value).Sum()))
+                .Where(q => q.Item2 > 0)
                 .OrderByDescending(q => q.Item2)
                 .ToList();
 

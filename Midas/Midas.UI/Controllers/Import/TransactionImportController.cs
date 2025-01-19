@@ -6,7 +6,9 @@ using Haondt.Web.Core.Extensions;
 using Haondt.Web.Core.Services;
 using Haondt.Web.Middleware;
 using Microsoft.AspNetCore.Mvc;
+using Midas.Core.Constants;
 using Midas.Core.Exceptions;
+using Midas.Core.Extensions;
 using Midas.Domain.Accounts.Services;
 using Midas.Domain.Import.Models;
 using Midas.Domain.Import.Services;
@@ -244,6 +246,7 @@ namespace Midas.TransactionImport.Controllers
 
             var myAccounts = await accountsService.GetAccountsIncludedInNetWorth();
             var pulledAccounts = new Dictionary<string, string>();
+            var failedAccountPulls = new HashSet<string>();
             var balanceChangesTasks = balanceChanges
                 .Where(kvp => kvp.Value != 0)
                 .Select(async kvp =>
@@ -252,12 +255,22 @@ namespace Midas.TransactionImport.Controllers
                     if (result.Value.NewAccounts.TryGetValue(kvp.Key, out var accountName))
                         return (accountName, isMine, kvp.Value);
 
-                    if (!pulledAccounts.TryGetValue(kvp.Key, out accountName))
-                        pulledAccounts[kvp.Key] = (await accountsService.GetAccount(kvp.Key)).Name;
-                    return (pulledAccounts[kvp.Key], isMine, kvp.Value);
+                    if (failedAccountPulls.Contains(kvp.Key))
+                        return (MidasConstants.DefaultAccountName, isMine, kvp.Value);
+
+                    if (pulledAccounts.TryGetValue(kvp.Key, out accountName))
+                        return (accountName, isMine, kvp.Value);
+
+                    if ((await accountsService.TryGetAccount(kvp.Key)).Test(out var account))
+                    {
+                        pulledAccounts[kvp.Key] = account.Name;
+                        return (account.Name, isMine, kvp.Value);
+                    }
+
+                    failedAccountPulls.Add(kvp.Key);
+                    return (MidasConstants.DefaultAccountName, isMine, kvp.Value);
                 });
             var balanceChangesList = await Task.WhenAll(balanceChangesTasks);
-
 
             return await componentFactory.RenderComponentAsync(new DryRunResult
             {

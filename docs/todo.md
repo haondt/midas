@@ -1,4 +1,11 @@
 ## Short Term
+- Search/filter All Accounts by name
+- move mapping needs to reload the entire page, i think some ids are cached in the aliases ui
+- categorical spending exclude 0$
+- categorical spending as a bar chart
+- super/categorical spending as a % of income (pie chart), including a % for whats left over (saving)
+- super/categorical spending as a percentage of total spending (pie charts)
+- remove line on income vs spending
 
 ## Medium Term
 - api endpoint for generating and pulling a takeout
