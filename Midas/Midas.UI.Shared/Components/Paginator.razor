@@ -49,7 +49,8 @@
                     on change 
                         set #paginator-total-pages's name to '' 
                         then @OnChange
-                        then set #paginator-total-pages's name to 'total-pages'
+                        then if #paginator-total-pages is not null
+                            set #paginator-total-pages's name to 'total-pages'
                 ">
                 @CreateSelectPageSizeSelectItem((25, PageSize == 25))
                 @CreateSelectPageSizeSelectItem((50, PageSize == 50))

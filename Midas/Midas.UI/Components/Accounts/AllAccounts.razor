@@ -12,6 +12,8 @@
     public int? TotalPages { get; set; }
     [Parameter]
     public int? PageSize { get; set; }
+    [Parameter]
+    public string? PartialAccountName { get; set; }
 
     private string Slug = "/accounts/all";
 
@@ -20,10 +22,15 @@
         PageSize ??= 25;
         if (!TotalPages.HasValue)
         {
-            var accounts = await AccountsService.GetNumberOfAccounts();
+            var accounts = string.IsNullOrEmpty(PartialAccountName)
+                ? await AccountsService.GetNumberOfAccounts()
+                : await AccountsService.GetNumberOfAccountsByPartialName(PartialAccountName);
             TotalPages = (int)Math.Ceiling(accounts / (double)PageSize.Value);
         }
-        AccountDtos = await AccountsService.GetPagedDetails(PageSize.Value, Page);
+        if (!string.IsNullOrEmpty(PartialAccountName))
+            AccountDtos = await AccountsService.SearchPagedDetailsByPartialName(PartialAccountName, PageSize.Value, Page);
+        else
+            AccountDtos = await AccountsService.GetPagedDetails(PageSize.Value, Page);
     }
 }
 
@@ -31,15 +38,26 @@
     <p class="panel-heading">All Accounts</p>
     <div class="panel-block">
         <div class="control is-flex is-flex-direction-column" style="gap:1rem;">
-            <div>
+            <div class="is-flex is-flex-direction-row is-flex-flex-wrap" style="gap:1rem;">
+                <input
+                    id="account-name-search-input"
+                    class="input is-flex-grow-1" 
+                    name="partial-account-name" 
+                    placeholder="Search"
+                    hx-get="/accounts/all"
+                    hx-params="partial-account-name,page-size"
+                    hx-include="#accounts-list"
+                    hx-target="#accounts-list"
+                    hx-select="#accounts-list"
+                    hx-trigger="input changed delay:200ms, keyup[key=='Enter']" />
                 <button
                     class="button is-primary" 
                     hx-swap="none"
                     hx-get="/accounts/create?include-in-net-worth=true">
-                    Add Account
+                    Create New Account
                 </button>
             </div>
-            <AccountsList AccountDtos="@AccountDtos" Paginator="new((Page, TotalPages!.Value, PageSize!.Value, Slug))"/>
+            <AccountsList AccountDtos="@AccountDtos" Paginator="@(new((Page, TotalPages!.Value, PageSize!.Value, Slug, "#account-name-search-input")))"/>
         </div>
     </div>
 </div>

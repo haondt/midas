@@ -115,7 +115,7 @@ namespace Midas.Persistence.Storages.Sqlite
             return d.GetValue(id);
         }
 
-        public Task<Dictionary<string, AccountDto>> GetMany(List<string> ids, long? limit = null, long? offset = null)
+        public Task<Dictionary<string, AccountDto>> GetMany(IEnumerable<string> ids, long? limit = null, long? offset = null)
         {
             var result = WithConnection(conn =>
             {
@@ -210,18 +210,19 @@ namespace Midas.Persistence.Storages.Sqlite
             return Task.FromResult(result);
         }
 
-        public Task<List<(string Name, string Id)>> SearchAccountsByName(string partialName, int limit)
+        public Task<List<(string Name, string Id)>> SearchAccountsByName(string partialName, int limit, int? offset = null)
         {
             var result = WithConnection(connection =>
             {
                 List<(string Name, string Id)> matchingKeys = [];
-                using var searchCommand = new SqliteCommand(
-                    $@"
+                var query = $@"
                         SELECT name, id
                         FROM {_tableName}
                         WHERE name LIKE @partialName
-                        LIMIT {limit};", connection);
-
+                        LIMIT {limit}";
+                if (offset.HasValue)
+                    query += $"\nOFFSET {offset.Value}";
+                using var searchCommand = new SqliteCommand(query, connection);
                 searchCommand.Parameters.AddLikeTermWithValue("@partialName", partialName);
 
                 using var reader = searchCommand.ExecuteReader();
@@ -316,6 +317,16 @@ namespace Midas.Persistence.Storages.Sqlite
             var result = WithTransaction((conn, trns) =>
             {
                 var command = new SqliteCommand($"SELECT COUNT(1) FROM {_tableName}", conn, trns);
+                return Convert.ToInt64(command.ExecuteScalar());
+            });
+            return Task.FromResult(result);
+        }
+        public Task<long> GetCountByPartialName(string partialName)
+        {
+            var result = WithTransaction((conn, trns) =>
+            {
+                var command = new SqliteCommand($"SELECT COUNT(1) FROM {_tableName} WHERE name LIKE @partialName", conn, trns);
+                command.Parameters.AddLikeTermWithValue("@partialName", partialName);
                 return Convert.ToInt64(command.ExecuteScalar());
             });
             return Task.FromResult(result);

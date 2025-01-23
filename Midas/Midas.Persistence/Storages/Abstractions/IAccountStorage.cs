@@ -10,7 +10,7 @@ namespace Midas.Persistence.Storages.Abstractions
         Task Set(string accountId, AccountDto account);
         Task SetMany(List<(string AccountId, AccountDto Account)> values);
         Task<Dictionary<string, AccountDto>> GetAll(long? limit = null, long? offset = null);
-        Task<List<(string Name, string Id)>> SearchAccountsByName(string partialName, int limit);
+        Task<List<(string Name, string Id)>> SearchAccountsByName(string partialName, int limit, int? offset = null);
         Task<bool> HasAccountWithName(string name);
         Task<Dictionary<string, AccountDto>> GetAllMine();
         Task<bool> Delete(string id);
@@ -20,6 +20,7 @@ namespace Midas.Persistence.Storages.Abstractions
         Task AddMany(List<(string AccountId, AccountDto Account)> values);
         Task Add(string accountId, AccountDto account);
         Task<List<string>> GetAccountIdsByName(string name, long? limit = null);
-        Task<Dictionary<string, AccountDto>> GetMany(List<string> ids, long? limit = null, long? offset = null);
+        Task<Dictionary<string, AccountDto>> GetMany(IEnumerable<string> ids, long? limit = null, long? offset = null);
+        Task<long> GetCountByPartialName(string partialName);
     }
 }

@@ -112,6 +112,10 @@ namespace Midas.Domain.Accounts.Services
         {
             return accountStorage.GetCount();
         }
+        public Task<long> GetNumberOfAccountsByPartialName(string partialName)
+        {
+            return accountStorage.GetCountByPartialName(partialName);
+        }
 
         public Task UpsertAccount(string id, AccountDto accountDto)
         {
@@ -122,7 +126,23 @@ namespace Midas.Domain.Accounts.Services
             return accountStorage.SetMany(accounts);
         }
 
+        public async Task<Dictionary<string, AccountDetails>> SearchPagedDetailsByPartialName(string partialName, int pageSize, int page)
+        {
+            var limit = pageSize;
+            var offset = (page - 1) * pageSize;
+            var accountIds = (await accountStorage.SearchAccountsByName(partialName, limit, offset));
+            var accounts = await accountStorage.GetMany(accountIds.Select(q => q.Id));
+            var netWorthAccounts = await GetAccountsIncludedInNetWorth();
 
+            var amounts = await transactionService.GetAmounts(new List<TransactionFilter>
+            {
+                TransactionFilter.EitherAccountIsOneOf(accounts.Keys.ToList())
+            });
 
+            return accounts.ToDictionary(
+                kvp => kvp.Key,
+                kvp => AccountDetails.FromAccountDto(kvp.Value,
+                    amounts.ByDestination.GetValue(kvp.Key).Or(0) - amounts.BySource.GetValue(kvp.Key).Or(0)));
+        }
     }
 }

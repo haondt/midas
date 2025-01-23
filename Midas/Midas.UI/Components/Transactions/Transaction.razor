@@ -18,7 +18,8 @@
     _="
     on click
         if (the event's target is not the first <input/> in me
-            and the event's target is not in the first .actions in me)
+            and the event's target is not in the first .actions in me
+            and the event's target is not the first <a/> in me)
             toggle .is-hidden on the next <tr/> toggle .expanded on me
         end
     end
@@ -33,7 +34,12 @@
             class="select-checkbox" name="t-@Id" type="checkbox"/>
     </td>
     <td>
-        @TransactionDto.Description
+        <a 
+            hx-boost="true"
+            href="/transactions/edit/@Id"
+            hx-target="#content">
+            @TransactionDto.Description
+        </a>
     </td>
     <td>
         @StringFormatter.FormatCurrency(TransactionDto.Amount)

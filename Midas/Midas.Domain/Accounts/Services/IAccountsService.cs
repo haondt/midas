@@ -15,7 +15,9 @@ namespace Midas.Domain.Accounts.Services
         Task<Optional<AccountDto>> TryGetAccount(string id);
         Task<bool> HasAccountWithName(string accountName);
         Task<Dictionary<string, AccountDetails>> GetPagedDetails(int pageSize, int page);
+        Task<Dictionary<string, AccountDetails>> SearchPagedDetailsByPartialName(string partialName, int pageSize, int page);
         Task<long> GetNumberOfAccounts();
+        Task<long> GetNumberOfAccountsByPartialName(string partialName);
         Task<int> DeleteAllAccounts();
         Task<List<(string Name, string Id)>> SearchAccountsByName(string partialName);
         Task<List<string>> GetAccountIdsByName(string name, long? limit = null);

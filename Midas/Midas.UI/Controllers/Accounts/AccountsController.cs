@@ -23,7 +23,7 @@ namespace Midas.Accounts.Controllers
     {
         [ServiceFilter(typeof(RenderPageFilter))]
         [HttpGet("all")]
-        public Task<IResult> GetAllAccounts()
+        public Task<IResult> GetAllAccounts([FromQuery(Name = "partial-account-name")] string? partialAccountName)
         {
             var requestData = Request.AsRequestData();
             var pageSize = requestData.Query.TryGetValue<int>("page-size");
@@ -33,7 +33,8 @@ namespace Midas.Accounts.Controllers
             {
                 PageSize = pageSize.Test(out var q) ? q : null,
                 Page = page.Or(1),
-                TotalPages = totalPages.Test(out var q2) ? q2 : null
+                TotalPages = totalPages.Test(out var q2) ? q2 : null,
+                PartialAccountName = partialAccountName
             });
         }
 
