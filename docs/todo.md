@@ -1,5 +1,4 @@
 ## Short Term
-- Search/filter All Accounts by name
 - move mapping needs to reload the entire page, i think some ids are cached in the aliases ui
 - categorical spending as a bar chart
 - super/categorical spending as a % of income (pie chart), including a % for whats left over (saving)

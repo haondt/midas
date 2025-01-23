@@ -1,4 +1,5 @@
 ﻿@using Haondt.Web.Core.Extensions
+@using Midas.UI.Shared.Models
 @code {
     [Parameter, EditorRequired]
     public required IComponent Content { get; set; }
@@ -60,6 +61,12 @@
     
 </style>
 <div id="mother-container" hx-ext="rename,loading-states,include-vals">
+    <div 
+        hx-trigger="toastRelay"
+        hx-get="/fragments/toast"
+        id="toast-relay"
+        hx-vals='js:{"message": event.detail.message, "severity": event.detail.severity || "@ToastSeverity.Info"}'
+    ></div>
     <div id="toast-container" 
         class="is-flex is-flex-direction-column is-justify-content-flex-start is-align-items-flex-end mr-5 mt-5">
         <style>
@@ -81,7 +88,6 @@
         </style>
     </div>
     <div id="modal-container" class="modal">
-
     </div>
     <div id="page-container">
         <div class="columns ml-3 mt-3 mb-3 mr-3">

@@ -1,4 +1,5 @@
-﻿using Haondt.Web.Components;
+﻿using Haondt.Core.Extensions;
+using Haondt.Web.Components;
 using Haondt.Web.Core.Extensions;
 using Haondt.Web.Core.Services;
 using Haondt.Web.Middleware;
@@ -13,17 +14,21 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Midas.Kvs.Controllers
 {
+
     [Route("kvs/mapping")]
     public class MappingController(IComponentFactory componentFactory,
         IKvsService kvs) : MidasUIController
     {
+        private const string ALIAS_MOVED_HEADER = "Midas-Alias-Moved";
+
         [HttpGet("{encodedKey}")]
         [ServiceFilter(typeof(RenderPageFilter))]
         public async Task<IResult> Get(string encodedKey)
         {
             var key = StringFormatter.UrlBase64Decode(encodedKey);
             var mapping = await kvs.GetMapping(key);
-            return await componentFactory.RenderComponentAsync(new Midas.UI.Components.Kvs.Kvs
+
+            var kvsComponent = new Midas.UI.Components.Kvs.Kvs
             {
                 Mapping = new Mapping
                 {
@@ -33,7 +38,24 @@ namespace Midas.Kvs.Controllers
                     Aliases = mapping.Aliases,
                     IsSwap = false
                 }
-            });
+            };
+            var x = Request.Headers.TryGetValue<bool>(ALIAS_MOVED_HEADER).Or(false);
+
+            Microsoft.AspNetCore.Components.IComponent result = Request.Headers.TryGetValue<bool>(ALIAS_MOVED_HEADER).Or(false)
+                ? new AppendComponentLayout
+                {
+                    Components = new()
+                    {
+                        kvsComponent,
+                        new Toast
+                        {
+                            Message = "Alias moved.",
+                            Severity = ToastSeverity.Success
+                        }
+                    }
+                } : kvsComponent;
+
+            return await componentFactory.RenderComponentAsync(kvsComponent);
         }
 
         [HttpGet]
@@ -159,25 +181,28 @@ namespace Midas.Kvs.Controllers
         {
             var key = StringFormatter.UrlBase64Decode(encodedKey);
             await kvs.MoveMapping(key, newKey);
-
             var newEncodedKey = StringFormatter.UrlBase64Encode(newKey);
-            Response.AsResponseData()
-                .HxPushUrl($"/kvs/mapping/{newEncodedKey}");
 
-            return await componentFactory.RenderComponentAsync(new AppendComponentLayout
+            var component = await componentFactory.RenderComponentAsync(new AppendComponentLayout
             {
                 Components = [
                     new Toast
                     {
                         Message = "Alias moved.",
                         Severity = ToastSeverity.Success
-                    },
-                    new KeyView
-                    {
-                        Key = new((newEncodedKey, newKey))
                     }
                 ]
             });
+
+            Response.AsResponseData()
+                .HxTrigger("toastRelay",
+                    new Dictionary<string, string>() { { "message", "Alias moved." }, { "severity", ToastSeverity.Success.ToString() } },
+                    "#toast-relay")
+                .HxLocation($"/kvs/mapping/{newEncodedKey}",
+                    target: "#kvs-mapping",
+                    select: "#kvs-mapping",
+                    headers: new() { { ALIAS_MOVED_HEADER, "true" } });
+            return component;
         }
     }
 }
