@@ -183,7 +183,7 @@
                                     </div>
                                     <div class="control">
                                         <button
-                                            hx-post="/transactions/edit/add-tag"
+                                            hx-get="/fragments/tag"
                                             hx-include="#add-tag-input"
                                             hx-params="tag"
                                             hx-target="#tags"
@@ -195,7 +195,7 @@
                                     _="on htmx:afterSwap set #add-tag-input's value to ''">
                                     @foreach(var tag in @Tags)
                                     {
-                                        <EditTransactionTag Text="@tag" />
+                                        <Tag Text="@tag" />
                                     }
                                 </div>
                             </div>

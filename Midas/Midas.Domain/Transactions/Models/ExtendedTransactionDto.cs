@@ -6,5 +6,6 @@ namespace Midas.Domain.Transactions.Models
     {
         public required string SourceAccountName { get; set; }
         public required string DestinationAccountName { get; set; }
+        public required List<long> SourceDataHashes { get; set; }
     }
 }

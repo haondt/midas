@@ -8,7 +8,6 @@ using Microsoft.Extensions.Primitives;
 using Midas.Core.Constants;
 using Midas.Core.Exceptions;
 using Midas.Domain.Accounts.Services;
-using Midas.Domain.Transactions.Models;
 using Midas.Domain.Transactions.Services;
 using Midas.Persistence.Models;
 using Midas.UI.Components.Transactions;
@@ -183,6 +182,8 @@ namespace Midas.UI.Controllers.Transactions
             var transaction = await transactionService.GetExtendedTransaction(accountsService, id);
             if (!transaction.HasValue)
                 throw new NotFoundPageException();
+
+
             return await componentFactory.RenderComponentAsync(EditTransaction.FromExtendedTransaction(id, transaction.Value));
         }
 
@@ -195,8 +196,13 @@ namespace Midas.UI.Controllers.Transactions
 
             var transactionId = await transactionService.CreateTransaction(newTransaction);
             Response.AsResponseData()
-                .HxPushUrl($"/transactions/edit/{transactionId}");
-            return await componentFactory.RenderComponentAsync(EditTransaction.FromExtendedTransaction(transactionId, newTransaction));
+                .HxLocation($"/transactions/edit/{transactionId}", target: "#content");
+
+            return await componentFactory.RenderComponentAsync(new Toast
+            {
+                Message = "Transaction created successfully.",
+                Severity = Shared.Models.ToastSeverity.Success
+            });
         }
 
         [HttpPost("edit/{id}")]
@@ -209,11 +215,16 @@ namespace Midas.UI.Controllers.Transactions
             var newIds = await transactionService.ReplaceTransactions([newTransaction], [id]);
             var transactionId = newIds[0];
             Response.AsResponseData()
-                .HxPushUrl($"/transactions/edit/{transactionId}");
-            return await componentFactory.RenderComponentAsync(EditTransaction.FromExtendedTransaction(transactionId, newTransaction));
+                .HxLocation($"/transactions/edit/{transactionId}", target: "#content");
+
+            return await componentFactory.RenderComponentAsync(new Toast
+            {
+                Message = "Transaction updated successfully.",
+                Severity = Shared.Models.ToastSeverity.Success
+            });
         }
 
-        private async Task<(List<(string Id, AccountDto Account)> NewAccounts, ExtendedTransactionDto NewTransaction)> ProcessUpsertTransactionRequest(UpsertTransactionRequestDto requestDto)
+        private async Task<(List<(string Id, AccountDto Account)> NewAccounts, TransactionDto NewTransaction)> ProcessUpsertTransactionRequest(UpsertTransactionRequestDto requestDto)
         {
             var newAccounts = new List<(string, AccountDto)>();
 
@@ -247,7 +258,7 @@ namespace Midas.UI.Controllers.Transactions
                 }));
             }
 
-            var transaction = new ExtendedTransactionDto
+            var transaction = new TransactionDto
             {
                 SourceAccount = requestDto.SourceAccount,
                 DestinationAccount = requestDto.DestinationAccount,
@@ -256,8 +267,6 @@ namespace Midas.UI.Controllers.Transactions
                 Category = requestDto.Category ?? MidasConstants.DefaultCategory,
                 Tags = requestDto.Tags.ToHashSet(),
                 TimeStamp = requestDto.Date,
-                SourceAccountName = requestDto.SourceAccountName,
-                DestinationAccountName = requestDto.DestinationAccountName,
             };
             return (newAccounts, transaction);
         }
@@ -285,12 +294,5 @@ namespace Midas.UI.Controllers.Transactions
             return await componentFactory.RenderComponentAsync(result);
         }
 
-        [HttpPost("edit/add-tag")]
-        public Task<IResult> AddTag([FromForm] string tag)
-        {
-            if (string.IsNullOrWhiteSpace(tag))
-                throw new UserException("Tag cannot be empty");
-            return componentFactory.RenderComponentAsync(new EditTransactionTag { Text = tag.Trim() });
-        }
     }
 }

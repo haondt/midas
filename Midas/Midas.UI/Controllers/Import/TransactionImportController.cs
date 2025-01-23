@@ -47,7 +47,7 @@ namespace Midas.TransactionImport.Controllers
             [FromQuery] IEnumerable<string> filters,
             [FromQuery(Name = "select-all"), ModelBinder(typeof(CheckboxModelBinder))] bool selectAll)
         {
-            var result = new Midas.UI.Components.Import.SetupSelectTransactionsField();
+            var result = new Midas.UI.Components.TransactionsSelect.TransactionsSelectField();
             if (selectAll)
             {
                 var parsedFilters = (await transactionFilterService.ParseFiltersAsync(filters)).ToList();
@@ -70,46 +70,7 @@ namespace Midas.TransactionImport.Controllers
             });
         }
 
-        [HttpGet("reimport/search")]
-        public async Task<IResult> GetReimportSearchModal()
-        {
-            return await componentFactory.RenderComponentAsync<TransactionReimportSearchModal>();
-        }
 
-        [HttpPost("reimport/search")]
-        public async Task<IResult> UpdateReimportSearchQuery(
-            [FromForm] IEnumerable<string> filters,
-            [FromForm(Name = "select-all"), ModelBinder(typeof(CheckboxModelBinder))] bool selectAll)
-        {
-            var result = new SetupSelectTransactionsField
-            {
-                Swap = true
-            };
-
-            if (selectAll)
-            {
-                var parsedFilters = (await transactionFilterService.ParseFiltersAsync(filters)).ToList();
-                result.SelectedTransactions = await transactionService.GetTransactionsCount(parsedFilters);
-                result.SelectedTransactionFilters = filters.ToList();
-            }
-            else
-            {
-                result.SelectedTransactionIds = Request.AsRequestData().Form
-                    .Where(kvp => Regex.IsMatch(kvp.Key, "^t-[0-9]+$"))
-                    .Select(kvp => kvp.Key.Substring(2))
-                    .Select(s => long.Parse(s))
-                    .ToList();
-                result.SelectedTransactions = result.SelectedTransactionIds.Count;
-            }
-
-            return await componentFactory.RenderComponentAsync(new AppendComponentLayout
-            {
-                Components = [
-                    result,
-                    new CloseModal()
-                ]
-            });
-        }
 
         [HttpGet("configs")]
         public async Task<IResult> GetConfigModal()

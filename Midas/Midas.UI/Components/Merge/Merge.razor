@@ -1,0 +1,27 @@
+﻿@using Haondt.Web.Components
+@using Midas.Domain.Reconcile.Models
+@using Midas.UI.Components.Import
+@using Midas.UI.Components.TransactionsSelect
+
+@code{
+    [Parameter]
+    public TransactionsSelectField? SelectTransactionsField { get; set; }
+}
+
+<div id="transaction-import" class="block" style="max-width:var(--midas-form-page-width);margin:auto;">
+    <div class="panel is-link" >
+        <p class="panel-heading">Reconcile Transactions</p>
+        <div class="panel-block">
+            <div class="control">
+                <div
+                    hx-include="#select-transactions"
+                    hx-get="/merge/configure" hx-trigger="transactionsSelected from:body" hx-target="#configure-merge">
+                    <TransactionsSelectField SelectionEvent="@("transactionsSelected")" SelectedTransactions="0" />
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="configure-merge"></div>
+</div>

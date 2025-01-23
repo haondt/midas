@@ -1,0 +1,241 @@
+﻿@using Midas.Core.Constants
+@using Midas.Core.Models
+
+@code {
+    [Parameter]
+    public List<string> NewAccounts { get; set; } = [];
+    [Parameter]
+    public List<string> NewCategories { get; set; } = [];
+    [Parameter]
+    public List<string> NewTags { get; set; } = [];
+    [Parameter]
+    public List<(string AccountName, bool IsMine, decimal Amount)> BalanceChanges { get; set; } = [];
+
+    [Parameter, EditorRequired]
+    public required decimal Amount { get; set; }
+    [Parameter, EditorRequired]
+    public required List<string> Tags { get; set; } = [];
+    [Parameter, EditorRequired]
+    public required string Category { get; set; }
+    [Parameter, EditorRequired]
+    public required AbsoluteDateTime Timestamp { get; set; }
+    [Parameter, EditorRequired]
+    public required string SourceAccountName { get; set; }
+    [Parameter, EditorRequired]
+    public required string DestinationAccountName { get; set; }
+    [Parameter, EditorRequired]
+    public required string Description { get; set; } = "";
+
+    private RenderFragment<(string Title, RenderFragment Inner)> CreateResultItem = (args) =>
+        @<details open class="block">
+            <summary class="mb-2 is-flex is-flex-direction-row is-align-items-center is-justify-content-flex-start">
+                <span class="indicator icon">
+                    <i class="fas fa-chevron-right"/>
+                </span>
+                <p class="subtitle">@args.Title</p>
+            </summary>
+            <div class="message mb-2">
+                <div class="message-body">
+                @args.Inner
+                </div>
+            </div>
+        </details>;
+
+}
+
+
+<div>
+    <div class="box">
+        <style>
+            @@scope {
+                details[open] .indicator {
+                    transform: rotate(90deg);
+                }
+                summary::marker {
+                    display: none;
+                }
+                summary {
+                    .icon, .subtitle {
+                        transition: color 0.3s ease;
+                    }
+                }
+                summary:hover, summary .subtitle:hover {
+                    cursor: pointer;
+                    .icon, .subtitle {
+                        --bulma-text: hsl(var(--bulma-text-h), var(--bulma-text-s), 90%);
+                    }
+                }
+            }
+        </style>
+
+        @CreateResultItem(("Account Balance Changes", 
+        @<div class="table-container">
+            <table class="table is-hoverable  is-fullwidth">
+                <tbody>
+                    @foreach(var (accountName, isMine, amount) in BalanceChanges)
+                    {
+
+                        <tr class="@(isMine? "has-background-info-dark" : "")">
+                            <td>
+                                @accountName
+                            </td>
+                            @if(amount < 0)
+                            {
+                                <td class="has-text-danger">@StringFormatter.FormatCurrency(amount)</td>
+                            }
+                            else
+                            {
+                                <td class="has-text-success">@StringFormatter.FormatCurrency(amount)</td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>))
+
+        @if(NewCategories.Count > 0)
+        {
+            @CreateResultItem(("New Categories", 
+            @<div class="table-container">
+                <table class="table is-hoverable  is-fullwidth" >
+                    <tbody>
+                        @foreach(var name in NewCategories)
+                        {
+                            <tr>
+                                <td>@name</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>))
+        }
+
+            
+        @if(NewTags.Count > 0)
+        {
+            @CreateResultItem(("New Tags", 
+            @<div class="table-container">
+                <table class="table is-hoverable  is-fullwidth" >
+                    <tbody>
+                        @foreach(var name in NewTags)
+                        {
+                            <tr>
+                                <td>@name</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>))
+        }
+
+        @if (NewAccounts.Count > 0)
+        {
+            @CreateResultItem(("New Accounts", 
+            @<div class="table-container">
+                <table class="table is-hoverable  is-fullwidth" >
+                    <tbody>
+                        @foreach(var name in NewAccounts)
+                        {
+                            <tr><td>@name</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>))
+        }
+
+        <p class="subtitle mb-2">New Transaction</p>
+        <div class="table-container">
+            <table class="table is-fullwidth is-hoverable">
+                <style>
+                    @@scope {
+                        tr.summary:hover,
+                        tr.summary:hover + tr,
+                        tr.summary:has(+ tr:hover)
+                        {
+                            cursor: pointer;
+                            background-color: var(--bulma-table-row-hover-background-color);
+                        }
+                        
+                        tr.expanded td {
+                            border: none;
+                        }
+
+                        tr.details table {
+                            --bulma-table-cell-border-color: hsl(0, 0%, 14%);
+                        }
+                    }
+                </style>
+                <thead>
+                    <tr>
+                        <th>Source</th>
+                        <th>Destination</th>
+                        <th>Description</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="summary"
+                        _="
+                        on click
+                            toggle .is-hidden on the next <tr/>
+                            toggle .expanded on me
+                        end
+                    ">
+                        <td>
+                            @SourceAccountName
+                        </td>
+                        <td>
+                            @DestinationAccountName
+                        </td>
+                        <td>
+                            @Description
+                        </td>
+                        <td>
+                            @StringFormatter.FormatCurrency(Amount)
+                        </td>
+                        <td>
+                            @StringFormatter.FormatDate(Timestamp)
+                        </td>
+                    </tr>
+                    <tr class="details is-hidden">
+                        <td colspan="5">
+                            <table style="width:100%;">
+                                <tbody>
+                                    <tr>
+                                        <th>Category</th>
+                                        <td>@Category</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Tags</th>
+                                        <td>
+                                            <div class="tags">
+                                                @foreach(var tag in Tags)
+                                                {
+                                                    <span class="tag">@tag</span>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div> 
+
+        <hr/>
+        <div class="field">
+            <div class="control">
+                <button 
+                    class="button is-primary"
+                    hx-post="/merge/run"
+                    hx-swap="none"
+                    hx-include="#transaction-configuration, #select-transactions">
+                    Merge Transactions
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

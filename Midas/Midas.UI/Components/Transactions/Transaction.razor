@@ -1,5 +1,6 @@
 ﻿@using Midas.Core.Models
 @using Midas.Domain.Transactions.Models
+@using Midas.UI.Shared.Components
 
 @code {
     [Parameter, EditorRequired]
@@ -41,64 +42,44 @@
         @StringFormatter.FormatDate(TransactionDto.TimeStamp)
     </td>
     <td class="actions">
-        <div class="is-flex is-flex-direction-column is-align-items-flex-end">
-            <div>
-                <button class="button is-small"
-                    _="
-                        set :dd to the next .dropdown
-                        on click toggle .is-active on :dd then halt the event
-                        on click from elsewhere
-                            if the event's target is not in :dd
-                                remove .is-active from :dd">
-                    <span>actions</span>
-                    <span class="icon">
-                        <i class="fa-solid fa-caret-down"></i>
-                    </span>
-                </button>
-            </div>
-            <div class="dropdown is-right">
-                <div class="dropdown-menu">
-                    <div class="dropdown-content">
-                        <button 
-                            class="dropdown-item"
-                            hx-swap="none"
-                            _="on htmx:afterOnLoad
-                                if event.detail.xhr.status == 204 then
-                                    send afterDeleted to the closest <tr/>"
-                            hx-confirm="are you sure?"
-                            hx-delete="/transaction/@Id">
-                            <span class="icon has-text-danger">
-                                <i class="fa-solid fa-trash"></i>
-                            </span>
-                            <span>delete</span>
-                        </button>
-						<button 
-							class="dropdown-item"
-							hx-target="#content"
-							hx-swap="innerHTML"
-							hx-push-url="true"
-							hx-vals='{"t-@Id":"true"}'
-							hx-get="/transaction-import/reimport">
-							<span class="icon has-text-warning">
-								<i class="fa-solid fa-arrows-rotate"></i>
-							</span>
-							<span>re-import</span>
-						</button>
-						<button 
-							class="dropdown-item"
-							hx-target="#content"
-							hx-swap="innerHTML"
-							hx-push-url="true"
-							hx-get="/transactions/edit/@Id">
-							<span class="icon has-text-info">
-								<i class="fa-solid fa-pencil"></i>
-							</span>
-							<span>edit</span>
-						</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <ActionsDropdown>
+            <button 
+                class="dropdown-item"
+                hx-swap="none"
+                _="on htmx:afterOnLoad
+                    if event.detail.xhr.status == 204 then
+                        send afterDeleted to the closest <tr/>"
+                hx-confirm="are you sure?"
+                hx-delete="/transaction/@Id">
+                <span class="icon has-text-danger">
+                    <i class="fa-solid fa-trash"></i>
+                </span>
+                <span>delete</span>
+            </button>
+            <button 
+                class="dropdown-item"
+                hx-target="#content"
+                hx-swap="innerHTML"
+                hx-push-url="true"
+                hx-vals='{"t-@Id":"true"}'
+                hx-get="/transaction-import/reimport">
+                <span class="icon has-text-warning">
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                </span>
+                <span>re-import</span>
+            </button>
+            <button 
+                class="dropdown-item"
+                hx-target="#content"
+                hx-swap="innerHTML"
+                hx-push-url="true"
+                hx-get="/transactions/edit/@Id">
+                <span class="icon has-text-info">
+                    <i class="fa-solid fa-pencil"></i>
+                </span>
+                <span>edit</span>
+            </button>
+        </ActionsDropdown>
     </td>
 </tr>
 <tr class="details is-hidden"
@@ -133,6 +114,17 @@
                             @foreach(var tag in TransactionDto.Tags)
                             {
                                 <span class="tag is-info">@tag</span>
+                            }
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Source Data Hashes</th>
+                    <td>
+                        <div class="tags">
+                            @foreach(var hash in TransactionDto.SourceDataHashes)
+                            {
+                                <span class="tag">@hash</span>
                             }
                         </div>
                     </td>

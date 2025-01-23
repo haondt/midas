@@ -1,10 +1,11 @@
 @using Haondt.Web.Components
 @using Midas.Domain.Reconcile.Models
 @using Midas.UI.Components.Import
+@using Midas.UI.Components.TransactionsSelect
 
 @code{
     [Parameter]
-    public SetupSelectTransactionsField? SelectTransactionsField { get; set; }
+    public TransactionsSelectField? SelectTransactionsField { get; set; }
 }
 
 <div id="transaction-import" class="block" style="max-width:var(--midas-form-page-width);margin:auto;">
@@ -20,7 +21,7 @@
                     }
                     else
                     {
-                        <SetupSelectTransactionsField />
+                        <TransactionsSelectField />
                     }
                     <div class="message">
                         <div class="message-body">

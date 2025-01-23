@@ -1,3 +1,4 @@
+@using Haondt.Core.Models
 
 @code {
     [Parameter]
@@ -8,6 +9,8 @@
     public List<long>? SelectedTransactionIds { get; set; }
     [Parameter]
     public bool Swap { get; set; } = false;
+    [Parameter]
+    public Optional<string> SelectionEvent { get; set; } = new();
     private Dictionary<string, object> _attributes = [];
     protected override void OnInitialized()
     {
@@ -30,13 +33,17 @@
     {
         <input type="hidden" name="transactions" value="@string.Join(',', SelectedTransactionIds.Select(i => $"{i}"))"/>
     }
+    @if (SelectionEvent.HasValue)
+    {
+        <input type="hidden" name="selection-event" value="@SelectionEvent.Value"/>
+    }
     <div class="field has-addons">
         <div class="control">
             <input class="input" type="text" readonly value="@(SelectedTransactions?.ToString() ?? "All") transactions selected"/>
         </div>
         <div class="control">
         <button class="button is-info"
-            hx-get="/transaction-import/reimport/search"
+            hx-get="/transactions-select/search"
             hx-include="#select-transactions"
             hx-swap="none">
             Reselect Transactions

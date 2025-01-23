@@ -1,6 +1,10 @@
-
 @using Haondt.Core.Models
 @using Midas.UI.Components.Transactions
+
+@code {
+    [Parameter]
+    public Optional<string> SelectionEvent { get; set; } = new();
+}
 <div 
     id="modal-container"
     class="modal is-active is-justify-content-flex-start pt-6"
@@ -52,9 +56,13 @@
         </section>
         <footer class="modal-card-foot">
             <form 
-                hx-post="/transaction-import/reimport/search"
+                hx-post="/transactions-select/search"
                 hx-swap="none"
                 hx-include="#filters,#search-results">
+                @if (SelectionEvent.HasValue)
+                {
+                    <input type="hidden" name="selection-event" value="@SelectionEvent.Value"/>
+                }
             </form>
             <div class="buttons">
                 <button class="button is-success" 

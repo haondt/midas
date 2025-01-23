@@ -60,6 +60,11 @@ namespace Midas.UI.Extensions
                     },
                     new NavigationLink
                     {
+                        Title = "Merge",
+                        Slug = "merge",
+                    },
+                    new NavigationLink
+                    {
                         Title = "Import",
                         Slug = "transaction-import",
                     },

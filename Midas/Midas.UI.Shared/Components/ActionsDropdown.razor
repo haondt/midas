@@ -1,0 +1,29 @@
+﻿@code {
+    [Parameter, EditorRequired]
+    public required RenderFragment ChildContent { get; set; }
+}
+
+
+<div class="is-flex is-flex-direction-column is-align-items-flex-end">
+    <div>
+        <button class="button is-small"
+            _="
+                set :dd to the next .dropdown
+                on click toggle .is-active on :dd then halt the event
+                on click from elsewhere
+                    if the event's target is not in :dd
+                        remove .is-active from :dd">
+            <span>actions</span>
+            <span class="icon">
+                <i class="fa-solid fa-caret-down"></i>
+            </span>
+        </button>
+    </div>
+    <div class="dropdown is-right">
+        <div class="dropdown-menu">
+            <div class="dropdown-content">
+                @ChildContent
+            </div>
+        </div>
+    </div>
+</div>

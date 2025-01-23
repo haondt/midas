@@ -59,51 +59,31 @@
                     <th>Amount</th>
                     <th>Date</th>
                     <th class="actions">
-                        <div class="is-flex is-flex-direction-column is-align-items-flex-end">
-                            <div>
-                                <button class="button is-small"
-                                    _="
-                                        set :dd to the next .dropdown
-                                        on click toggle .is-active on :dd then halt the event
-                                        on click from elsewhere
-                                            if the event's target is not in :dd
-                                                remove .is-active from :dd">
-                                    <span>actions</span>
-                                    <span class="icon">
-                                        <i class="fa-solid fa-caret-down"></i>
-                                    </span>
-                                </button>
-                            </div>
-                            <div class="dropdown is-right">
-                                <div class="dropdown-menu">
-                                    <div class="dropdown-content">
-                                        <button 
-                                            class="dropdown-item"
-                                            hx-swap="none"
-                                            hx-confirm="are you sure?"
-                                            hx-include="closest <form/>, #filters"
-                                            hx-delete="/transactions">
-                                            <span class="icon has-text-danger">
-                                                <i class="fa-solid fa-trash"></i>
-                                            </span>
-                                            <span>delete selected</span>
-                                        </button>
-                                        <button 
-                                            class="dropdown-item"
-                                            hx-target="#content"
-                                            hx-swap="innerHTML"
-                                            hx-include="closest <form/>, #filters"
-                                            hx-push-url="true"
-                                            hx-get="/transaction-import/reimport">
-                                            <span class="icon has-text-warning">
-                                                <i class="fa-solid fa-arrows-rotate"></i>
-                                            </span>
-                                            <span>re-import selected</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <ActionsDropdown>
+                            <button 
+                                class="dropdown-item"
+                                hx-swap="none"
+                                hx-confirm="are you sure?"
+                                hx-include="closest <form/>, #filters"
+                                hx-delete="/transactions">
+                                <span class="icon has-text-danger">
+                                    <i class="fa-solid fa-trash"></i>
+                                </span>
+                                <span>delete selected</span>
+                            </button>
+                            <button 
+                                class="dropdown-item"
+                                hx-target="#content"
+                                hx-swap="innerHTML"
+                                hx-include="closest <form/>, #filters"
+                                hx-push-url="true"
+                                hx-get="/transaction-import/reimport">
+                                <span class="icon has-text-warning">
+                                    <i class="fa-solid fa-arrows-rotate"></i>
+                                </span>
+                                <span>re-import selected</span>
+                            </button>
+                        </ActionsDropdown>
                     </th>
                 </tr>
             </thead>

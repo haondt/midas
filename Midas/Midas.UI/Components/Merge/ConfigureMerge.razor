@@ -1,0 +1,269 @@
+﻿@using Midas.Core.Constants
+@using Midas.Core.Models
+@using Midas.UI.Components.Transactions
+@using Midas.UI.Models.Transactions
+@using Midas.UI.Shared.Components
+@code {
+    [Parameter]
+    public string SourceAccountName { get; set; } = "";
+    [Parameter]
+    public string SourceAccount { get; set; } = MidasConstants.DefaultAccount;
+    [Parameter]
+    public string DestinationAccountName { get; set; } = "";
+    [Parameter]
+    public string DestinationAccount { get; set; } = MidasConstants.DefaultAccount;
+    [Parameter]
+    public decimal Amount { get; set; } = 0;
+    [Parameter]
+    public decimal MeanAmount { get; set; } = 0;
+    [Parameter]
+    public decimal SumAmount { get; set; } = 0;
+    [Parameter]
+    public string Description { get; set; } = "";
+    [Parameter]
+    public string ConcatenatedDescription { get; set; } = "";
+    [Parameter]
+    public AbsoluteDateTime Timestamp { get; set; } = AbsoluteDateTime.Now.FloorToLocalDay();
+    [Parameter]
+    public AbsoluteDateTime MeanTimestamp { get; set; } = AbsoluteDateTime.Now.FloorToLocalDay();
+    [Parameter]
+    public AbsoluteDateTime FirstTimestamp { get; set; } = AbsoluteDateTime.Now.FloorToLocalDay();
+    [Parameter]
+    public AbsoluteDateTime LastTimestamp { get; set; } = AbsoluteDateTime.Now.FloorToLocalDay();
+    [Parameter]
+    public AbsoluteDateTime CurrentTimestamp { get; set; } = AbsoluteDateTime.Now.FloorToLocalDay();
+    [Parameter]
+    public string Category { get; set; } = "";
+    [Parameter]
+    public List<string> Tags { get; set; } = [];
+}
+
+
+<div>
+    <div class="box">
+        <p class="title is-4">Configure Merged Transaction</p>
+
+        <table class="table is-fullwidth" id="transaction-configuration">
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Value</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>
+                        Source Account
+                    </th>
+                    <td>
+                        <Autocomplete 
+                            ChangedEvent="@("sourceAccountChanged")"
+                            Placeholder="@MidasConstants.DefaultAccountName"
+                            Value="@SourceAccountName"
+                            Id="@("source-account")"
+                            Name="@($"{TransactionFilterTargets.SourceAccountName}-value")"
+                            SuggestionUri="@("/transactions/search/complete/source-account")"
+                        />
+                        <div class="mt-2"
+                            hx-post="/transactions/search/account-id"
+                            hx-trigger="sourceAccountChanged from:#source-account"
+                            hx-rename="@($"{TransactionFilterTargets.SourceAccountName}-value"):name"
+                            hx-swap="innerHTML"
+                            hx-vals='{"inputName":"source-account-id"}'
+                            hx-params="@($"{TransactionFilterTargets.SourceAccountName}-value"),inputName"
+                            hx-target="this"
+                            hx-include="#source-account">
+                            <EditTransactionAccountId 
+                                Id="@SourceAccount" 
+                                IsExistingAccount="@(SourceAccount != MidasConstants.DefaultAccount)" 
+                                InputName="@("source-account-id")"/>
+                        </div>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>
+                        Destination Account
+                    </th>
+                    <td>
+                        <Autocomplete 
+                            ChangedEvent="@("destinationAccountChanged")"
+                            Placeholder="@MidasConstants.DefaultAccountName"
+                            Value="@DestinationAccountName"
+                            Id="@("destination-account")"
+                            Name="@($"{TransactionFilterTargets.DestinationAccountName}-value")"
+                            SuggestionUri="@("/transactions/search/complete/destination-account")"
+                        />
+                        <div class="mt-2"
+                            hx-post="/transactions/search/account-id"
+                            hx-trigger="destinationAccountChanged from:#destination-account"
+                            hx-rename="@($"{TransactionFilterTargets.DestinationAccountName}-value"):name"
+                            hx-swap="innerHTML"
+                            hx-vals='{"inputName":"destination-account-id"}'
+                            hx-params="@($"{TransactionFilterTargets.DestinationAccountName}-value"),inputName"
+                            hx-target="this"
+                            hx-include="#destination-account">
+                            <EditTransactionAccountId 
+                                Id="@DestinationAccount" 
+                                IsExistingAccount="@(DestinationAccount != MidasConstants.DefaultAccount)" 
+                                InputName="@("destination-account-id")"/>
+                        </div>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th>
+                        Description
+                    </th>
+                    <td>
+                        <div class="field">
+                                <input name="description" class="input" type="text" value="@Description" />
+                        </div>
+                    </td>
+                    <td>
+                        <ActionsDropdown>
+                            <button 
+                                class="dropdown-item"
+                                _="on click set <input[name='description']/>'s value to '@ConcatenatedDescription'">
+                                <span>Use concatenated</span>
+                            </button>
+                        </ActionsDropdown>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>
+                        Amount
+                    </th>
+                    <td>
+                        <div class="field has-addons">
+                            <div class="control">
+                                <a class="button is-static">$</a>
+                            </div>
+                            <div class="control">
+                                <input name="amount" class="input" type="number" step=".01" value="@Amount" />
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <ActionsDropdown>
+                            <button 
+                                class="dropdown-item"
+                                _="on click set <input[name='amount']/>'s value to @SumAmount">
+                                <span>Use sum</span>
+                            </button>
+                            <button 
+                                class="dropdown-item"
+                                _="on click set <input[name='amount']/>'s value to @MeanAmount">
+                                <span>Use mean</span>
+                            </button>
+                        </ActionsDropdown>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>
+                        Date
+                    </th>
+                    <td>
+                        <div class="field">
+                            <input name="timestamp" class="input" type="date" value="@StringFormatter.FormatDate(Timestamp)" />
+                        </div>
+                    </td>
+                    <td>
+                        <ActionsDropdown>
+                            <button 
+                                class="dropdown-item"
+                                _="on click set <input[name='timestamp']/>'s value to '@StringFormatter.FormatDate(MeanTimestamp)'">
+                                <span>Use mean</span>
+                            </button>
+                            <button 
+                                class="dropdown-item"
+                                _="on click set <input[name='timestamp']/>'s value to '@StringFormatter.FormatDate(FirstTimestamp)'">
+                                <span>Use first</span>
+                            </button>
+                            <button 
+                                class="dropdown-item"
+                                _="on click set <input[name='timestamp']/>'s value to '@StringFormatter.FormatDate(LastTimestamp)'">
+                                <span>Use last</span>
+                            </button>
+                            <button 
+                                class="dropdown-item"
+                                _="on click set <input[name='timestamp']/>'s value to '@StringFormatter.FormatDate(CurrentTimestamp)'">
+                                <span>Use current</span>
+                            </button>
+                        </ActionsDropdown>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>
+                        Category
+                    </th>
+                    <td>
+                        <div class="field">
+                            <input name="category" placeholder="@MidasConstants.DefaultCategory" class="input" type="text" value="@Category" />
+                        </div>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>
+                        Tags
+                    </th>
+                    <td>
+                        <div class="field">
+                            <div class="field has-addons">
+                                <div class="control">
+                                    <input id="add-tag-input" name="tag" class="input" type="text" />
+                                </div>
+                                <div class="control">
+                                    <button
+                                        hx-get="/fragments/tag"
+                                        hx-include="#add-tag-input"
+                                        hx-params="tag"
+                                        hx-target="#tags"
+                                        hx-swap="beforeend"
+                                        class="button is-info">Add Tag</button>
+                                </div>
+                            </div>
+                            <div id="tags" class="field is-grouped is-grouped-multiline mt-2"
+                                _="on htmx:afterSwap set #add-tag-input's value to ''">
+                                @foreach(var tag in @Tags)
+                                {
+                                    <Tag Text="@tag" />
+                                }
+                            </div>
+                        </div>
+                    </td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <hr />
+
+        <div class="field">
+            <div class="control">
+                <button 
+                    class="button is-primary"
+                    hx-post="/merge/dry-run"
+                    hx-swap="innerHTML"
+                    hx-include="#transaction-configuration, #select-transactions"
+                    hx-target="#dry-run-result">
+                    Dry Run Merge
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="dry-run-result"></div>
+</div>

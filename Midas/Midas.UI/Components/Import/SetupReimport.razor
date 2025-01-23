@@ -7,13 +7,14 @@
 @using Midas.Domain.Import.Models
 @using Midas.Persistence.Services
 @using Midas.Persistence.Storages.Abstractions
+@using Midas.UI.Components.TransactionsSelect
 @inject IAccountsService AccountsService
 @inject ITransactionImportConfigurationStorage ImportConfigurationStorage
 @inject ISingleTypeMidasStorage<TransactionImportAccountMetadataDto> accountMetadataStorage
 
 @code {
     [Parameter]
-    public SetupSelectTransactionsField? SelectTransactionsField { get; set; }
+    public TransactionsSelectField? SelectTransactionsField { get; set; }
     [Parameter]
     public Optional<string> SelectedAccount { get; set; } = new();
     private Optional<string> _selectedAccountDefaultConfiguration;
@@ -58,7 +59,7 @@
     }
     else
     {
-        <SetupSelectTransactionsField />
+        <TransactionsSelectField />
     }
 
 

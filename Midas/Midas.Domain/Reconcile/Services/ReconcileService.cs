@@ -150,6 +150,8 @@ namespace Midas.Domain.Reconcile.Services
                     var oldImportData = (await importDataStorage.GetMany(flattenedOldTransactions))
                         .Zip(flattenedOldTransactions)
                         .ToDictionary(q => q.Second, q => q.First);
+
+                    // todo: make it one transaction
                     var newTransactionIds = await transactionService.ReplaceTransactions(newTransactions.ToList(), flattenedOldTransactions);
                     await importDataStorage.AddMany(newTransactionIds
                         .Zip(oldTransactions)

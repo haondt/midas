@@ -9,6 +9,7 @@ using Midas.Domain.Admin.Services;
 using Midas.Domain.Dashboard.Services;
 using Midas.Domain.Import.Services;
 using Midas.Domain.Kvs.Services;
+using Midas.Domain.Merge.Services;
 using Midas.Domain.NodeRed.Models;
 using Midas.Domain.NodeRed.Services;
 using Midas.Domain.Reconcile.Services;
@@ -47,7 +48,7 @@ namespace Midas.Domain.Shared.Extensions
             }).AddPolicyHandler(GetNodeRedPolicy(configuration));
             services.AddSingleton<IKvsService, KvsService>();
             services.AddSingleton<IDashboardService, DashboardService>();
-
+            services.AddSingleton<IMergeService, MergeService>();
             services.AddSingleton<IAccountsService, AccountsService>();
             services.AddSingleton<ISupercategoryService, SupercategoryService>();
             return services;

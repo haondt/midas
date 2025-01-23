@@ -7,6 +7,7 @@ using Midas.Domain.Accounts.Services;
 using Midas.Domain.Reconcile.Models;
 using Midas.Domain.Reconcile.Services;
 using Midas.Persistence.Models;
+using Midas.Persistence.Storages.Abstractions;
 using Midas.UI.Components.Reconcile;
 using Midas.UI.Models.Reconcile;
 using Midas.UI.Services.Transactions;
@@ -19,6 +20,7 @@ namespace Midas.UI.Controllers.Reconcile
     public class TransactionReconcileController(
         IReconcileService reconcileService,
         IAccountsService accountsService,
+        ITransactionImportDataStorage importDataStorage,
         ITransactionFilterService transactionFilterService,
         IComponentFactory componentFactory) : MidasUIController
     {
@@ -87,6 +89,30 @@ namespace Midas.UI.Controllers.Reconcile
             var accountIds = result.Value.MergedTransactions.Value.SelectMany(t => new List<string> { t.NewTransaction.SourceAccount, t.NewTransaction.DestinationAccount });
             var accountNames = (await accountsService.GetMany(accountIds.ToList()))
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Name);
+            var allOldTransactions = result.Value.MergedTransactions.Value.SelectMany(t => t.OldTransactions).ToList();
+            var sourceDataHashes = (await importDataStorage.GetMany(allOldTransactions)).Zip(allOldTransactions).ToDictionary(q => q.Second, q => q.First.Select(r => r.SourceDataHash));
+
+            //var mergedTransactions = new List<ReconcileDryRunExpandedSingleResult>();
+            //foreach(var t in result.Value.MergedTransactions.Value)
+            //{
+            //    mergedTransactions.Add(new ()
+            //    {
+            //        NewTransaction = new()
+            //        {
+            //            Amount = t.NewTransaction.Amount,
+            //            DestinationAccount = t.NewTransaction.DestinationAccount,
+            //            SourceAccount = t.NewTransaction.SourceAccount,
+            //            Category = t.NewTransaction.Category,
+            //            Description = t.NewTransaction.Description,
+            //            Tags = t.NewTransaction.Tags,
+            //            TimeStamp = t.NewTransaction.TimeStamp,
+            //            SourceAccountName = accountNames.GetValueOrDefault(t.NewTransaction.SourceAccount, MidasConstants.DefaultAccountName),
+            //            DestinationAccountName = accountNames.GetValueOrDefault(t.NewTransaction.DestinationAccount, MidasConstants.DefaultAccountName),
+
+            //        }
+            //    })
+            //}
+            //var expandedResult = new ReconcileDryRunExpandedResultDto { MergedTransactions = }
 
             var expandedResult = new ReconcileDryRunExpandedResultDto
             {
@@ -104,6 +130,7 @@ namespace Midas.UI.Controllers.Reconcile
                         TimeStamp = t.NewTransaction.TimeStamp,
                         SourceAccountName = accountNames.GetValueOrDefault(t.NewTransaction.SourceAccount, MidasConstants.DefaultAccountName),
                         DestinationAccountName = accountNames.GetValueOrDefault(t.NewTransaction.DestinationAccount, MidasConstants.DefaultAccountName),
+                        SourceDataHashes = t.OldTransactions.SelectMany(t => sourceDataHashes.GetValueOrDefault(t, [])).Distinct().ToList()
                     }
                 }).ToList())
             };

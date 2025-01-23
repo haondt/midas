@@ -11,6 +11,7 @@ using Midas.Persistence.Storages.Abstractions;
 namespace Midas.Domain.Transactions.Services
 {
     public class TransactionService(ITransactionStorage transactionStorage,
+        ITransactionImportDataStorage importDataStorage,
         IStorage storage) : ITransactionService
     {
         public async Task<long> CreateTransaction(TransactionDto transaction)
@@ -67,19 +68,23 @@ namespace Midas.Domain.Transactions.Services
                 .Distinct();
             var accounts = (await accountsService.GetMany(accountIds.ToList()));
 
-            return transactions.ToDictionary(kvp => kvp.Key,
-                kvp => new ExtendedTransactionDto
+            var result = new Dictionary<long, ExtendedTransactionDto>();
+            foreach (var (key, value) in transactions)
+                result[key] = new ExtendedTransactionDto
                 {
-                    Amount = kvp.Value.Amount,
-                    DestinationAccount = kvp.Value.DestinationAccount,
-                    DestinationAccountName = accounts.GetValue(kvp.Value.DestinationAccount).As(k => k.Name).Or(MidasConstants.DefaultAccountName),
-                    SourceAccount = kvp.Value.SourceAccount,
-                    SourceAccountName = accounts.GetValue(kvp.Value.SourceAccount).As(k => k.Name).Or(MidasConstants.DefaultAccountName),
-                    Category = kvp.Value.Category,
-                    Description = kvp.Value.Description,
-                    Tags = kvp.Value.Tags,
-                    TimeStamp = kvp.Value.TimeStamp,
-                });
+                    Amount = value.Amount,
+                    DestinationAccount = value.DestinationAccount,
+                    DestinationAccountName = accounts.GetValue(value.DestinationAccount).As(k => k.Name).Or(MidasConstants.DefaultAccountName),
+                    SourceAccount = value.SourceAccount,
+                    SourceAccountName = accounts.GetValue(value.SourceAccount).As(k => k.Name).Or(MidasConstants.DefaultAccountName),
+                    Category = value.Category,
+                    Description = value.Description,
+                    Tags = value.Tags,
+                    TimeStamp = value.TimeStamp,
+                    SourceDataHashes = (await importDataStorage.Get(key)).Select(q => q.SourceDataHash).ToList()
+                };
+
+            return result;
         }
 
         public Task<(Dictionary<string, decimal> BySource, Dictionary<string, decimal> ByDestination)> GetAmounts(List<TransactionFilter> filters)
@@ -111,6 +116,7 @@ namespace Midas.Domain.Transactions.Services
                 Description = transaction.Value.Description,
                 Tags = transaction.Value.Tags,
                 TimeStamp = transaction.Value.TimeStamp,
+                SourceDataHashes = (await importDataStorage.Get(id)).Select(q => q.SourceDataHash).ToList()
             };
         }
 
