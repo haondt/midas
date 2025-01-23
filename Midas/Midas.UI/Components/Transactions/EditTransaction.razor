@@ -23,6 +23,8 @@
     public string Category { get; set; } = "";
     [Parameter]
     public List<string> Tags { get; set; } = [];
+    [Parameter]
+    public List<long> SourceDataHashes { get; set; } = [];
 
     [Parameter]
     public Optional<long> Id { get; set; }
@@ -40,7 +42,8 @@
             Description = transaction.Description,
             Id = id,
             Tags = transaction.Tags.ToList(),
-            TimeStamp = transaction.TimeStamp
+            TimeStamp = transaction.TimeStamp,
+            SourceDataHashes = transaction.SourceDataHashes
         };
     }
 
@@ -143,7 +146,7 @@
                                     <a class="button is-static">$</a>
                                 </div>
                                 <div class="control">
-                                    <input name="amount" class="input" type="number" step=".01" value="@Amount" />
+                                    <input min="0" name="amount" class="input" type="number" step=".01" value="@Amount" />
                                 </div>
                             </div>
                         </div>
@@ -201,6 +204,25 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="field is-horizontal">
+                        <div class="field-label is-normal">
+                            <label class="label">Source Data Hashes</label>
+                        </div>
+                        <div class="field-body">
+                            <div class="field">
+                                <div id="tags" class="field is-grouped is-grouped-multiline mt-2"
+                                    _="on htmx:afterSwap set #add-tag-input's value to ''">
+                                    @foreach(var sourceDataHash in SourceDataHashes)
+                                    {
+                                        <span class="tag">@sourceDataHash</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
 
                     <div class="field">
                         <div class="control">

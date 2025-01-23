@@ -1,5 +1,4 @@
 ## Short Term
-- move mapping needs to reload the entire page, i think some ids are cached in the aliases ui
 - categorical spending as a bar chart
 - super/categorical spending as a % of income (pie chart), including a % for whats left over (saving)
 - super/categorical spending as a percentage of total spending (pie charts)
@@ -7,7 +6,6 @@
 - make "are you sure" messages more informative - e.g. "are you sure you want to delete account xyz?"
 - add monthly amount on breakdowns in report
 - button on fields in reports to open popup showing transactions included in that amount
-- show import data hashes on edit transaction view
 
 
 ## Medium Term
