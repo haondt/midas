@@ -1,5 +1,6 @@
 ﻿@using Midas.Core.Models
 @using Midas.Domain.Transactions.Models
+@using Midas.UI.Models.Transactions
 @using Midas.UI.Shared.Components
 
 @code {
@@ -8,9 +9,6 @@
 
     [Parameter, EditorRequired]
     public required ExtendedTransactionDto TransactionDto { get; set; } 
-
-    [Parameter]
-    public bool ShowActions { get; set; } = true;
 }
 
 <tr class="summary" 
@@ -95,23 +93,73 @@
             <tbody>
                 <tr>
                     <th>Source account name</th>
-                    <td>@TransactionDto.SourceAccountName</td>
+                    <td>
+                        @TransactionDto.SourceAccountName
+                        <TransactionsFilterForValueButton
+                            Target="@TransactionFilterTargets.SourceAccountName"
+                            Value="@TransactionDto.SourceAccountName"
+                        />
+                        <TransactionsFilterOutValueButton
+                            Target="@TransactionFilterTargets.SourceAccountName"
+                            Value="@TransactionDto.SourceAccountName"
+                        />
+                    </td>
                 </tr>
                 <tr>
                     <th>Source account ID</th>
-                    <td>@TransactionDto.SourceAccount</td>
+                    <td>
+                        @TransactionDto.SourceAccount
+                        <TransactionsFilterForValueButton
+                            Target="@TransactionFilterTargets.SourceAccountId"
+                            Value="@TransactionDto.SourceAccount"
+                        />
+                        <TransactionsFilterOutValueButton
+                            Target="@TransactionFilterTargets.SourceAccountId"
+                            Value="@TransactionDto.SourceAccount"
+                        />
+                    </td>
                 </tr>
                 <tr>
                     <th>Destination account name</th>
-                    <td>@TransactionDto.DestinationAccountName</td>
+                    <td>
+                        @TransactionDto.DestinationAccountName
+                        <TransactionsFilterForValueButton
+                            Target="@TransactionFilterTargets.DestinationAccountName"
+                            Value="@TransactionDto.DestinationAccountName"
+                        />
+                        <TransactionsFilterOutValueButton
+                            Target="@TransactionFilterTargets.DestinationAccountName"
+                            Value="@TransactionDto.DestinationAccountName"
+                        />
+                    </td>
                 </tr>
                 <tr>
                     <th>Destination account ID</th>
-                    <td>@TransactionDto.DestinationAccount</td>
+                    <td>
+                        @TransactionDto.DestinationAccount
+                        <TransactionsFilterForValueButton
+                            Target="@TransactionFilterTargets.DestinationAccountId"
+                            Value="@TransactionDto.DestinationAccount"
+                        />
+                        <TransactionsFilterOutValueButton
+                            Target="@TransactionFilterTargets.DestinationAccountId"
+                            Value="@TransactionDto.DestinationAccount"
+                        />
+                    </td>
                 </tr>
                 <tr>
                     <th>Category</th>
-                    <td>@TransactionDto.Category</td>
+                    <td>
+                        @TransactionDto.Category
+                        <TransactionsFilterForValueButton
+                            Target="@TransactionFilterTargets.Category"
+                            Value="@TransactionDto.Category"
+                        />
+                        <TransactionsFilterOutValueButton
+                            Target="@TransactionFilterTargets.Category"
+                            Value="@TransactionDto.Category"
+                        />
+                    </td>
                 </tr>
                 <tr>
                     <th>Tags</th>

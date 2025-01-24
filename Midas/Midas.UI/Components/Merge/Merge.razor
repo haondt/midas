@@ -6,6 +6,7 @@
 @code{
     [Parameter]
     public TransactionsSelectField? SelectTransactionsField { get; set; }
+    private string _selectionEvent = "transactionsSelected";
 }
 
 <div id="transaction-import" class="block" style="max-width:var(--midas-form-page-width);margin:auto;">
@@ -15,8 +16,9 @@
             <div class="control">
                 <div
                     hx-include="#select-transactions"
-                    hx-get="/merge/configure" hx-trigger="transactionsSelected from:body" hx-target="#configure-merge">
-                    <TransactionsSelectField SelectionEvent="@("transactionsSelected")" SelectedTransactions="0" />
+                    hx-get="/merge/configure" hx-trigger="@_selectionEvent from:body" hx-target="#configure-merge">
+                    <TransactionsSelectField
+                        Selection="new() { SelectNone = true, SelectionEvent = _selectionEvent}" />
                 </div>
             </div>
         </div>

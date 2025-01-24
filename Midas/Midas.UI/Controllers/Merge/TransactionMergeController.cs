@@ -31,7 +31,7 @@ namespace Midas.UI.Controllers.Merge
 
         [HttpGet("configure")]
         public async Task<IResult> GetConfigurationSection(
-            [FromQuery] IEnumerable<string> filters,
+            [FromQuery(Name = "filter")] IEnumerable<string> filters,
             [FromQuery] string? transactions)
         {
             var parsedFilters = (await transactionFilterService.ParseFiltersAsync(filters)).ToList();

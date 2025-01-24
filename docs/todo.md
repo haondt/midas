@@ -10,13 +10,13 @@
 
 ## Medium Term
 - api endpoint for generating and pulling a takeout
-- keeping the same transaction filters when re-opening the transaction select modal
 
 ## Long term
 - account default import configuration
 - configurable / last used reconcile options
 - consitency with the label,title and subtitle casing
 - split merged transactions
+- hx-try-include
 
 ## ultra long term
 - complete docs

@@ -15,6 +15,7 @@
 @code {
     [Parameter]
     public TransactionsSelectField? SelectTransactionsField { get; set; }
+
     [Parameter]
     public Optional<string> SelectedAccount { get; set; } = new();
     private Optional<string> _selectedAccountDefaultConfiguration;
@@ -59,7 +60,7 @@
     }
     else
     {
-        <TransactionsSelectField />
+        <TransactionsSelectField Selection="new(){ SelectNone = false }"  />
     }
 
 

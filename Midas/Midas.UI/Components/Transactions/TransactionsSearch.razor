@@ -16,6 +16,9 @@
     public string DivClass { get; set; } = "";
     private Dictionary<string, FilterData> _targets = default!;
 
+    [Parameter]
+    public Optional<List<string>> Filters { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         var categories = await TransactionService.GetCategories();
@@ -113,23 +116,40 @@
                         default:
                             <input id="@target-input" name="@target-value" class="target-input input @hiddenClass" type="text" />
                             break;
+                        }
+                        isFirst = false;
                     }
-                    isFirst = false;
                 }
-            }
             </div>
             <button class="button">
                 Add filter
             </button>
         </form>
         <form hx-post="/transactions/search"
-            class="field is-grouped is-grouped-multiline" id="filters"
-            hx-target="#search-results" hx-swap="innerHTML"
-            hx-include="#paginator"
-            _="on submit set #search-results's innerHTML to ''">
+        class="field is-grouped is-grouped-multiline" id="filters"
+        hx-target="#search-results" hx-swap="innerHTML" hx-include="#paginator"
+        _="on submit set #search-results's innerHTML to ''">
+            @if (Filters.HasValue)
+            {
+                @foreach(var filter in Filters.Value)
+                {
+                    <TransactionFilterComponent Swap="false" Text="@filter" />
+                }
+            }
         </form>
     </div>
 </div>
-<div id="search-results" class="@DivClass">
-    <div _="on load send submit to #filters"></div>
+@{
+    var searchResultsAttributes = new Dictionary<string, object>();
+    if (Filters.HasValue)
+    {
+        searchResultsAttributes["_"] = "on htmx:afterSettle 1 from me set #select-all's checked to true then send click to #select-all";
+    }
+}
+<div id="search-results" class="@DivClass"  @attributes=searchResultsAttributes>
+    <div
+        hx-trigger="load"
+        hx-post="/transactions/search"
+        hx-include="#filters"
+        hx-swap="outerHTML"></div>
 </div>

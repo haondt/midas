@@ -44,6 +44,10 @@ namespace Midas.Persistence.Models
         {
             return new HasCategoryTransactionFilter { Value = category };
         }
+        public static TransactionFilter CategoryIsNot(string category)
+        {
+            return new CategoryIsNotTransactionFilter { Value = category };
+        }
         public static TransactionFilter DescriptionContains(string substring)
         {
             return new DescriptionContainsTransactionFilter { Value = substring };
@@ -65,6 +69,14 @@ namespace Midas.Persistence.Models
         public static TransactionFilter DestinationAccountIsOneOf(List<string> ids)
         {
             return new DestinationAccountIsOneOfTransactionFilter { Ids = ids };
+        }
+        public static TransactionFilter SourceAccountIsNotOneOf(List<string> ids)
+        {
+            return new SourceAccountIsNotOneOfTransactionFilter { Ids = ids };
+        }
+        public static TransactionFilter DestinationAccountIsNotOneOf(List<string> ids)
+        {
+            return new DestinationAccountIsNotOneOfTransactionFilter { Ids = ids };
         }
     }
 
@@ -90,6 +102,10 @@ namespace Midas.Persistence.Models
         public required string Value { get; set; }
     }
     public class HasCategoryTransactionFilter : TransactionFilter
+    {
+        public required string Value { get; set; }
+    }
+    public class CategoryIsNotTransactionFilter : TransactionFilter
     {
         public required string Value { get; set; }
     }
@@ -127,6 +143,14 @@ namespace Midas.Persistence.Models
         public required List<string> Ids { get; set; }
     }
     public class DestinationAccountIsOneOfTransactionFilter : TransactionFilter
+    {
+        public required List<string> Ids { get; set; }
+    }
+    public class SourceAccountIsNotOneOfTransactionFilter : TransactionFilter
+    {
+        public required List<string> Ids { get; set; }
+    }
+    public class DestinationAccountIsNotOneOfTransactionFilter : TransactionFilter
     {
         public required List<string> Ids { get; set; }
     }

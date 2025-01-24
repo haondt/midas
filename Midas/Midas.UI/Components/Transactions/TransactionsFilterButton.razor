@@ -1,0 +1,48 @@
+﻿@using Newtonsoft.Json
+
+@code {
+    [Parameter, EditorRequired]
+    public required string Target { get; set; }
+    [Parameter, EditorRequired]
+    public required string Operator { get; set; }
+    [Parameter, EditorRequired]
+    public required string Value { get; set; }
+    [Parameter]
+    public string Title { get; set; } = "";
+    [Parameter]
+    public string Icon { get; set; } = "fas fa-filter";
+
+
+    private string _hxVals = default!;
+    protected override void OnInitialized()
+    {
+        _hxVals = JsonConvert.SerializeObject(new Dictionary<string, string>
+        {
+            { "target", Target},
+            { "operator", Operator},
+            { $"{Target}-value", Value},
+        });
+    }
+
+
+
+}
+
+<button
+    title="@Title"
+    hx-post="/transactions/search/filter"
+    hx-vals="@_hxVals"
+    hx-swap="none",
+    _="on htmx:afterSwap
+        if event.detail.xhr.status == 200 then
+        set #paginator-total-pages's value to '' then
+        send submit to #filters">
+    <span class="icon is-small has-text-grey-darker" 
+        _="
+            on mouseenter add .has-text-grey-light to me then remove .has-text-grey-darker from me end
+            on mouseleave add .has-text-grey-darker to me then remove .has-text-grey-light from me end
+        "
+    >
+        <i class="@Icon"></i>
+    </span>
+</button>

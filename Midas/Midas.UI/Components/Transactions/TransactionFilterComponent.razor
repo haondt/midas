@@ -1,13 +1,14 @@
 ﻿@code {
     [Parameter, EditorRequired]
     public required string Text { get; set; }
-}
+    [Parameter]
+    public bool Swap { get; set; } = true;
 
-<div hx-swap-oob="beforeend:#filters">
-    <div class="filter-tag control">
-        <input type="hidden" name="filters" value="@Text" />
+    private RenderFragment<string> CreateFilter = (text) =>
+    @<div class="filter-tag control">
+        <input type="hidden" name="filter" value="@text" />
         <div class="tags has-addons">
-            <span class="tag is-info">@Text</span>
+            <span class="tag is-info">@text</span>
             <button
                 class="tag is-delete"
                 _="on click 
@@ -19,5 +20,18 @@
             ">
             </button>
         </div>
+    </div>;
+
+
+}
+
+@if (Swap)
+{
+    <div hx-swap-oob="beforeend:#filters">
+        @CreateFilter(Text)
     </div>
-</div>
+}
+else
+{
+    @CreateFilter(Text)
+}

@@ -524,6 +524,10 @@ namespace Midas.Persistence.Storages.Sqlite
                         whereClauses.Add($"t.category = @Category{i}");
                         parameters.Add(new SqliteParameter($"@Category{i}", hasCategoryFilter.Value));
                         break;
+                    case CategoryIsNotTransactionFilter categoryIsNotFilter:
+                        whereClauses.Add($"t.category != @Category{i}");
+                        parameters.Add(new SqliteParameter($"@Category{i}", categoryIsNotFilter.Value));
+                        break;
                     case EitherAccountIsTransactionFilter eitherAccountFilter:
                         whereClauses.Add($"(t.sourceAccount = @EitherAccountId{i} OR t.destinationAccount = @EitherAccountId{i})");
                         parameters.Add(new SqliteParameter($"@EitherAccountId{i}", eitherAccountFilter.Id));
@@ -548,6 +552,20 @@ namespace Midas.Persistence.Storages.Sqlite
                         var destinationAccountOneOfInString = string.Join(", ", destinationAccountOneOfParameters.Select(q => q.Item1));
                         whereClauses.Add($"t.destinationAccount IN ({destinationAccountOneOfInString})");
                         parameters.AddRange(destinationAccountOneOfParameters.Select(q => new SqliteParameter(q.Item1, q.Item2)));
+                        break;
+                    case SourceAccountIsNotOneOfTransactionFilter sourceAccountNotOneOfFilter:
+                        var sourceAccountNotOneOfParameters = sourceAccountNotOneOfFilter.Ids
+                            .Select((v, j) => ($"@SourceAccountNotOneOf{i}_{j}", v));
+                        var sourceAccountNotOneOfInString = string.Join(", ", sourceAccountNotOneOfParameters.Select(q => q.Item1));
+                        whereClauses.Add($"t.sourceAccount NOT IN ({sourceAccountNotOneOfInString})");
+                        parameters.AddRange(sourceAccountNotOneOfParameters.Select(q => new SqliteParameter(q.Item1, q.Item2)));
+                        break;
+                    case DestinationAccountIsNotOneOfTransactionFilter destinationAccountNotOneOfFilter:
+                        var destinationAccountNotOneOfParameters = destinationAccountNotOneOfFilter.Ids
+                            .Select((v, j) => ($"@DestinationAccountNotOneOf{i}_{j}", v));
+                        var destinationAccountNotOneOfInString = string.Join(", ", destinationAccountNotOneOfParameters.Select(q => q.Item1));
+                        whereClauses.Add($"t.destinationAccount NOT IN ({destinationAccountNotOneOfInString})");
+                        parameters.AddRange(destinationAccountNotOneOfParameters.Select(q => new SqliteParameter(q.Item1, q.Item2)));
                         break;
                     case DescriptionContainsTransactionFilter descriptionContainsFilter:
                         whereClauses.Add($"t.description LIKE @DescriptionContains{i}");

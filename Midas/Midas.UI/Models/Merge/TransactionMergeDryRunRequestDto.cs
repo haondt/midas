@@ -5,7 +5,7 @@ namespace Midas.UI.Models.Merge
 {
     public class TransactionMergeDryRunRequestDto
     {
-        [BindProperty(Name = "filters")]
+        [BindProperty(Name = "filter")]
         public List<string> Filters { get; set; } = [];
 
         [BindProperty(Name = "transactions")]

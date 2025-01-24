@@ -16,12 +16,12 @@ using Midas.Domain.Transactions.Services;
 using Midas.Persistence.Models;
 using Midas.Persistence.Storages.Abstractions;
 using Midas.UI.Components.Import;
+using Midas.UI.Models.TransactionsSelect;
 using Midas.UI.Services.Transactions;
 using Midas.UI.Shared.Components;
 using Midas.UI.Shared.Controllers;
 using Midas.UI.Shared.Extensions;
 using Midas.UI.Shared.ModelBinders;
-using System.Text.RegularExpressions;
 
 namespace Midas.TransactionImport.Controllers
 {
@@ -44,25 +44,12 @@ namespace Midas.TransactionImport.Controllers
         [HttpGet("reimport")]
         [ServiceFilter(typeof(RenderPageFilter))]
         public async Task<IResult> GetReimport(
-            [FromQuery] IEnumerable<string> filters,
-            [FromQuery(Name = "select-all"), ModelBinder(typeof(CheckboxModelBinder))] bool selectAll)
+            [FromQuery] TransactionSelectionResult selection)
         {
-            var result = new Midas.UI.Components.TransactionsSelect.TransactionsSelectField();
-            if (selectAll)
+            var result = new Midas.UI.Components.TransactionsSelect.TransactionsSelectField
             {
-                var parsedFilters = (await transactionFilterService.ParseFiltersAsync(filters)).ToList();
-                result.SelectedTransactions = await transactionService.GetTransactionsCount(parsedFilters);
-                result.SelectedTransactionFilters = filters.ToList();
-            }
-            else
-            {
-                result.SelectedTransactionIds = Request.AsRequestData().Query
-                    .Where(kvp => Regex.IsMatch(kvp.Key, "^t-[0-9]+$"))
-                    .Select(kvp => kvp.Key.Substring(2))
-                    .Select(s => long.Parse(s))
-                    .ToList();
-                result.SelectedTransactions = result.SelectedTransactionIds.Count;
-            }
+                Selection = selection.GetSelectionState(Request.Query, transactionFilterService)
+            };
 
             return await componentFactory.RenderComponentAsync(new TransactionReimport
             {
@@ -104,7 +91,7 @@ namespace Midas.TransactionImport.Controllers
             [FromForm] IFormFile? file,
             [FromForm(Name = "is-reimport")] bool isReimport,
             [FromForm(Name = "add-import-tag"), ModelBinder(typeof(CheckboxModelBinder))] bool addImportTag,
-            [FromForm] IEnumerable<string> filters,
+            [FromForm(Name = "filter")] IEnumerable<string> filters,
             [FromForm] TransactionImportConflictResolutionStrategy conflicts,
             [FromForm] string? transactions)
         {
@@ -365,7 +352,7 @@ namespace Midas.TransactionImport.Controllers
         [HttpPost("dry-run/{id}/transactions")]
         public async Task<IResult> GetDryRunTransactions(
             string id,
-            [FromForm] IEnumerable<string> filters,
+            [FromForm(Name = "filter")] IEnumerable<string> filters,
             [FromForm(Name = "page-size")] int? pageSize,
             [FromForm] int? page)
         {

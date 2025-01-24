@@ -6,7 +6,7 @@ namespace Midas.UI.Models.Reconcile
 {
     public class ReconcileDryRunRequestDto
     {
-        [BindProperty(Name = "filters")]
+        [BindProperty(Name = "filter")]
         public List<string> Filters { get; set; } = [];
 
         [BindProperty(Name = "transactions")]

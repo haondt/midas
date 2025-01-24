@@ -30,6 +30,8 @@ namespace Midas.UI.Services.Transactions
                         {
                             case TransactionFilterOperators.IsEqualTo:
                                 return TransactionFilter.HasCategory(value);
+                            case TransactionFilterOperators.IsNotEqualTo:
+                                return TransactionFilter.CategoryIsNot(value);
                             default:
                                 throw new NotSupportedException($"Operation {op} is not supported with target {target}.");
                         }
@@ -54,12 +56,52 @@ namespace Midas.UI.Services.Transactions
                             default:
                                 throw new NotSupportedException($"Operation {op} is not supported with target {target}.");
                         }
+                    case TransactionFilterTargets.Id:
+                        switch (op)
+                        {
+                            case TransactionFilterOperators.IsOneOf:
+                                return TransactionFilter.TransactionIdIsOneOf(value
+                                    .Split(',')
+                                    .Select(q => (long.TryParse(q, out var id), id))
+                                    .Where(q => q.Item1)
+                                    .Select(q => q.id)
+                                    .ToList());
+                            default:
+                                throw new NotSupportedException($"Operation {op} is not supported with target {target}.");
+                        }
+                    case TransactionFilterTargets.SourceAccountId:
+                        switch (op)
+                        {
+                            case TransactionFilterOperators.IsEqualTo:
+                                return TransactionFilter.SourceAccountIsOneOf([value]);
+                            case TransactionFilterOperators.IsNotEqualTo:
+                                return TransactionFilter.SourceAccountIsNotOneOf([value]);
+                            default:
+                                throw new NotSupportedException($"Operation {op} is not supported with target {target}.");
+                        }
+                    case TransactionFilterTargets.DestinationAccountId:
+                        switch (op)
+                        {
+                            case TransactionFilterOperators.IsEqualTo:
+                                return TransactionFilter.DestinationAccountIsOneOf([value]);
+                            case TransactionFilterOperators.IsNotEqualTo:
+                                return TransactionFilter.DestinationAccountIsNotOneOf([value]);
+                            default:
+                                throw new NotSupportedException($"Operation {op} is not supported with target {target}.");
+                        }
                     case TransactionFilterTargets.SourceAccountName:
                         switch (op)
                         {
                             case TransactionFilterOperators.IsEqualTo:
-                                var accountsList = await accountsService.GetAccountIdsByName(value);
-                                return TransactionFilter.SourceAccountIsOneOf(accountsList);
+                                {
+                                    var accountsList = await accountsService.GetAccountIdsByName(value);
+                                    return TransactionFilter.SourceAccountIsOneOf(accountsList);
+                                }
+                            case TransactionFilterOperators.IsNotEqualTo:
+                                {
+                                    var accountsList = await accountsService.GetAccountIdsByName(value);
+                                    return TransactionFilter.SourceAccountIsNotOneOf(accountsList);
+                                }
                             default:
                                 throw new NotSupportedException($"Operation {op} is not supported with target {target}.");
                         }
@@ -67,8 +109,15 @@ namespace Midas.UI.Services.Transactions
                         switch (op)
                         {
                             case TransactionFilterOperators.IsEqualTo:
-                                var accountsList = await accountsService.GetAccountIdsByName(value);
-                                return TransactionFilter.DestinationAccountIsOneOf(accountsList);
+                                {
+                                    var accountsList = await accountsService.GetAccountIdsByName(value);
+                                    return TransactionFilter.DestinationAccountIsOneOf(accountsList);
+                                }
+                            case TransactionFilterOperators.IsNotEqualTo:
+                                {
+                                    var accountsList = await accountsService.GetAccountIdsByName(value);
+                                    return TransactionFilter.DestinationAccountIsNotOneOf(accountsList);
+                                }
                             default:
                                 throw new NotSupportedException($"Operation {op} is not supported with target {target}.");
                         }
@@ -76,8 +125,10 @@ namespace Midas.UI.Services.Transactions
                         switch (op)
                         {
                             case TransactionFilterOperators.IsEqualTo:
-                                var accountsList = await accountsService.GetAccountIdsByName(value);
-                                return TransactionFilter.EitherAccountIsOneOf(accountsList);
+                                {
+                                    var accountsList = await accountsService.GetAccountIdsByName(value);
+                                    return TransactionFilter.EitherAccountIsOneOf(accountsList);
+                                }
                             default:
                                 throw new NotSupportedException($"Operation {op} is not supported with target {target}.");
                         }

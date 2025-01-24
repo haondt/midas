@@ -12,12 +12,11 @@ using Midas.Domain.Transactions.Services;
 using Midas.Persistence.Models;
 using Midas.UI.Components.Transactions;
 using Midas.UI.Models.Transactions;
+using Midas.UI.Models.TransactionsSelect;
 using Midas.UI.Services.Transactions;
 using Midas.UI.Shared.Components;
 using Midas.UI.Shared.Controllers;
 using Midas.UI.Shared.Exceptions;
-using Midas.UI.Shared.ModelBinders;
-using System.Text.RegularExpressions;
 
 namespace Midas.UI.Controllers.Transactions
 {
@@ -37,25 +36,13 @@ namespace Midas.UI.Controllers.Transactions
         [HttpDelete]
         public async Task<IResult> Delete(
             [FromQuery(Name = "page-size")] int? pageSize,
-            [FromQuery] IEnumerable<string> filters,
-            [FromQuery(Name = "select-all"), ModelBinder(typeof(CheckboxModelBinder))] bool selectAll)
+            [FromQuery] TransactionSelectionResult selection)
         {
-            if (selectAll)
-            {
-                var transactionFilters = (await transactionFilterService.ParseFiltersAsync(filters)).ToList();
-                await transactionService.DeleteTransactions(transactionFilters);
-            }
-            else
-            {
-                var requestData = Request.AsRequestData();
-                var targets = requestData.Query
-                    .Where(kvp => Regex.IsMatch(kvp.Key, "^t-[0-9]+$"))
-                    .Select(kvp => kvp.Key.Substring(2))
-                    .Select(s => long.Parse(s));
-                await transactionService.DeleteTransactions(targets.ToList());
-            }
+            var selectionState = selection.GetSelectionState(Request.Query, transactionFilterService);
+            var filters = (await transactionFilterService.ParseFiltersAsync(selectionState.Filters)).ToList();
+            await transactionService.DeleteTransactions(filters);
 
-            var searchResult = await GetSearchResultComponent(filters, null, pageSize, null);
+            var searchResult = await GetSearchResultComponent(selection.Filters, null, pageSize, null);
             Response.AsResponseData()
                 .HxReswap("innerHTML")
                 .HxRetarget("#search-results");
@@ -119,8 +106,11 @@ namespace Midas.UI.Controllers.Transactions
                 TransactionFilterTargets.Description
                     or TransactionFilterTargets.Category
                     or TransactionFilterTargets.Tags
+                    or TransactionFilterTargets.Id
                     or TransactionFilterTargets.SourceAccountName
                     or TransactionFilterTargets.DestinationAccountName
+                    or TransactionFilterTargets.SourceAccountId
+                    or TransactionFilterTargets.DestinationAccountId
                     or TransactionFilterTargets.EitherAccountName
                     => value.Or(""),
                 _ => new()
@@ -130,7 +120,8 @@ namespace Midas.UI.Controllers.Transactions
         }
 
         [HttpPost("search")]
-        public async Task<IResult> Search([FromForm] IEnumerable<string> filters,
+        public async Task<IResult> Search(
+            [FromForm(Name = "filter")] IEnumerable<string> filters,
             [FromForm(Name = "total-pages")] int? totalPages,
             [FromForm(Name = "page-size")] int? pageSize,
             [FromForm] int? page)
@@ -139,11 +130,10 @@ namespace Midas.UI.Controllers.Transactions
                 filters, totalPages, pageSize, page));
         }
 
-
-        public async Task<SearchResult> GetSearchResultComponent([FromForm] IEnumerable<string> filters,
-            [FromForm(Name = "total-pages")] long? totalPages,
-            [FromForm(Name = "page-size")] long? pageSize,
-            [FromForm] long? page)
+        public async Task<SearchResult> GetSearchResultComponent(IEnumerable<string> filters,
+            long? totalPages,
+            long? pageSize,
+            long? page)
         {
             pageSize ??= 25;
             page ??= 1;

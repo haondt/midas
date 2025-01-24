@@ -63,8 +63,9 @@
                             <button 
                                 class="dropdown-item"
                                 hx-swap="none"
-                                hx-confirm="are you sure?"
+                                hx-confirm="This will delete all selected transactions. Continue?"
                                 hx-include="closest <form/>, #filters"
+                                hx-vals='{"took-filtered": "false", "took-selected": "true"}'
                                 hx-delete="/transactions">
                                 <span class="icon has-text-danger">
                                     <i class="fa-solid fa-trash"></i>
@@ -77,11 +78,37 @@
                                 hx-swap="innerHTML"
                                 hx-include="closest <form/>, #filters"
                                 hx-push-url="true"
+                                hx-vals='{"took-filtered": "false", "took-selected": "true"}'
                                 hx-get="/transaction-import/reimport">
                                 <span class="icon has-text-warning">
                                     <i class="fa-solid fa-arrows-rotate"></i>
                                 </span>
                                 <span>re-import selected</span>
+                            </button>
+                            <button 
+                                class="dropdown-item"
+                                hx-swap="none"
+                                hx-confirm="This will delete all filtered transactions. Continue?"
+                                hx-include="closest <form/>, #filters"
+                                hx-vals='{"took-filtered": "true", "took-selected": "false"}'
+                                hx-delete="/transactions">
+                                <span class="icon has-text-danger">
+                                    <i class="fa-solid fa-trash"></i>
+                                </span>
+                                <span>delete filtered</span>
+                            </button>
+                            <button 
+                                class="dropdown-item"
+                                hx-target="#content"
+                                hx-swap="innerHTML"
+                                hx-include="closest <form/>, #filters"
+                                hx-push-url="true"
+                                hx-vals='{"took-filtered": "true", "took-selected": "false"}'
+                                hx-get="/transaction-import/reimport">
+                                <span class="icon has-text-warning">
+                                    <i class="fa-solid fa-arrows-rotate"></i>
+                                </span>
+                                <span>re-import filtered</span>
                             </button>
                         </ActionsDropdown>
                     </th>

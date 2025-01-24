@@ -30,7 +30,7 @@
             if (args.IsCurrent)
                 attrs["class"] += " is-current";
             else
-                attrs["_"] = $"on click set #paginator-page's value to {args.Page} then {OnChange}";
+                attrs["_"] = $"on click halt the event then set #paginator-page's value to {args.Page} then {OnChange}";
 
             return@<li>
                 <button @attributes="attrs">

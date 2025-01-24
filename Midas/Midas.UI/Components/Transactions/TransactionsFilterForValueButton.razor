@@ -1,0 +1,16 @@
+﻿@using Midas.UI.Models.Transactions
+@code {
+    [Parameter, EditorRequired]
+    public required string Target { get; set; }
+    [Parameter, EditorRequired]
+    public required string Value { get; set; }
+
+}
+
+<TransactionsFilterButton
+    Target="@Target"
+    Value="@Value"
+    Operator="@TransactionFilterOperators.IsEqualTo"
+    Icon="@("fas fa-square-plus")"
+    Title="@("filter for value")"
+/>
