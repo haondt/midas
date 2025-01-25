@@ -1,6 +1,5 @@
 ## Short Term
 - make "are you sure" messages more informative - e.g. "are you sure you want to delete account xyz?"
-- dashboard granularity should be variable, like it is with report
 
 ## Medium Term
 - api endpoint for generating and pulling a takeout
