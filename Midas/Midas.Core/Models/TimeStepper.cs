@@ -11,7 +11,9 @@
             AbsoluteDateTime = stepSize switch
             {
                 TimeStepSize.Day => absoluteDateTime.FloorToLocalDay(),
+                TimeStepSize.Week => absoluteDateTime.FloorToLocalDay(),
                 TimeStepSize.Month => absoluteDateTime.FloorToLocalMonth(),
+                TimeStepSize.Quarter => absoluteDateTime.FloorToLocalMonth(),
                 TimeStepSize.Year => absoluteDateTime.FloorToLocalYear(),
                 _ => throw new ArgumentException($"Unknown stepsize {stepSize}")
             };
@@ -30,8 +32,10 @@
             return StepSize switch
             {
                 TimeStepSize.Day => this with { AbsoluteDateTime = AbsoluteDateTime.AddLocalDays(1) },
+                TimeStepSize.Week => this with { AbsoluteDateTime = AbsoluteDateTime.AddLocalDays(7) },
                 TimeStepSize.Month => this with { AbsoluteDateTime = AbsoluteDateTime.AddLocalMonths(1) },
-                TimeStepSize.Year => this with { AbsoluteDateTime = AbsoluteDateTime.AddLocalDays(1) },
+                TimeStepSize.Quarter => this with { AbsoluteDateTime = AbsoluteDateTime.AddLocalMonths(3) },
+                TimeStepSize.Year => this with { AbsoluteDateTime = AbsoluteDateTime.AddLocalYears(1) },
                 _ => throw new ArgumentException($"Unknown stepsize {StepSize}")
             };
         }
@@ -41,7 +45,9 @@
     public enum TimeStepSize
     {
         Day,
+        Week,
         Month,
+        Quarter,
         Year
     }
 }

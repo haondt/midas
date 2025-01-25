@@ -30,48 +30,128 @@ namespace Midas.Domain.Dashboard.Services
             var currentBalances = accounts.ToDictionary(kvp => kvp.Key,
                 kvp => startAmounts.ByDestination.GetValue(kvp.Key).Or(0) - startAmounts.BySource.GetValue(kvp.Key).Or(0));
 
-            var transactionsByDateTime = transactions
+            List<(AbsoluteDateTime Date, IEnumerable<TransactionDto> Transactions)> transactionsByDateTime = transactions
                 .Select(t =>
                 {
                     return new { Date = t.Value.TimeStamp.FloorToLocalDay(), Transaction = t.Value };
                 })
                 .GroupBy(t => t.Date)
-                .ToDictionary(grp => grp.Key, grp => grp.Select(x => x.Transaction));
+                .OrderBy(t => t.Key)
+                .Select(grp =>
+                (
+                    grp.Key,
+                    grp.Select(q => q.Transaction)
+                ))
+                .ToList();
+
+
+            var startDay = start.FloorToLocalDay();
+            if (start <= AbsoluteDateTime.MinValue.AddDays(7))// subtracting a week as a buffer for localized time
+                startDay = transactionsByDateTime[0].Date;
+            var endDay = end.FloorToLocalDay();
+            if (end >= AbsoluteDateTime.MaxValue.AddDays(-7))
+                endDay = transactionsByDateTime[^1].Date;
+
+            var range = endDay - startDay;
+            TimeStepper stepper;
+            var desiredMaxPoints = 25;
+            if (range <= TimeSpan.FromDays(desiredMaxPoints))
+                stepper = new TimeStepper(startDay, TimeStepSize.Day);
+            else if (range <= TimeSpan.FromDays(desiredMaxPoints * 7))
+                stepper = new TimeStepper(startDay, TimeStepSize.Week);
+            else if (range <= TimeSpan.FromDays(desiredMaxPoints * 31)) // 30 months
+                stepper = new TimeStepper(startDay, TimeStepSize.Month);
+            else if (range <= TimeSpan.FromDays(desiredMaxPoints * 31 * 3)) // 30 quarters
+                stepper = new TimeStepper(startDay, TimeStepSize.Quarter);
+            else
+                stepper = new TimeStepper(startDay, TimeStepSize.Year);
+
+            var transactionsByPeriod = new List<List<TransactionDto>>();
+            var periods = new List<AbsoluteDateTime>();
+
+            var currentPeriodStart = stepper.AbsoluteDateTime;
+            periods.Add(currentPeriodStart);
+            transactionsByPeriod.Add(new());
+            stepper = stepper.Step();
+            var currentPeriodEnd = stepper.AbsoluteDateTime;
+            foreach (var (date, transactionGroup) in transactionsByDateTime)
+            {
+                while (date >= currentPeriodEnd)
+                {
+                    currentPeriodStart = currentPeriodEnd;
+                    periods.Add(currentPeriodStart);
+                    transactionsByPeriod.Add(new());
+                    stepper = stepper.Step();
+                    currentPeriodEnd = stepper.AbsoluteDateTime;
+                }
+
+                transactionsByPeriod[^1].AddRange(transactionGroup);
+            }
+
+            while (currentPeriodEnd <= endDay)
+            {
+                currentPeriodStart = currentPeriodEnd;
+                periods.Add(currentPeriodStart);
+                transactionsByPeriod.Add(new());
+                stepper = stepper.Step();
+                currentPeriodEnd = stepper.AbsoluteDateTime;
+            }
 
             var balanceChartData = new DashboardBalanceChartDataDto
             {
                 AccountNames = accountsList.Select(a => accounts[a].Name).Prepend("Net Worth").ToList(),
-                Balances = accountsList.Select(_ => new List<decimal>()).Prepend(new List<decimal>()).ToList(),
-                TimeStamps = []
+                Balances = Enumerable.Range(0, accountsList.Count + 1).Select(_ => new List<decimal>(new decimal[periods.Count])).ToList(),
+                TimeStepLabels = stepper.StepSize switch
+                {
+                    TimeStepSize.Day => periods.Select(p => p.LocalTime.ToString("yyyy-MM-dd")).ToList(),
+                    TimeStepSize.Week => periods.Select(p => p.LocalTime.ToString("yyyy-MM-dd")).ToList(),
+                    TimeStepSize.Month => periods.Select(p => p.LocalTime.ToString("MMMM yyyy")).ToList(),
+                    TimeStepSize.Quarter => periods.Select(p => p.LocalTime.ToString("MMMM yyyy")).ToList(),
+                    TimeStepSize.Year => periods.Select(p => p.LocalTime.ToString("yyyy")).ToList(),
+                    _ => throw new ArgumentException($"Unknown step size {stepper.StepSize}")
+                }
             };
 
-            var currentDay = start.FloorToLocalDay();
-            if (start <= AbsoluteDateTime.MinValue.AddDays(7)) // basically, if we are using the min & max datetimes (with some tolerance), just round to the earliest and latest transactions
-                currentDay = transactionsByDateTime.Keys.Min();
-            var lastDay = end.FloorToLocalDay();
-            if (end >= AbsoluteDateTime.MaxValue.AddDays(-7))
-                lastDay = transactionsByDateTime.Keys.Max();
-
-            while (currentDay <= lastDay)
+            var accountIndices = accountsList.Select((id, index) => (id, index))
+                .ToDictionary(q => q.id, q => q.index + 1);
+            for (int i = 0; i < transactionsByPeriod.Count; i++)
             {
-                if (transactionsByDateTime.TryGetValue(currentDay, out var currentTransactions))
-                    foreach (var transaction in currentTransactions)
-                    {
-                        if (currentBalances.ContainsKey(transaction.SourceAccount))
-                            currentBalances[transaction.SourceAccount] -= transaction.Amount;
-                        if (currentBalances.ContainsKey(transaction.DestinationAccount))
-                            currentBalances[transaction.DestinationAccount] += transaction.Amount;
-                    }
-
-                balanceChartData.TimeStamps.Add(currentDay);
-                balanceChartData.Balances[0].Add(0);
-                for (int i = 0; i < accountsList.Count; i++)
+                foreach (var transaction in transactionsByPeriod[i])
                 {
-                    balanceChartData.Balances[i + 1].Add(currentBalances[accountsList[i]]);
-                    balanceChartData.Balances[0][^1] += currentBalances[accountsList[i]];
+                    if (accountIndices.TryGetValue(transaction.SourceAccount, out var index))
+                    {
+                        balanceChartData.Balances[0][i] += transaction.Amount;
+                        balanceChartData.Balances[index][i] += transaction.Amount;
+                    }
+                    if (accountIndices.TryGetValue(transaction.DestinationAccount, out index))
+                    {
+                        balanceChartData.Balances[0][i] -= transaction.Amount;
+                        balanceChartData.Balances[index][i] -= transaction.Amount;
+                    }
                 }
-                currentDay = currentDay.AddLocalDays(1);
             }
+
+
+            //while (currentDay <= lastDay)
+            //{
+            //    if (transactionsByDateTime.TryGetValue(currentDay, out var currentTransactions))
+            //        foreach (var transaction in currentTransactions)
+            //        {
+            //            if (currentBalances.ContainsKey(transaction.SourceAccount))
+            //                currentBalances[transaction.SourceAccount] -= transaction.Amount;
+            //            if (currentBalances.ContainsKey(transaction.DestinationAccount))
+            //                currentBalances[transaction.DestinationAccount] += transaction.Amount;
+            //        }
+
+            //    balanceChartData.TimeStamps.Add(currentDay);
+            //    balanceChartData.Balances[0].Add(0);
+            //    for (int i = 0; i < accountsList.Count; i++)
+            //    {
+            //        balanceChartData.Balances[i + 1].Add(currentBalances[accountsList[i]]);
+            //        balanceChartData.Balances[0][^1] += currentBalances[accountsList[i]];
+            //    }
+            //    currentDay = currentDay.AddLocalDays(1);
+            //}
 
             var categoricalSpendingChartData = new Dictionary<string, decimal>();
 

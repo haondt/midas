@@ -87,7 +87,7 @@
                         Type = ChartConfigurationType.Line,
                         Data = new()
                         {
-                            Labels = BalanceChartData.TimeStamps.Select(t => StringFormatter.FormatDate(t)).ToList(),
+                            Labels = BalanceChartData.TimeStepLabels,
                             Datasets = BalanceChartData.Balances.Select((b, i) => new ChartDataSet
                             {
                                 Label = BalanceChartData.AccountNames[i],
