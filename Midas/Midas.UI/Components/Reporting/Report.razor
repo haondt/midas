@@ -1,4 +1,7 @@
-﻿@using Newtonsoft.Json;
+﻿@using Midas.Core.Constants
+@using Midas.UI.Components.Reporting.ChartFactories
+@using Midas.UI.Components.Reporting.TableFactories
+@using Newtonsoft.Json;
 @using Midas.Core.Models
 @using Midas.UI.Components.Charts
 @using Midas.UI.Models.Charts
@@ -7,6 +10,8 @@
     public required AbsoluteDateTime StartTime { get; set; }
     [Parameter, EditorRequired]
     public required AbsoluteDateTime EndTime { get; set; }
+
+    private double _durationMonths;
 
     [Parameter, EditorRequired]
     public required List<string> TimeStepLabels { get; set; }
@@ -33,6 +38,39 @@
     [Parameter, EditorRequired]
     public required List<(string AccountName, decimal Amount, int TransactionsCount, decimal AverageAmountPerTransaction)> TopSpendingDestinations { get; set; }
 
+    private ReportingChartFactory _chartFactory = default!;
+    private ReportingTableDataFactory _tableDataFactory = default!;
+
+    protected override void OnInitialized()
+    {
+        // +1 because end time is inclusive
+        _durationMonths = ((EndTime - StartTime).TotalDays + 1) / MidasConstants.MonthsPerYear;
+
+        _chartFactory = new()
+        {
+            CashFlowPerTimeStep = CashFlowPerTimeStep,
+            TimeStepLabels = TimeStepLabels,
+            SpendingPerTimeStep = SpendingPerTimeStep,
+            IncomePerTimeStep = IncomePerTimeStep,
+            SupercategoricalSpending = SupercategoricalSpending,
+            CategoricalSpending = CategoricalSpending,
+            TotalSpending = TotalSpending.Spending,
+            TotalIncome = TotalSpending.Income,
+        };
+
+        _tableDataFactory = new()
+        {
+            AccountSpending = AccountSpending,
+            DurationInMonths = _durationMonths,
+            TotalSpending = TotalSpending.Spending,
+            TotalIncome = TotalSpending.Income,
+            TotalCashFlow = TotalSpending.CashFlow,
+            CategoricalSpending = CategoricalSpending,
+            SupercategoricalSpending = SupercategoricalSpending,
+            TopIncomeSources = TopIncomeSources,
+            TopSpendingDestinations = TopSpendingDestinations
+        };
+    }
 }
 
 <style>
@@ -41,6 +79,11 @@
             position: absolute;
             width: calc(100% - 3em); /* based on --bulma-message-body-padding */
             height: calc(100% - 2.5em);
+        }
+
+        .message-header {
+            justify-content: flex-start;
+            gap: 1rem;
         }
     }
 
@@ -51,275 +94,69 @@
     <div class="panel-block">
         <div class="control">
             <p class="title is-4">Summary</p>
-            <table class="table is-fullwidth">
-                <thead>
-                    <tr>
-                        <th>Total income</th>
-                        <th>Total spending</th>
-                        <th>Cash flow</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>@StringFormatter.FormatCurrency(TotalSpending.Income)</td>
-                        <td>@StringFormatter.FormatCurrency(TotalSpending.Spending)</td>
-                        @if(TotalSpending.CashFlow > 0)
-                        {
-                            <td class="has-text-success">+@StringFormatter.FormatCurrency(TotalSpending.CashFlow)</td>
-                        }
-                        else if(TotalSpending.CashFlow < 0)
-                        {
-                            <td class="has-text-danger">@StringFormatter.FormatCurrency(TotalSpending.CashFlow, false)</td>
-                        }
-                        else
-                        {
-                            <td>@StringFormatter.FormatCurrency(TotalSpending.CashFlow)</td>
-                        }
-                    </tr>
-                </tbody>
-            </table>
+            <ReportTable TableData="_tableDataFactory.CreateSummaryTable()" />
         </div>
     </div>
 </div>
 
-<div class="block">
-    <div class="message">
-        <div class="message-header">
-            <p>Income vs Spending</p>
-        </div>
-        <div class="message-body" style="position:relative;height:350px;">
-            @{
-                var successColor = "#48c78e";
-                var dangerColor = "#ff6685";
-                var cashFlowColors = CashFlowPerTimeStep
-                    .Select(q => q < 0 ? dangerColor : successColor)
-                    .ToList();
 
-                var balanceChartConfiguration = new BarConfiguration
-                {
-                    Data = new()
-                    {
-                        Labels = TimeStepLabels,
-                        Datasets = new()
-                        {
-                            new()
-                            {
-                                Label = "Cash Flow",
-                                Data = CashFlowPerTimeStep.Cast<object>().ToList(),
-                                Type = "line",
-                                Tension = 0.35,
-                                BorderColor = "#2e333d",
-                                PointBackgroundColor = cashFlowColors,
-                                PointBorderColor = cashFlowColors,
-                                BackgroundColor = "#2e333d",
-                            },
-                            new()
-                            {
-                                Label = "Spending",
-                                Data = SpendingPerTimeStep.Cast<object>().ToList(),
-                                BackgroundColor = dangerColor
-                            },
-                            new()
-                            {
-                                Label = "Income",
-                                Data = IncomePerTimeStep.Cast<object>().ToList(),
-                                BackgroundColor = successColor
-                            },
-                        },
-                    },
-                    Options = new()
-                    {
-                        Plugins = new()
-                        {
-                            Tooltip = new()
-                            {
-                                Callbacks = new()
-                                {
-                                    Label = new()
-                                    {
-                                        Function = @"function(context) { 
-                                            const rawValue = context.raw;
-                                            const formattedValue = Math.abs(rawValue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                                            return rawValue < 0 ? `${context.dataset.label}: -$${formattedValue}` : `${context.dataset.label}: $${formattedValue}`;
-                                        }"
-                                    }
-                                }
-                            }
-                        },
-                        Scales = new()
-                        {
-                            Y = new()
-                            {
-                                BeginAtZero = true,
-                                Grid = new()
-                                {
-                                    Color = new()
-                                    {
-                                        Function = "({ tick }) => tick.value == 0 ? '#2e333d' : Chart.defaults.borderColor"
-                                    }
-                                },
-                                Ticks = new()
-                                {
-                                    Callback = new()
-                                    {
-                                        Function = @"function(value) { 
-                                            const formattedValue = Math.abs(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                                            return value < 0 ? `-$${formattedValue}` : `$${formattedValue}`;
-                                        }"
-                                    }
-                                },
-                            }
-                        }
-                    }
-                };
-
-            }
-
-            <div class="chart-wrapper">
-                <Chart Configuration="@balanceChartConfiguration"/>
-            </div>
-
-        </div>
-    </div>
-</div>
-
+<ReportCard
+    Data="@([
+        ("Income vs Spending", _chartFactory.CreateIncomeSpendingChart()),
+        ("Aggregate Cash Flow", _chartFactory.CreateAggregateCashFlowChart()),
+        ("Cash Flow Trend", _chartFactory.CreateCashFlowTrendChart())])"
+    Title="@("Cash Flow")"
+ />
 
 <div class="block">
     <div class="box">
         <div class="control">
             <p class="title is-4">Account Balance Breakdown</p>
-            <table class="table is-fullwidth is-hoverable">
-                <thead>
-                    <tr>
-                        <th>Account</th>
-                        <th>Income</th>
-                        <th>Spending</th>
-                        <th style="white-space:nowrap;">Cash flow</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach(var (name, income, spending, cashFlow) in AccountSpending)
-                    {
-                        <tr>
-                            <td>@name</td>
-                            <td>@StringFormatter.FormatCurrency(income)</td>
-                            <td>@StringFormatter.FormatCurrency(spending)</td>
-                            @if(cashFlow > 0)
-                            {
-                                <td class="has-text-success">+@StringFormatter.FormatCurrency(cashFlow)</td>
-                            }
-                            else if(cashFlow < 0)
-                            {
-                                <td class="has-text-danger">@StringFormatter.FormatCurrency(cashFlow, false)</td>
-                            }
-                            else
-                            {
-                                <td>@StringFormatter.FormatCurrency(cashFlow)</td>
-                            }
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            <ReportTable TableData="_tableDataFactory.CreateAccountBalanceTable()" />
         </div>
     </div>
 </div>
 
+
 <div class="block">
     <div class="columns is-multiline">
         <div class="column">
-            <div class="message">
-                <div class="message-header">
-                    <p>Supercategorical Spending</p>
-                </div>
-                <div class="message-body" style="position:relative;height:350px;">
-                    @{
-                        var supercategoricalSpendingChartConfiguration = new BarConfiguration
-                        {
-                            Data = new()
-                            {
-                                Labels = SupercategoricalSpending.Select(q => q.SupercategoryName).ToList(),
-                                Datasets = [
-                                    new() {
-                                        Axis = "y",
-                                        Data = SupercategoricalSpending.Select(q => q.Amount).Cast<object>().ToList(),
-                                    }
-                                ]
-                            },
-                            Options = new()
-                            {
-                                IndexAxis = "y",
-                                Plugins = new()
-                                {
-                                    Legend = new()
-                                    {
-                                        Display = false
-                                    },
-                                    Tooltip = new()
-                                    {
-                                        Callbacks = new()
-                                        {
-                                            Label = new()
-                                            {
-                                                Function = @"function(context) { 
-                                                    const rawValue = context.raw;
-                                                    const formattedValue = Math.abs(rawValue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                                                    return rawValue < 0 ? `-$${formattedValue}` : `$${formattedValue}`;
-                                                }"
-                                            }
-                                        }
-                                    }
-                                },
-                                Scales = new()
-                                {
-                                    X = new()
-                                    {
-                                        Ticks = new()
-                                        {
-                                            Callback = new()
-                                            {
-                                                Function = @"function(value) { 
-                                                    const formattedValue = Math.abs(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                                                    return value < 0 ? `-$${formattedValue}` : `$${formattedValue}`;
-                                                }"
-                                            }
-                                        },
-                                    }
-                                }
-                            }
-                        };
+            @{
+                var supercategoryDatum = new List<(string, Union<ChartConfiguration, ReportingTableData>)>
+                {
+                    ("Amount", _chartFactory.CreateSupercategoryAmountChart())
+                };
 
-                    }
+                if (TotalSpending.Spending > 0)
+                    supercategoryDatum.Add(("% Spending", _chartFactory.CreateSupercategorySpendingPercentChart()));
+                if (TotalSpending.Income > 0)
+                    supercategoryDatum.Add(("% Income", _chartFactory.CreateSupercategoryIncomePercentChart()));
 
-                    <div class="chart-wrapper">
-                        <Chart Configuration="@supercategoricalSpendingChartConfiguration"/>
-                    </div>
-
-                </div>
-            </div>
+                supercategoryDatum.Add(("Table", _tableDataFactory.CreateSupercategoricalSpendingTable()));
+            }
+            <ReportCard
+                Data="@supercategoryDatum"
+                Title="@("Supercategorical Spending")"
+             />
         </div>
         <div class="column">
-            <div class="box">
-                <div class="control">
-                    <p class="title is-4">Categorical Spending Breakdown</p>
-                    <table class="table is-fullwidth is-hoverable">
-                        <thead>
-                            <tr>
-                                <th>Category</th>
-                                <th>Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach(var (name, amount) in CategoricalSpending)
-                            {
-                                <tr>
-                                    <td>@name</td>
-                                    <td>@StringFormatter.FormatCurrency(amount)</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            @{
+                var categoryDatum = new List<(string, Union<ChartConfiguration, ReportingTableData>)>
+                {
+                    ("Amount", _chartFactory.CreateCategoryAmountChart())
+                };
+
+                if (TotalSpending.Spending > 0)
+                    categoryDatum.Add(("% Spending", _chartFactory.CreateCategorySpendingPercentChart()));
+                if (TotalSpending.Income > 0)
+                    categoryDatum.Add(("% Income", _chartFactory.CreateCategoryIncomePercentChart()));
+
+                categoryDatum.Add(("Table", _tableDataFactory.CreateCategoricalSpendingTable()));
+            }
+            <ReportCard
+                Data="@categoryDatum"
+                Title="@("Categorical Spending")"
+             />
         </div>
     </div>
 </div>
@@ -332,8 +169,9 @@
         </div>
         <div class="message-body" style="position:relative;height:350px;">
             @{
-                var categoricalSpendingChartConfiguration = new BarConfiguration
+                var categoricalSpendingChartConfiguration = new ChartConfiguration
                 {
+                    Type = ChartConfigurationType.Bar,
                     Data = new()
                     {
                         Labels = TimeStepLabels,
@@ -404,27 +242,7 @@
             <div class="box">
                 <div class="control">
                     <p class="title is-4">Top Income Sources</p>
-                    <table class="table is-fullwidth is-hoverable">
-                        <thead>
-                            <tr>
-                                <th>Source</th>
-                                <th>Amount</th>
-                                <th>Transactions</th>
-                                <th style="white-space:nowrap;">Amount (avg)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach(var (name, amount, count, average) in TopIncomeSources)
-                            {
-                                <tr>
-                                    <td>@name</td>
-                                    <td>@StringFormatter.FormatCurrency(amount)</td>
-                                    <td>@count</td>
-                                    <td>@StringFormatter.FormatCurrency(average)</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+                    <ReportTable TableData="_tableDataFactory.CreateTopIncomeSourcesTable()" />
                 </div>
             </div>
         </div>
@@ -432,29 +250,10 @@
             <div class="box">
                 <div class="control">
                     <p class="title is-4">Top Spending Destinations</p>
-                    <table class="table is-fullwidth is-hoverable">
-                        <thead>
-                            <tr>
-                                <th>Destination</th>
-                                <th>Amount</th>
-                                <th>Transactions</th>
-                                <th style="white-space:nowrap;">Amount (avg)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach(var (name, amount, count, average) in TopSpendingDestinations)
-                            {
-                                <tr>
-                                    <td>@name</td>
-                                    <td>@StringFormatter.FormatCurrency(amount)</td>
-                                    <td>@count</td>
-                                    <td>@StringFormatter.FormatCurrency(average)</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+                    <ReportTable TableData="_tableDataFactory.CreateTopSpendingDestinationsTable()" />
                 </div>
             </div>
         </div>
     </div>
 </div>
+

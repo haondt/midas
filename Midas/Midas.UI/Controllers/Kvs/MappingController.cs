@@ -183,16 +183,6 @@ namespace Midas.Kvs.Controllers
             await kvs.MoveMapping(key, newKey);
             var newEncodedKey = StringFormatter.UrlBase64Encode(newKey);
 
-            var component = await componentFactory.RenderComponentAsync(new AppendComponentLayout
-            {
-                Components = [
-                    new Toast
-                    {
-                        Message = "Alias moved.",
-                        Severity = ToastSeverity.Success
-                    }
-                ]
-            });
 
             Response.AsResponseData()
                 .HxTrigger("toastRelay",
@@ -202,7 +192,8 @@ namespace Midas.Kvs.Controllers
                     target: "#kvs-mapping",
                     select: "#kvs-mapping",
                     headers: new() { { ALIAS_MOVED_HEADER, "true" } });
-            return component;
+
+            return Results.Ok();
         }
     }
 }

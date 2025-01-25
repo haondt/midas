@@ -19,7 +19,7 @@ namespace Midas.Domain.Reporting.Services
             var transactions = await transactionService.GetTransactions(new()
             {
                 TransactionFilter.MinDate(start),
-                TransactionFilter.ExclusiveMaxDate(end)
+                TransactionFilter.MaxDate(end)
             });
 
             List<(AbsoluteDateTime Date, IEnumerable<TransactionDto> Transactions)> transactionsByDateTime = transactions
@@ -42,8 +42,6 @@ namespace Midas.Domain.Reporting.Services
             var endDay = end.FloorToLocalDay();
             if (end >= AbsoluteDateTime.MaxValue.AddDays(-7))
                 endDay = transactionsByDateTime[^1].Date;
-            else
-                endDay = endDay.AddLocalDays(-1);
 
             var range = endDay - startDay;
             TimeStepper stepper;
@@ -77,7 +75,7 @@ namespace Midas.Domain.Reporting.Services
                 transactionsByPeriod[^1].AddRange(transactionGroup);
             }
 
-            while (currentPeriodEnd < endDay)
+            while (currentPeriodEnd <= endDay)
             {
                 currentPeriodStart = currentPeriodEnd;
                 periods.Add(currentPeriodStart);

@@ -17,6 +17,7 @@ using Midas.UI.Services.Transactions;
 using Midas.UI.Shared.Components;
 using Midas.UI.Shared.Controllers;
 using Midas.UI.Shared.Exceptions;
+using Midas.UI.Shared.Models;
 
 namespace Midas.UI.Controllers.Transactions
 {
@@ -186,13 +187,12 @@ namespace Midas.UI.Controllers.Transactions
 
             var transactionId = await transactionService.CreateTransaction(newTransaction);
             Response.AsResponseData()
+                .HxTrigger("toastRelay",
+                    new Dictionary<string, string>() { { "message", "Transaction created successfully." }, { "severity", ToastSeverity.Success.ToString() } },
+                    "#toast-relay")
                 .HxLocation($"/transactions/edit/{transactionId}", target: "#content");
 
-            return await componentFactory.RenderComponentAsync(new Toast
-            {
-                Message = "Transaction created successfully.",
-                Severity = Shared.Models.ToastSeverity.Success
-            });
+            return Results.Created();
         }
 
         [HttpPost("edit/{id}")]
@@ -204,14 +204,14 @@ namespace Midas.UI.Controllers.Transactions
 
             var newIds = await transactionService.ReplaceTransactions([newTransaction], [id]);
             var transactionId = newIds[0];
+
             Response.AsResponseData()
+                .HxTrigger("toastRelay",
+                    new Dictionary<string, string>() { { "message", "Transaction updated successfully." }, { "severity", ToastSeverity.Success.ToString() } },
+                    "#toast-relay")
                 .HxLocation($"/transactions/edit/{transactionId}", target: "#content");
 
-            return await componentFactory.RenderComponentAsync(new Toast
-            {
-                Message = "Transaction updated successfully.",
-                Severity = Shared.Models.ToastSeverity.Success
-            });
+            return Results.Ok();
         }
 
         private async Task<(List<(string Id, AccountDto Account)> NewAccounts, TransactionDto NewTransaction)> ProcessUpsertTransactionRequest(UpsertTransactionRequestDto requestDto)

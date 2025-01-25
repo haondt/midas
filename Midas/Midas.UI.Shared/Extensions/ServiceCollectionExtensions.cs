@@ -2,6 +2,7 @@
 using Haondt.Web.BulmaCSS.Extensions;
 using Haondt.Web.Services;
 using Midas.UI.Shared.Middlewares;
+using Midas.UI.Shared.Models;
 using Midas.UI.Shared.Services;
 
 namespace Midas.UI.Shared.Extensions
@@ -71,6 +72,13 @@ namespace Midas.UI.Shared.Extensions
             services.AddScoped<IHeadEntryDescriptor>(_ => new ScriptDescriptor
             {
                 Uri = "https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"
+            });
+            // disable chartjs animations
+            services.AddScoped<IHeadEntryDescriptor>(_ => new JavascriptDescriptor
+            {
+                Body = @"
+                    Chart.defaults.animation = false;
+                "
             });
             return services;
         }

@@ -1,0 +1,64 @@
+﻿@using Midas.Core.Models
+@using Midas.UI.Components.Charts
+@using Midas.UI.Components.Reporting.TableFactories
+@using Midas.UI.Models.Charts
+
+@code {
+    [Parameter, EditorRequired]
+    public required List<(string TabName, Union<ChartConfiguration, ReportingTableData> Configuration)> Data { get; set; }
+    [Parameter, EditorRequired]
+    public required string Title { get; set; }
+}
+
+
+<div class="block">
+    <div class="message">
+        <div class="message-header">
+            <div class="is-flex is-flex-direction-row is-flex-wrap-wrap is-align-items-center" style="gap: 1rem;">
+                @Title
+                <div class="buttons has-addons is-flex-wrap-wrap">
+                    @for(int i = 0; i < Data.Count; i++)
+                    {
+                        <button
+                            class="button is-small is-info is-inverted @(i == 0 ? "is-hovered is-selected" : "")"
+                            _="on click
+                                set active to the next <.report-card-data:not(.is-hidden)/>
+                                set selected to the next .report-card-data-@i
+                                if active != selected
+                                    set activeButton to the next <.button.is-selected/> within the closest .buttons with wrapping
+                                    remove .is-selected from activeButton
+                                    remove .is-hovered from activeButton
+                                    remove .is-hidden from selected
+                                    add .is-selected to me
+                                    add .is-hovered to me
+                                    add .is-hidden to active
+                            "
+                        >
+                            @Data[i].TabName
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="message-body" style="position:relative;height:350px;">
+            @for(int i = 0; i < Data.Count; i++)
+            {
+                var chart = Data[i].Configuration;
+
+                <div class="report-card-data report-card-data-@i @(i != 0 ? "is-hidden": "")">
+                    @if (chart.Is<ChartConfiguration>(out var chartConfiguration))
+                    {
+                        <div class="chart-wrapper">
+                            <Chart Configuration="@chartConfiguration"/>
+                        </div>
+                    }
+                    else
+                    {
+                        <ReportTable TableClasses="@("has-background-black-ter")" TableData="@((ReportingTableData)chart)"/>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+

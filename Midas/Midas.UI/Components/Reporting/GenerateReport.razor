@@ -13,20 +13,20 @@
         {
             new()
             {
-                (currentYear.LocalTime.ToString("yyyy"), StringFormatter.FormatDate(currentYear), StringFormatter.FormatDate(currentYear.AddLocalYears(1)))
+                (currentYear.LocalTime.ToString("yyyy"), StringFormatter.FormatDate(currentYear), StringFormatter.FormatDate(currentYear.AddLocalYears(1).AddLocalDays(-1)))
             },
             Enumerable.Range(0, 12)
                 .Select(i => currentYear.AddLocalMonths(i))
                 .Where(d => d <= currentDateTime)
-                .Select(i => (i.LocalTime.ToString("MMMM yyyy"), StringFormatter.FormatDate(i), StringFormatter.FormatDate(i.AddLocalMonths(1))))
+                .Select(i => (i.LocalTime.ToString("MMMM yyyy"), StringFormatter.FormatDate(i), StringFormatter.FormatDate(i.AddLocalMonths(1).AddLocalDays(-1))))
                 .ToList(),
             new()
             {
-                (previousYear.LocalTime.ToString("yyyy"), StringFormatter.FormatDate(previousYear), StringFormatter.FormatDate(currentYear))
+                (previousYear.LocalTime.ToString("yyyy"), StringFormatter.FormatDate(previousYear), StringFormatter.FormatDate(currentYear.AddLocalDays(-1)))
             },
             Enumerable.Range(0, 12)
                 .Select(i => previousYear.AddLocalMonths(i))
-                .Select(i => (i.LocalTime.ToString("MMMM yyyy"), StringFormatter.FormatDate(i), StringFormatter.FormatDate(i.AddLocalMonths(1))))
+                .Select(i => (i.LocalTime.ToString("MMMM yyyy"), StringFormatter.FormatDate(i), StringFormatter.FormatDate(i.AddLocalMonths(1).AddLocalDays(-1))))
                 .ToList(),
         };
     }

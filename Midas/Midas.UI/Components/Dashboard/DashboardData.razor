@@ -82,8 +82,9 @@
                 <div class="message-body"  style="position:relative;height:350px;">
 
                 @{
-                    var chartConfiguration = new LineConfiguration
+                    var chartConfiguration = new ChartConfiguration
                     {
+                        Type = ChartConfigurationType.Line,
                         Data = new()
                         {
                             Labels = BalanceChartData.TimeStamps.Select(t => StringFormatter.FormatDate(t)).ToList(),
@@ -163,8 +164,9 @@
                 </div>
                 <div class="message-body"  style="position:relative;height:350px;">
                 @{
-                    var chartConfiguration2 = new BarConfiguration
+                    var chartConfiguration2 = new ChartConfiguration
                     {
+                        Type = ChartConfigurationType.Bar,
                         Data = new()
                         {
                             Labels = CategoricalSpendingChartData.Categories,

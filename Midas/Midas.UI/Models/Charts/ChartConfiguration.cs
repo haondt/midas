@@ -3,9 +3,9 @@
 namespace Midas.UI.Models.Charts
 {
 
-    public abstract class ChartConfiguration
+    public class ChartConfiguration
     {
-        public abstract string Type { get; }
+        public required string Type { get; set; }
         public ChartData Data { get; set; } = new();
         public ChartOptions Options { get; set; } = new();
         public List<ChartDataSet>? DataSets { get; set; }

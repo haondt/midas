@@ -18,5 +18,6 @@ namespace Midas.UI.Models.Charts
         public double? Tension { get; set; }
         public bool? Fill { get; set; }
         public string? YAxisID { get; set; }
+        public double? HoverOffset { get; set; }
     }
 }

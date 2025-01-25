@@ -12,6 +12,7 @@ namespace Midas.Core.Constants
         public const string DefaultAccount = "00000000-0000-0000-0000-000000000000";
         public const string DefaultAccountName = "Unknown";
         public const string FallbackAccountName = "No name";
+        public const double MonthsPerYear = 30.4375;
 
         public static JsonSerializerSettings ApiSerializerSettings { get; }
         static MidasConstants()

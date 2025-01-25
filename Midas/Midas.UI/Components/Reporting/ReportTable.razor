@@ -1,0 +1,63 @@
+﻿@using Midas.Core.Models
+@using Midas.UI.Components.Reporting.TableFactories
+@code {
+    [Parameter, EditorRequired]
+    public required ReportingTableData TableData { get; set; }
+    [Parameter]
+    public string TableClasses { get; set; } = "";
+}
+
+<div class="table-container">
+    <table class="table @TableClasses is-fullwidth is-hoverable">
+        <thead>
+            <tr>
+                @foreach(var header in TableData.Headers)
+                {
+                    <th style="white-space:nowrap;">@header</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var row in TableData.Rows)
+            {
+                <tr>
+                    @foreach(var cell in row)
+                    {
+                        switch (cell)
+                        {
+                            case ReportingTableDataStringCell stringCell:
+                                <td>@stringCell.Value</td>
+                                break;
+                            case ReportingTableDataAmountCell amountCell:
+                                if (amountCell.IsDelta)
+                                {
+                                    if(amountCell.Amount >= 0)
+                                    {
+                                        <td class="has-text-success">
+                                            +@StringFormatter.FormatCurrency(amountCell.Amount)
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td class="has-text-danger">
+                                            @StringFormatter.FormatCurrency(amountCell.Amount, false)
+                                        </td>
+                                    }
+                                }
+                                else
+                                {
+                                    <td>
+                                        @StringFormatter.FormatCurrency(amountCell.Amount)
+                                    </td>
+
+                                }
+                                break;
+                            default:
+                                throw new ArgumentException($"Unknown cell type: {cell.GetType()}");
+                        }
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
