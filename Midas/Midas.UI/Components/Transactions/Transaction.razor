@@ -8,7 +8,7 @@
     public required long Id { get; set; }
 
     [Parameter, EditorRequired]
-    public required ExtendedTransactionDto TransactionDto { get; set; } 
+    public required ExtendedTransactionDto TransactionDto { get; set; }
 }
 
 <tr class="summary" 
@@ -17,6 +17,7 @@
     on click
         if (the event's target is not the first <input/> in me
             and the event's target is not in the first .actions in me
+            and the event's target is not in the first .transaction-link in me
             and the event's target is not the first <a/> in me)
             toggle .is-hidden on the next <tr/> toggle .expanded on me
         end
@@ -32,12 +33,23 @@
             class="select-checkbox" name="t-@Id" type="checkbox"/>
     </td>
     <td>
-        <a 
-            hx-boost="true"
-            href="/transactions/edit/@Id"
-            hx-target="#content">
-            @TransactionDto.Description
-        </a>
+        <div class="is-flex is-flex-direction-row">
+            <div class="transaction-link">
+                <a  class="transaction-link-blank"
+                    target="_blank"
+                    hx-boost="true"
+                    href="/transactions/edit/@Id"
+                    hx-target="#content">
+                    @TransactionDto.Description
+                </a>
+                <a class="transaction-link-here" 
+                    hx-boost="true"
+                    href="/transactions/edit/@Id"
+                    hx-target="#content">
+                    @TransactionDto.Description
+                </a>
+            </div>
+        </div>
     </td>
     <td>
         @StringFormatter.FormatCurrency(TransactionDto.Amount)

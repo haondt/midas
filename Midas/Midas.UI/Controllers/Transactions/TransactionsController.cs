@@ -1,5 +1,6 @@
 ﻿using Haondt.Core.Extensions;
 using Haondt.Core.Models;
+using Haondt.Web.Components;
 using Haondt.Web.Core.Extensions;
 using Haondt.Web.Core.Services;
 using Haondt.Web.Middleware;
@@ -160,10 +161,7 @@ namespace Midas.UI.Controllers.Transactions
         [ServiceFilter(typeof(RenderPageFilter))]
         public Task<IResult> GetCreatePage()
         {
-            return componentFactory.RenderComponentAsync(new EditTransaction
-            {
-
-            });
+            return componentFactory.RenderComponentAsync<EditTransaction>();
         }
 
         [HttpGet("edit/{id}")]
@@ -175,7 +173,15 @@ namespace Midas.UI.Controllers.Transactions
                 throw new NotFoundPageException();
 
 
-            return await componentFactory.RenderComponentAsync(EditTransaction.FromExtendedTransaction(id, transaction.Value));
+            return await componentFactory.RenderComponentAsync(new AppendComponentLayout
+            {
+                Components = [
+                    new CloseModal(),
+
+                EditTransaction.FromExtendedTransaction(id, transaction.Value)
+                    ]
+
+            });
         }
 
         [HttpPost("edit")]

@@ -32,6 +32,23 @@
                     tr.details table {
                         --bulma-table-cell-border-color: hsl(0, 0%, 14%);
                     }
+
+                    a.transaction-link-here {
+                        display: block;
+                    }
+                    a.transaction-link-blank {
+                        display: none;
+                    }
+
+                    #modal-container :scope {
+                        a.transaction-link-here {
+                            display: none;
+                        }
+                        a.transaction-link-blank {
+                            display: block;
+                        }
+                    }
+
                 }
             </style>
             <thead>

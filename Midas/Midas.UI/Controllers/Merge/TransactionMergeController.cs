@@ -10,8 +10,8 @@ using Midas.Persistence.Models;
 using Midas.UI.Components.Merge;
 using Midas.UI.Models.Merge;
 using Midas.UI.Services.Transactions;
-using Midas.UI.Shared.Components;
 using Midas.UI.Shared.Controllers;
+using Midas.UI.Shared.Models;
 
 namespace Midas.UI.Controllers.Merge
 {
@@ -126,12 +126,11 @@ namespace Midas.UI.Controllers.Merge
             var id = await mergeService.PerformMerge(options);
 
             Response.AsResponseData()
+                .HxTrigger("toastRelay",
+                    new Dictionary<string, string>() { { "message", "Transactions merged successfully." }, { "severity", ToastSeverity.Success.ToString() } },
+                    "#toast-relay")
                 .HxLocation($"/transactions/edit/{id}", target: "#content");
-            return await componentFactory.RenderComponentAsync(new Toast
-            {
-                Message = "Transactions merged successfully!",
-                Severity = Shared.Models.ToastSeverity.Success
-            });
+            return Results.Ok();
         }
     }
 }
