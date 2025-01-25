@@ -1,6 +1,5 @@
 ## Short Term
 - make "are you sure" messages more informative - e.g. "are you sure you want to delete account xyz?"
-- button on fields in reports to open popup showing transactions included in that amount
 - dashboard granularity should be variable, like it is with report
 
 ## Medium Term
@@ -18,3 +17,5 @@
 - mobile app
 - extract the midas subflows to an npm package
 - unit tests lol
+- there's some things (e.g. reports) that use account name in places where it really should be account id
+- button on fields in reports to open popup showing transactions included in that amount

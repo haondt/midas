@@ -1,4 +1,5 @@
-﻿using Midas.Domain.Accounts.Services;
+﻿using Midas.Core.Models;
+using Midas.Domain.Accounts.Services;
 using Midas.Persistence.Models;
 using Midas.UI.Models.Transactions;
 
@@ -32,6 +33,16 @@ namespace Midas.UI.Services.Transactions
                                 return TransactionFilter.HasCategory(value);
                             case TransactionFilterOperators.IsNotEqualTo:
                                 return TransactionFilter.CategoryIsNot(value);
+                            default:
+                                throw new NotSupportedException($"Operation {op} is not supported with target {target}.");
+                        }
+                    case TransactionFilterTargets.Supercategory:
+                        switch (op)
+                        {
+                            case TransactionFilterOperators.IsEqualTo:
+                                return TransactionFilter.SupercategoryIs(value);
+                            case TransactionFilterOperators.IsNoneOrEqualTo:
+                                return TransactionFilter.SupercategoryIsNoneOrEqualTo(value);
                             default:
                                 throw new NotSupportedException($"Operation {op} is not supported with target {target}.");
                         }
@@ -128,6 +139,23 @@ namespace Midas.UI.Services.Transactions
                                 {
                                     var accountsList = await accountsService.GetAccountIdsByName(value);
                                     return TransactionFilter.EitherAccountIsOneOf(accountsList);
+                                }
+                            default:
+                                throw new NotSupportedException($"Operation {op} is not supported with target {target}.");
+                        }
+                    case TransactionFilterTargets.Date:
+                        switch (op)
+                        {
+                            case TransactionFilterOperators.IsGreaterThanOrEqualTo:
+                                {
+                                    var dateTime = StringFormatter.ParseDate(value);
+                                    return TransactionFilter.MinDate(dateTime);
+                                }
+                            case TransactionFilterOperators.IsLessThanOrEqualTo:
+                                {
+                                    var dateTime = StringFormatter.ParseDate(value);
+                                    dateTime = dateTime.AddLocalDays(1).FloorToLocalDay();
+                                    return TransactionFilter.ExclusiveMaxDate(dateTime);
                                 }
                             default:
                                 throw new NotSupportedException($"Operation {op} is not supported with target {target}.");

@@ -128,7 +128,7 @@
         <form hx-post="/transactions/search"
         class="field is-grouped is-grouped-multiline" id="filters"
         hx-target="#search-results" hx-swap="innerHTML" hx-include="#paginator"
-        _="on submit set #search-results's innerHTML to ''">
+        _="-- on submit set #search-results's innerHTML to ''">
             @if (Filters.HasValue)
             {
                 @foreach(var filter in Filters.Value)

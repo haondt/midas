@@ -48,6 +48,14 @@ namespace Midas.Persistence.Models
         {
             return new CategoryIsNotTransactionFilter { Value = category };
         }
+        public static TransactionFilter SupercategoryIs(string supercategory)
+        {
+            return new SupercategoryIsTransactionFilter { Value = supercategory };
+        }
+        public static TransactionFilter SupercategoryIsNoneOrEqualTo(string supercategory)
+        {
+            return new SupercategoryIsNoneOrEqualToTransactionFilter { Value = supercategory };
+        }
         public static TransactionFilter DescriptionContains(string substring)
         {
             return new DescriptionContainsTransactionFilter { Value = substring };
@@ -109,7 +117,15 @@ namespace Midas.Persistence.Models
     {
         public required string Value { get; set; }
     }
+    public class SupercategoryIsTransactionFilter : TransactionFilter
+    {
+        public required string Value { get; set; }
+    }
 
+    public class SupercategoryIsNoneOrEqualToTransactionFilter : TransactionFilter
+    {
+        public required string Value { get; set; }
+    }
     public class DescriptionContainsTransactionFilter : TransactionFilter
     {
         public required string Value { get; set; }

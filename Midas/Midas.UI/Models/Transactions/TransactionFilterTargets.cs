@@ -5,6 +5,7 @@
         public const string Amount = "amount";
         public const string Description = "description";
         public const string Category = "category";
+        public const string Supercategory = "supercategory";
         public const string SourceAccountName = "source_account_name";
         public const string SourceAccountId = "source_account_id";
         public const string DestinationAccountName = "destination_account_name";

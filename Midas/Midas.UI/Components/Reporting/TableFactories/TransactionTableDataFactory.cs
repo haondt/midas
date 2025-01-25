@@ -1,4 +1,6 @@
-﻿namespace Midas.UI.Components.Reporting.TableFactories
+﻿using Midas.UI.Models.Transactions;
+
+namespace Midas.UI.Components.Reporting.TableFactories
 {
     public partial class ReportingTableDataFactory
     {
@@ -19,7 +21,17 @@
                 Rows = TopIncomeSources.Select(q => new List<ReportingTableDataCell>
                 {
 
-                    new ReportingTableDataStringCell { Value = q.AccountName },
+                    new ReportingTableDataTransactionFilterLinkCell
+                    {
+                        Text = q.AccountName,
+                        Filters = new List<string>()
+                        {
+                            $"{TransactionFilterTargets.SourceAccountName} {TransactionFilterOperators.IsEqualTo} {q.AccountName}",
+                            $"{TransactionFilterTargets.Date} {TransactionFilterOperators.IsGreaterThanOrEqualTo} {_startDateString}",
+                            $"{TransactionFilterTargets.Date} {TransactionFilterOperators.IsLessThanOrEqualTo} {_endDateString}",
+
+                        }
+                    },
                     new ReportingTableDataAmountCell { Amount = q.Amount },
                     new ReportingTableDataAmountCell { Amount = q.AverageAmountPerTransaction },
                     new ReportingTableDataAmountCell { Amount = AmortizeAmount(q.Amount) }
@@ -40,7 +52,16 @@
                 Rows = TopSpendingDestinations.Select(q => new List<ReportingTableDataCell>
                 {
 
-                    new ReportingTableDataStringCell { Value = q.AccountName },
+                    new ReportingTableDataTransactionFilterLinkCell
+                    {
+                        Text = q.AccountName,
+                        Filters = new List<string>()
+                        {
+                            $"{TransactionFilterTargets.DestinationAccountName} {TransactionFilterOperators.IsEqualTo} {q.AccountName}",
+                            $"{TransactionFilterTargets.Date} {TransactionFilterOperators.IsGreaterThanOrEqualTo} {_startDateString}",
+                            $"{TransactionFilterTargets.Date} {TransactionFilterOperators.IsLessThanOrEqualTo} {_endDateString}",
+                        }
+                    },
                     new ReportingTableDataAmountCell { Amount = q.Amount },
                     new ReportingTableDataAmountCell { Amount = q.AverageAmountPerTransaction },
                     new ReportingTableDataAmountCell { Amount = AmortizeAmount(q.Amount) }

@@ -68,7 +68,9 @@
             CategoricalSpending = CategoricalSpending,
             SupercategoricalSpending = SupercategoricalSpending,
             TopIncomeSources = TopIncomeSources,
-            TopSpendingDestinations = TopSpendingDestinations
+            TopSpendingDestinations = TopSpendingDestinations,
+            StartTime = StartTime,
+            EndTime = EndTime
         };
     }
 }
@@ -84,6 +86,11 @@
         .message-header {
             justify-content: flex-start;
             gap: 1rem;
+        }
+
+        .message a:not(.button):not(.tag):not(.dropdown-item) {
+            color: var(--bulma-link-text);
+            text-decoration: none;
         }
     }
 
@@ -165,7 +172,7 @@
 <div class="block">
     <div class="message">
         <div class="message-header">
-            <p>Spending By Category</p>
+            <p>Categorical Spending Over Time</p>
         </div>
         <div class="message-body" style="position:relative;height:350px;">
             @{

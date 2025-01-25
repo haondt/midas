@@ -18,11 +18,14 @@ namespace Midas.Persistence.Storages.Sqlite
     {
         private readonly string _tableName;
         private readonly string _tagsTableName;
+        private readonly string _supercategoriesTableName;
+        private const string _supercategoriesTableAlias = "c";
 
         public SqliteTransactionStorage(IOptions<MidasPersistenceSettings> options) : base(options)
         {
             _tableName = SanitizeTableName(options.Value.TransactionsTableName);
             _tagsTableName = SanitizeTableName(options.Value.TransactionsTagsTableName);
+            _supercategoriesTableName = SanitizeTableName(options.Value.SupercategoryTableName);
             InitializeDb();
         }
 
@@ -231,6 +234,9 @@ namespace Midas.Persistence.Storages.Sqlite
                 SELECT t.id
                 FROM {_tableName} t
             ");
+            var (whereClauses, parameters, needsSupercategories) = GenerateWhereClauses(filters);
+            if (needsSupercategories)
+                baseQuery.AppendLine($"LEFT JOIN {_supercategoriesTableName} {_supercategoriesTableAlias} ON t.category = {_supercategoriesTableAlias}.category");
 
             // Handle tag filters with INTERSECT
             var hasTagFilters = filters.OfType<HasTagTransactionFilter>().ToList();
@@ -249,7 +255,6 @@ namespace Midas.Persistence.Storages.Sqlite
             }
 
             // Add WHERE clause for other filters
-            var (whereClauses, parameters) = GenerateWhereClauses(filters);
 
             if (whereClauses.Count > 0)
             {
@@ -304,6 +309,9 @@ namespace Midas.Persistence.Storages.Sqlite
                 SELECT SUM(t.amountCents) AS amount, t.{groupBy} AS grouping
                 FROM {_tableName} t
             ");
+            var (whereClauses, parameters, needsSupercategories) = GenerateWhereClauses(filters);
+            if (needsSupercategories)
+                baseQuery.AppendLine($"LEFT JOIN {_supercategoriesTableName} {_supercategoriesTableAlias} ON t.category = {_supercategoriesTableAlias}.category");
 
             // Handle tag filters with INTERSECT
             var hasTagFilters = filters.OfType<HasTagTransactionFilter>().ToList();
@@ -322,7 +330,6 @@ namespace Midas.Persistence.Storages.Sqlite
             }
 
             // Add WHERE clause for other filters
-            var (whereClauses, parameters) = GenerateWhereClauses(filters);
 
             if (whereClauses.Count > 0)
             {
@@ -361,6 +368,9 @@ namespace Midas.Persistence.Storages.Sqlite
                     t.description
                 FROM {_tableName} t
             ");
+            var (whereClauses, parameters, needsSupercategories) = GenerateWhereClauses(filters);
+            if (needsSupercategories)
+                baseQuery.AppendLine($"LEFT JOIN {_supercategoriesTableName} {_supercategoriesTableAlias} ON t.category = {_supercategoriesTableAlias}.category");
 
             // Handle tag filters with INTERSECT
             var hasTagFilters = filters.OfType<HasTagTransactionFilter>().ToList();
@@ -379,8 +389,6 @@ namespace Midas.Persistence.Storages.Sqlite
             }
 
             // Add WHERE clause for other filters
-            var (whereClauses, parameters) = GenerateWhereClauses(filters);
-
             if (whereClauses.Count > 0)
             {
                 var conjunction = hasTagFilters.Any() ? "AND" : "WHERE";
@@ -435,6 +443,9 @@ namespace Midas.Persistence.Storages.Sqlite
                 SELECT COUNT(*) as totalRecords
                 FROM {_tableName} t
             ");
+            var (whereClauses, parameters, needsSupercategories) = GenerateWhereClauses(filters);
+            if (needsSupercategories)
+                baseQuery.AppendLine($"LEFT JOIN {_supercategoriesTableName} {_supercategoriesTableAlias} ON t.category = {_supercategoriesTableAlias}.category");
 
             // Handle tag filters with INTERSECT
             var hasTagFilters = filters.OfType<HasTagTransactionFilter>().ToList();
@@ -453,8 +464,6 @@ namespace Midas.Persistence.Storages.Sqlite
             }
 
             // Add WHERE clause for other filters
-            var (whereClauses, parameters) = GenerateWhereClauses(filters);
-
             if (whereClauses.Count > 0)
             {
                 var conjunction = hasTagFilters.Any() ? "AND" : "WHERE";
@@ -479,10 +488,11 @@ namespace Midas.Persistence.Storages.Sqlite
             return Task.FromResult(result);
         }
 
-        private (List<string> WhereClauses, List<SqliteParameter> Parameters) GenerateWhereClauses(List<TransactionFilter> filters)
+        private (List<string> WhereClauses, List<SqliteParameter> Parameters, bool NeedsSupercategories) GenerateWhereClauses(List<TransactionFilter> filters)
         {
             var whereClauses = new List<string>();
             var parameters = new List<SqliteParameter>();
+            var needsSupercategories = false;
 
             for (int i = 0; i < filters.Count; i++)
             {
@@ -571,6 +581,16 @@ namespace Midas.Persistence.Storages.Sqlite
                         whereClauses.Add($"t.description LIKE @DescriptionContains{i}");
                         parameters.Add(new SqliteParameter($"@DescriptionContains{i}", SqliteParameterCollectionExtensions.PrepareSqliteLikeTerm(descriptionContainsFilter.Value)));
                         break;
+                    case SupercategoryIsTransactionFilter supercategoryIsFilter:
+                        whereClauses.Add($"{_supercategoriesTableAlias}.supercategory = @SupercategoryIs{i}");
+                        parameters.Add(new SqliteParameter($"@SupercategoryIs{i}", supercategoryIsFilter.Value));
+                        needsSupercategories = true;
+                        break;
+                    case SupercategoryIsNoneOrEqualToTransactionFilter supercategoryIsNoneOrFilter:
+                        whereClauses.Add($"({_supercategoriesTableAlias}.supercategory IS NULL OR {_supercategoriesTableAlias}.supercategory = @SupercategoryIsNoneOr{i})");
+                        parameters.Add(new SqliteParameter($"@SupercategoryIsNoneOr{i}", supercategoryIsNoneOrFilter.Value));
+                        needsSupercategories = true;
+                        break;
                     case HasTagTransactionFilter:
                         break; // handled seperately
                     default:
@@ -578,7 +598,7 @@ namespace Midas.Persistence.Storages.Sqlite
                 }
             }
 
-            return (whereClauses, parameters);
+            return (whereClauses, parameters, needsSupercategories);
         }
 
         public Task<List<string>> GetCategories()

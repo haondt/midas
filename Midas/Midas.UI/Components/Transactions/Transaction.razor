@@ -26,7 +26,7 @@
         then remove me
     end
 ">
-    <td>
+    <td class="transaction-search-result-checkbox">
         <input
             _="on click send updateState to #select-all"
             class="select-checkbox" name="t-@Id" type="checkbox"/>
@@ -167,7 +167,7 @@
                         <div class="tags">
                             @foreach(var tag in TransactionDto.Tags)
                             {
-                                <span class="tag is-info">@tag</span>
+                                <span class="tag has-text-info">@tag</span>
                             }
                         </div>
                     </td>

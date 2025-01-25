@@ -13,4 +13,9 @@
         public required decimal Amount { get; set; }
         public bool IsDelta { get; set; } = false;
     }
+    public class ReportingTableDataTransactionFilterLinkCell : ReportingTableDataCell
+    {
+        public required string Text { get; set; }
+        public required List<string> Filters { get; set; }
+    }
 }

@@ -28,6 +28,22 @@
                             case ReportingTableDataStringCell stringCell:
                                 <td>@stringCell.Value</td>
                                 break;
+                            case ReportingTableDataTransactionFilterLinkCell filterCell:
+                                <td>
+                                    <form
+                                        hx-get="/transactions-select/static-search"     
+                                        hx-swap="none"
+                                    >
+                                        @foreach(var filter in filterCell.Filters)
+                                        {
+                                            <input type="hidden" name="filter" value="@filter"/>
+                                        }
+                                    </form>
+                                    <a _="on click send submit to the previous <form />">
+                                        @filterCell.Text
+                                    </a>
+                                </td>
+                                break;
                             case ReportingTableDataAmountCell amountCell:
                                 if (amountCell.IsDelta)
                                 {

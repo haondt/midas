@@ -1,4 +1,6 @@
-﻿namespace Midas.UI.Components.Reporting.TableFactories
+﻿using Midas.UI.Models.Transactions;
+
+namespace Midas.UI.Components.Reporting.TableFactories
 {
     public partial class ReportingTableDataFactory
     {
@@ -39,15 +41,24 @@
                     "Cash flow",
                     "Cash flow (/mo)"
                 },
-                Rows = AccountSpending.Select(x => new List<ReportingTableDataCell>()
+                Rows = AccountSpending.Select(q => new List<ReportingTableDataCell>()
                 {
-                    new ReportingTableDataStringCell { Value = x.AccountName },
-                    new ReportingTableDataAmountCell { Amount = x.Income },
-                    new ReportingTableDataAmountCell { Amount = x.Spending },
-                    new ReportingTableDataAmountCell { Amount = x.CashFlow, IsDelta = true },
+                    new ReportingTableDataTransactionFilterLinkCell
+                    {
+                        Text = q.AccountName,
+                        Filters = new List<string>()
+                        {
+                            $"{TransactionFilterTargets.EitherAccountName} {TransactionFilterOperators.IsEqualTo} {q.AccountName}",
+                            $"{TransactionFilterTargets.Date} {TransactionFilterOperators.IsGreaterThanOrEqualTo} {_startDateString}",
+                            $"{TransactionFilterTargets.Date} {TransactionFilterOperators.IsLessThanOrEqualTo} {_endDateString}",
+                        }
+                    },
+                    new ReportingTableDataAmountCell { Amount = q.Income },
+                    new ReportingTableDataAmountCell { Amount = q.Spending },
+                    new ReportingTableDataAmountCell { Amount = q.CashFlow, IsDelta = true },
                     new ReportingTableDataAmountCell
                     {
-                        Amount = AmortizeAmount(x.CashFlow),
+                        Amount = AmortizeAmount(q.CashFlow),
                         IsDelta = true
                     },
                 }).ToList()

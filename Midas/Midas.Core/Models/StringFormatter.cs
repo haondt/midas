@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Globalization;
 using System.Text;
 
 namespace Midas.Core.Models
@@ -55,6 +56,16 @@ namespace Midas.Core.Models
         public static string FormatDate(AbsoluteDateTime absoluteDateTime)
         {
             return absoluteDateTime.LocalTime.ToString("yyyy-MM-dd");
+        }
+
+        public static AbsoluteDateTime ParseDate(string dateString)
+        {
+            return AbsoluteDateTime.Create(
+                DateTime.ParseExact(
+                    dateString,
+                    "yyyy-MM-dd",
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.AssumeLocal));
         }
     }
 }

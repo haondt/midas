@@ -9,5 +9,6 @@
         public const string StartsWith = "starts_with";
         public const string IsGreaterThanOrEqualTo = ">=";
         public const string IsLessThanOrEqualTo = "<=";
+        public const string IsNoneOrEqualTo = "is_none_or";
     }
 }

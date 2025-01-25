@@ -1,4 +1,6 @@
-﻿namespace Midas.UI.Components.Reporting.TableFactories
+﻿using Midas.UI.Models.Transactions;
+
+namespace Midas.UI.Components.Reporting.TableFactories
 {
     public partial class ReportingTableDataFactory
     {
@@ -17,7 +19,16 @@
                 Rows = CategoricalSpending.Select(q => new List<ReportingTableDataCell>
                 {
 
-                    new ReportingTableDataStringCell { Value = q.CategoryName },
+                    new ReportingTableDataTransactionFilterLinkCell
+                    {
+                        Text = q.CategoryName,
+                        Filters = new List<string>()
+                        {
+                            $"{TransactionFilterTargets.Category} {TransactionFilterOperators.IsEqualTo} {q.CategoryName}",
+                            $"{TransactionFilterTargets.Date} {TransactionFilterOperators.IsGreaterThanOrEqualTo} {_startDateString}",
+                            $"{TransactionFilterTargets.Date} {TransactionFilterOperators.IsLessThanOrEqualTo} {_endDateString}",
+                        }
+                    },
                     new ReportingTableDataAmountCell { Amount = q.Amount },
                     new ReportingTableDataAmountCell { Amount = AmortizeAmount(q.Amount) },
                 }).ToList()

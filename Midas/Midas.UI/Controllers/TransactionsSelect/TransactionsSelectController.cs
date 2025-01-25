@@ -24,6 +24,16 @@ namespace Midas.UI.Controllers.TransactionsSelect
             });
         }
 
+        [HttpGet("static-search")]
+        public Task<IResult> GetStaticSearchModal(
+            [FromQuery(Name = "filter")] List<string> filters)
+        {
+            return componentFactory.RenderComponentAsync(new TransactionsSelectStaticModal
+            {
+                Filters = filters
+            });
+        }
+
         [HttpPost("search")]
         public async Task<IResult> FinishSearch(
             [FromForm] TransactionSelectionResult selection)
