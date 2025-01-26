@@ -60,11 +60,20 @@ namespace Midas.Domain.Dashboard.Services
             else if (range <= TimeSpan.FromDays(desiredMaxPoints * 7))
                 stepper = new TimeStepper(startDay, TimeStepSize.Week);
             else if (range <= TimeSpan.FromDays(desiredMaxPoints * 31)) // 30 months
+            {
+                startDay = startDay.FloorToLocalMonth();
                 stepper = new TimeStepper(startDay, TimeStepSize.Month);
+            }
             else if (range <= TimeSpan.FromDays(desiredMaxPoints * 31 * 3)) // 30 quarters
+            {
+                startDay = startDay.FloorToLocalMonth();
                 stepper = new TimeStepper(startDay, TimeStepSize.Quarter);
+            }
             else
+            {
+                startDay = startDay.FloorToLocalYear();
                 stepper = new TimeStepper(startDay, TimeStepSize.Year);
+            }
 
             var transactionsByPeriod = new List<List<TransactionDto>>();
             var periods = new List<AbsoluteDateTime>();

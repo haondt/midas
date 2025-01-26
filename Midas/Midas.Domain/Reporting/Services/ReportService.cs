@@ -48,9 +48,15 @@ namespace Midas.Domain.Reporting.Services
             if (range <= TimeSpan.FromDays(95)) // ~ 3 months
                 stepper = new TimeStepper(startDay, TimeStepSize.Day);
             else if (range <= TimeSpan.FromDays(550)) // ~ 1.5 years
+            {
+                startDay = startDay.FloorToLocalMonth();
                 stepper = new TimeStepper(startDay, TimeStepSize.Month);
+            }
             else
+            {
+                startDay = startDay.FloorToLocalYear();
                 stepper = new TimeStepper(startDay, TimeStepSize.Year);
+            }
 
             var transactionsByPeriod = new List<List<TransactionDto>>();
             var periods = new List<AbsoluteDateTime>();
