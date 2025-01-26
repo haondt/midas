@@ -21,8 +21,8 @@ namespace Midas.UI.Controllers.Reporting
             var report = await reportService.GenerateReportData(from, to);
             return await componentFactory.RenderComponentAsync(new Report
             {
-                StartTime = report.StartTime,
-                EndTime = report.EndTime,
+                StartTime = report.InclusiveStartDay,
+                EndTime = report.InclusiveEndDay,
                 CashFlowPerTimeStep = report.CashFlowPerTimeStep,
                 IncomePerTimeStep = report.IncomePerTimeStep,
                 SpendingPerTimeStep = report.SpendingPerTimeStep,

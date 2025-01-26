@@ -4,8 +4,8 @@ namespace Midas.Domain.Reporting.Models
 {
     public class ReportDataDto
     {
-        public required AbsoluteDateTime StartTime { get; set; }
-        public required AbsoluteDateTime EndTime { get; set; }
+        public required AbsoluteDateTime InclusiveStartDay { get; set; }
+        public required AbsoluteDateTime InclusiveEndDay { get; set; }
 
         public required List<string> TimeStepLabels { get; set; }
         public required List<decimal> SpendingPerTimeStep { get; set; }

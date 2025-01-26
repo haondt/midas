@@ -1122,7 +1122,7 @@
         "type": "function",
         "z": "9e3bf19c5e1acd5e",
         "name": "set date",
-        "func": "msg.midas.context.date = Math.floor(new Date(msg.midas.request.data[0]).getTime() / 1000);\nreturn msg;",
+        "func": "const parts = msg.midas.request.data[0].split(\"-\");\nconst localDate = new Date(parts[0], parts[1]-1, parts[2]);\nmsg.midas.context.date = Math.floor(localDate.getTime() / 1000);\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,

@@ -16,10 +16,12 @@ namespace Midas.Domain.Reporting.Services
     {
         public async Task<ReportDataDto> GenerateReportData(AbsoluteDateTime start, AbsoluteDateTime end)
         {
+            var inclusiveStartTime = start.FloorToLocalDay();
+            var exclusiveEndTime = end.FloorToLocalDay().AddDays(1);
             var transactions = await transactionService.GetTransactions(new()
             {
-                TransactionFilter.MinDate(start),
-                TransactionFilter.MaxDate(end)
+                TransactionFilter.MinDate(inclusiveStartTime),
+                TransactionFilter.ExclusiveMaxDate(exclusiveEndTime)
             });
 
             List<(AbsoluteDateTime Date, IEnumerable<TransactionDto> Transactions)> transactionsByDateTime = transactions
@@ -36,64 +38,62 @@ namespace Midas.Domain.Reporting.Services
                 ))
                 .ToList();
 
-            var startDay = start.FloorToLocalDay();
             if (start <= AbsoluteDateTime.MinValue.AddDays(7))// subtracting a week as a buffer for localized time
-                startDay = transactionsByDateTime[0].Date;
-            var endDay = end.FloorToLocalDay();
+                inclusiveStartTime = transactionsByDateTime[0].Date;
             if (end >= AbsoluteDateTime.MaxValue.AddDays(-7))
-                endDay = transactionsByDateTime[^1].Date;
+                exclusiveEndTime = transactionsByDateTime[^1].Date.AddDays(1);
 
-            var range = endDay - startDay;
+            var range = exclusiveEndTime - inclusiveStartTime;
             TimeStepper stepper;
             if (range <= TimeSpan.FromDays(95)) // ~ 3 months
-                stepper = new TimeStepper(startDay, TimeStepSize.Day);
+                stepper = new TimeStepper(inclusiveStartTime, TimeStepSize.Day);
             else if (range <= TimeSpan.FromDays(550)) // ~ 1.5 years
             {
-                startDay = startDay.FloorToLocalMonth();
-                stepper = new TimeStepper(startDay, TimeStepSize.Month);
+                inclusiveStartTime = inclusiveStartTime.FloorToLocalMonth();
+                stepper = new TimeStepper(inclusiveStartTime, TimeStepSize.Month);
             }
             else
             {
-                startDay = startDay.FloorToLocalYear();
-                stepper = new TimeStepper(startDay, TimeStepSize.Year);
+                inclusiveStartTime = inclusiveStartTime.FloorToLocalYear();
+                stepper = new TimeStepper(inclusiveStartTime, TimeStepSize.Year);
             }
 
             var transactionsByPeriod = new List<List<TransactionDto>>();
             var periods = new List<AbsoluteDateTime>();
 
-            var currentPeriodStart = stepper.AbsoluteDateTime;
-            periods.Add(currentPeriodStart);
+            var currentPeriodInclusiveStart = stepper.AbsoluteDateTime;
+            periods.Add(currentPeriodInclusiveStart);
             transactionsByPeriod.Add(new());
             stepper = stepper.Step();
-            var currentPeriodEnd = stepper.AbsoluteDateTime;
+            var currentPeriodExclusiveEnd = stepper.AbsoluteDateTime;
 
             foreach (var (date, transactionGroup) in transactionsByDateTime)
             {
-                while (date >= currentPeriodEnd)
+                while (date >= currentPeriodExclusiveEnd)
                 {
-                    currentPeriodStart = currentPeriodEnd;
-                    periods.Add(currentPeriodStart);
+                    currentPeriodInclusiveStart = currentPeriodExclusiveEnd;
+                    periods.Add(currentPeriodInclusiveStart);
                     transactionsByPeriod.Add(new());
                     stepper = stepper.Step();
-                    currentPeriodEnd = stepper.AbsoluteDateTime;
+                    currentPeriodExclusiveEnd = stepper.AbsoluteDateTime;
                 }
 
                 transactionsByPeriod[^1].AddRange(transactionGroup);
             }
 
-            while (currentPeriodEnd <= endDay)
+            while (currentPeriodExclusiveEnd < exclusiveEndTime)
             {
-                currentPeriodStart = currentPeriodEnd;
-                periods.Add(currentPeriodStart);
+                currentPeriodInclusiveStart = currentPeriodExclusiveEnd;
+                periods.Add(currentPeriodInclusiveStart);
                 transactionsByPeriod.Add(new());
                 stepper = stepper.Step();
-                currentPeriodEnd = stepper.AbsoluteDateTime;
+                currentPeriodExclusiveEnd = stepper.AbsoluteDateTime;
             }
 
             var reportData = new ReportDataDto
             {
-                StartTime = startDay,
-                EndTime = endDay,
+                InclusiveStartDay = inclusiveStartTime,
+                InclusiveEndDay = exclusiveEndTime.AddLocalDays(-1),
 
                 TimeStepLabels = stepper.StepSize switch
                 {
