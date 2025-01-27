@@ -3,28 +3,33 @@
 @inject IEnumerable<NavigationLink> UngroupedLinks
 
 @code{
-    private static RenderFragment<NavigationItem> RenderNavigationItem = (item) =>
-        item switch
+    private static RenderFragment<(NavigationItem Item, bool IsRoot)> RenderNavigationItem = (item) =>
+    @<text>
+        @switch(item.Item)
         {
-            NavigationLink link => @<li>
+            case NavigationLink link:
                 <a 
                     hx-boost="true"
                     href="/@link.Slug"
                     hx-target="#content">
                     @link.Title
                 </a>
-            </li>,
-            NavigationSection sec => @<text>
-                <p class="menu-label">@sec.Label</p>
+                break;
+
+            case NavigationSection sec:
+                <p class="@(item.IsRoot ? "menu-label" : "menu-item")">@sec.Label</p>
                 <ul class="menu-list">
                     @foreach(var child in sec.Children)
                     {
-                        @RenderNavigationItem!(child);
+                        <li>
+                            @RenderNavigationItem!((child, false))
+                        </li>
                     }
                 </ul>
-            </text>,
-            _ => @<div>ruhrioh</div>
-        };
+                break;
+        }
+
+    </text>;
 
     private IEnumerable<NavigationSection> MergedSections = default!;
 
@@ -74,12 +79,10 @@
     </p>
     <div class="panel-block">
         <div class="menu is-flex-grow-1">
-            <ul class="menu-list">
-                @foreach(var sec in MergedSections)
-                {
-                    @RenderNavigationItem(sec);
-                }
-            </ul>
+            @foreach(var sec in MergedSections)
+            {
+                @RenderNavigationItem((sec, true))
+            }
         </div>
     </div>
 </div>

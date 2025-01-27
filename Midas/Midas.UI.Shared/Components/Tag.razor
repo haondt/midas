@@ -1,12 +1,37 @@
 ﻿@code {
     [Parameter, EditorRequired]
     public required string Text { get; set; }
+
+    [Parameter]
+    public string Name { get; set; } = "tags";
+
+    [Parameter]
+    public bool IsStatic { get; set; } = false;
+
+    [Parameter]
+    public bool IsMonospace { get; set; } = true;
+
+    [Parameter]
+    public string ColorClasses  { get; set; } = "has-text-info-80";
+
+    private string _spanClass = default!;
+    protected override void OnInitialized()
+    {
+        _spanClass = $"tag {(IsMonospace ? "midas-is-family-monospace" : "")} {ColorClasses}"; 
+    }
 }
 
-<div class="control">
-    <div class="tags has-addons">
-        <span class="tag is-info">@Text</span>
-        <input name="tags" type="hidden" value="@Text"/>
-        <button _="on click remove the closest .control" class="tag is-delete"></button>
+@if (IsStatic)
+{
+    <span class="@_spanClass">@Text</span>
+}
+else
+{
+    <div class="control">
+        <div class="tags has-addons">
+            <span class="@_spanClass">@Text</span>
+            <input name="@Name" type="hidden" value="@Text"/>
+            <button _="on click remove the closest .control" class="tag is-delete"></button>
+        </div>
     </div>
-</div>
+}

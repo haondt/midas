@@ -16,6 +16,7 @@ using Midas.Domain.Reconcile.Services;
 using Midas.Domain.Reporting.Models;
 using Midas.Domain.Reporting.Services;
 using Midas.Domain.Shared.Services;
+using Midas.Domain.Split.Services;
 using Midas.Domain.Supercategories.Services;
 using Midas.Domain.Transactions.Services;
 using Polly;
@@ -51,6 +52,7 @@ namespace Midas.Domain.Shared.Extensions
             services.AddSingleton<IMergeService, MergeService>();
             services.AddSingleton<IAccountsService, AccountsService>();
             services.AddSingleton<ISupercategoryService, SupercategoryService>();
+            services.AddSingleton<ISplitService, SplitService>();
             return services;
         }
 

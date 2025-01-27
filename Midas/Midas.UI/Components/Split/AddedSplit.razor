@@ -1,0 +1,21 @@
+﻿@using Haondt.Web.Components
+@using Midas.Domain.Transactions.Models
+@using Midas.UI.Components.Transactions
+
+@code {
+    [Parameter, EditorRequired]
+    public required ExtendedTransactionDto SourceTransaction { get; set; }
+
+    private FormTransaction SourceFormTransaction = default!;
+
+    protected override void OnInitialized()
+    {
+        SourceFormTransaction = FormTransaction.FromExtendedTransaction(SourceTransaction);
+        SourceFormTransaction.ImportDatum = [];
+    }
+}
+
+<div class="split">
+    <hr class="has-background-primary"/>
+    <ObjectComponentT Component="@SourceFormTransaction" />
+</div>

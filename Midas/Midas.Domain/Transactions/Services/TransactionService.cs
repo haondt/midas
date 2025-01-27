@@ -39,10 +39,34 @@ namespace Midas.Domain.Transactions.Services
             return transactionStorage.AddTransactions(newTransactions, oldTransacations);
         }
 
+        public async Task<long> ReplaceTransaction(TransactionDto newTransaction, long oldTransacation, bool keepImportData)
+        {
+            if (keepImportData)
+            {
+                var importDatum = await importDataStorage.Get(oldTransacation);
+                var result = await transactionStorage.AddTransactions([newTransaction], [oldTransacation]);
+                var id = result[0];
+                if (importDatum.Count > 0)
+                    await importDataStorage.AddMany(importDatum.Select(q => new TransactionImportDataDto
+                    {
+                        Account = q.Account,
+                        ConfigurationSlug = q.ConfigurationSlug,
+                        SourceData = q.SourceData,
+                        Transaction = id
+                    }));
+                return id;
+            }
+            return (await transactionStorage.AddTransactions([newTransaction], [oldTransacation]))[0];
+        }
+
 
         public Task<Dictionary<long, TransactionDto>> GetTransactions(List<TransactionFilter> filters)
         {
             return transactionStorage.GetTransactions(filters);
+        }
+        public Task<Optional<TransactionDto>> GetTransaction(long id)
+        {
+            return transactionStorage.GetTransaction(id);
         }
         public Task<long> GetTransactionsCount(List<TransactionFilter> filters)
         {
@@ -66,7 +90,7 @@ namespace Midas.Domain.Transactions.Services
             var transactions = await GetPagedTransactions(filters, pageSize, page);
             var accountIds = transactions.Values.SelectMany(t => new List<string> { t.SourceAccount, t.DestinationAccount })
                 .Distinct();
-            var accounts = (await accountsService.GetMany(accountIds.ToList()));
+            var accounts = (await accountsService.GetAccounts(accountIds.ToList()));
 
             var result = new Dictionary<long, ExtendedTransactionDto>();
             foreach (var (key, value) in transactions)
@@ -81,7 +105,8 @@ namespace Midas.Domain.Transactions.Services
                     Description = value.Description,
                     Tags = value.Tags,
                     TimeStamp = value.TimeStamp,
-                    SourceDataHashes = (await importDataStorage.Get(key)).Select(q => q.SourceDataHash).ToList()
+                    ImportDatum = (await importDataStorage.Get(key))
+                        .Select(q => (ExtendedTransactionImportData)q).ToList()
                 };
 
             return result;
@@ -101,8 +126,8 @@ namespace Midas.Domain.Transactions.Services
                 return new();
 
             var accounts = await (transaction.Value.SourceAccount == transaction.Value.DestinationAccount
-                ? accountsService.GetMany([transaction.Value.DestinationAccount])
-                : accountsService.GetMany([transaction.Value.SourceAccount, transaction.Value.DestinationAccount]));
+                ? accountsService.GetAccounts([transaction.Value.DestinationAccount])
+                : accountsService.GetAccounts([transaction.Value.SourceAccount, transaction.Value.DestinationAccount]));
 
 
             return new ExtendedTransactionDto
@@ -116,7 +141,8 @@ namespace Midas.Domain.Transactions.Services
                 Description = transaction.Value.Description,
                 Tags = transaction.Value.Tags,
                 TimeStamp = transaction.Value.TimeStamp,
-                SourceDataHashes = (await importDataStorage.Get(id)).Select(q => q.SourceDataHash).ToList()
+                ImportDatum = (await importDataStorage.Get(id))
+                    .Select(q => (ExtendedTransactionImportData)q).ToList()
             };
         }
 
@@ -148,5 +174,6 @@ namespace Midas.Domain.Transactions.Services
         {
             return transactionStorage.DeleteTransactions(filters);
         }
+
     }
 }

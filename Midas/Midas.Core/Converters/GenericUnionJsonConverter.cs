@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using Midas.Core.Models;
+﻿using Midas.Core.Models;
+using Newtonsoft.Json;
 
 namespace Midas.Core.Converters
 {
-    public class GenericUnionConverter : JsonConverter
+    public class GenericUnionJsonConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {

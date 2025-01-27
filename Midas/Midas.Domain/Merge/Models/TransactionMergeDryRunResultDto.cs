@@ -10,7 +10,6 @@ namespace Midas.Domain.Merge.Models
         public Optional<string> NewCategory { get; set; } = new();
         public List<string> NewTags { get; set; } = [];
         public List<(string AccountName, bool IsMine, decimal Amount)> BalanceChanges { get; set; } = [];
-        public List<long> TargetTransactions { get; set; } = [];
 
         public decimal Amount { get; set; }
         public List<string> Tags { get; set; } = [];

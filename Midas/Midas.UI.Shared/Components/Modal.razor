@@ -1,15 +1,13 @@
-﻿@using Haondt.Core.Models
-@using Midas.UI.Components.Transactions
-@using Midas.UI.Models.Transactions
-@using Midas.UI.Models.TransactionsSelect
-
+﻿
 @code {
+    [Parameter]
+    public RenderFragment? BodyContent { get; set; } 
+    [Parameter]
+    public RenderFragment? FooterContent { get; set; } 
     [Parameter, EditorRequired]
-    public required List<string> Filters { get; set; }
-
-    [Parameter, EditorRequired]
-    public required TransactionSearchOptions Options { get; set; }
+    public required string Title { get; set; } 
 }
+
 
 <div 
     id="modal-container"
@@ -40,22 +38,19 @@
 
                 .card-content {
                     overflow: auto;
-                    overflow-y: scroll;
+                    /* overflow-y: scroll; */
                 }
             }
         </style>
         <header class="modal-card-head card-header">
-            <p class="modal-card-title">View Transactions</p>
+            <p class="modal-card-title">@Title</p>
             <button class="delete" _="on click send click to the previous .modal-background"></button>
         </header>
         <section class="card-content">
-            <TransactionsSearch Options="@Options"  Filters="@Filters" />
+            @BodyContent
         </section>
         <footer class="modal-card-foot">
-            <button class="button" 
-                _="on click send click to the previous .modal-background">
-                Close
-            </button>
+            @FooterContent
         </footer>
     </div>
 </div>

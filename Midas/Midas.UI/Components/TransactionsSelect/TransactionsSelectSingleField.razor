@@ -1,0 +1,15 @@
+﻿@code {
+    public const string SelectionEvent = "transactionSelected";
+    public const string EventTarget = $"#{Id}";
+    private const string Id = "select-transaction";
+}
+
+<div id="@Id" class="field">
+    <button
+        class="button is-info"
+        hx-get="/transactions-select/single-search"
+        hx-params="none"
+        hx-swap="none">
+        Select target transaction
+    </button>
+</div>

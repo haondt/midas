@@ -1,8 +1,7 @@
-﻿using Newtonsoft.Json;
-using Midas.Charts.Converters;
+﻿using Midas.Charts.Converters;
 using Midas.Core.Constants;
-using Midas.Core.Converters;
 using Midas.Core.Extensions;
+using Newtonsoft.Json;
 
 namespace Midas.UI.Models.Charts
 {
@@ -13,7 +12,6 @@ namespace Midas.UI.Models.Charts
         {
             SerializerSettings = MidasConstants.ApiSerializerSettings.Clone();
             SerializerSettings.Converters.Add(new ChartCallbackJsonConverter());
-            SerializerSettings.Converters.Add(new GenericUnionConverter());
         }
     }
 }

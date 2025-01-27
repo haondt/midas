@@ -21,7 +21,7 @@ namespace Midas.Domain.Accounts.Services
         Task<int> DeleteAllAccounts();
         Task<List<(string Name, string Id)>> SearchAccountsByName(string partialName);
         Task<List<string>> GetAccountIdsByName(string name, long? limit = null);
-        Task<Dictionary<string, AccountDto>> GetMany(List<string> ids);
+        Task<Dictionary<string, AccountDto>> GetAccounts(List<string> ids);
         Task<Optional<string>> GetAccountIdByName(string name);
         Task UpsertAccounts(List<(string Id, AccountDto Account)> accounts);
         Task CreateAccounts(List<(string Id, AccountDto Account)> accounts);

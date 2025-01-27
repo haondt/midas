@@ -2,6 +2,7 @@
 @using Midas.Domain.Transactions.Models
 @using Midas.UI.Models.Transactions
 @using Midas.UI.Shared.Components
+@using System.Text
 
 @code {
     [Parameter, EditorRequired]
@@ -9,45 +10,94 @@
 
     [Parameter, EditorRequired]
     public required ExtendedTransactionDto TransactionDto { get; set; }
+
+    [Parameter, EditorRequired]
+    public required TransactionSearchOptions Options { get; set; }
+
+    private string _summaryScript = default!;
+
+    protected override void OnInitialized()
+    {
+        var sb = new StringBuilder();
+
+        if (!Options.HideDetails)
+        {
+            sb.AppendLine(@"
+				on click
+					if (the event's target is not the first <input/> in me
+						and the event's target is not in the first .actions in me
+				");
+
+            if (Options.LinkTarget != TransactionLinkTarget.None)
+                sb.AppendLine("and the event's target is not in the first .transaction-link in me");
+
+            sb.AppendLine(@"
+						and the event's target is not the first <a/> in me)
+						toggle .is-hidden on the next <tr/> toggle .expanded on me
+					end
+				end
+            ");
+        }
+
+        sb.AppendLine(@"
+			on afterDeleted
+				remove the next <tr/>
+				then remove me
+			end
+		");
+
+        _summaryScript = sb.ToString();
+    }
 }
 
 <tr class="summary" 
     id="summary-@Id"
-    _="
-    on click
-        if (the event's target is not the first <input/> in me
-            and the event's target is not in the first .actions in me
-            and the event's target is not in the first .transaction-link in me
-            and the event's target is not the first <a/> in me)
-            toggle .is-hidden on the next <tr/> toggle .expanded on me
-        end
-    end
-    on afterDeleted
-        remove the next <tr/>
-        then remove me
-    end
-">
-    <td class="transaction-search-result-checkbox">
-        <input
-            _="on click send updateState to #select-all"
-            class="select-checkbox" name="t-@Id" type="checkbox"/>
-    </td>
+    _="@_summaryScript">
+    @if (!Options.HideCheckboxes)
+    {
+		<td>
+			<input
+				_="on click send updateState to #select-all"
+				class="select-checkbox" name="t-@Id" type="checkbox"/>
+		</td>
+    }
     <td>
         <div class="is-flex is-flex-direction-row">
             <div class="transaction-link">
-                <a  class="transaction-link-blank"
-                    target="_blank"
-                    hx-boost="true"
-                    href="/transactions/edit/@Id"
-                    hx-target="#content">
-                    @TransactionDto.Description
-                </a>
-                <a class="transaction-link-here" 
-                    hx-boost="true"
-                    href="/transactions/edit/@Id"
-                    hx-target="#content">
-                    @TransactionDto.Description
-                </a>
+                @switch (Options.LinkTarget)
+                {
+                    case TransactionLinkTarget.Here:
+                        <a
+                            hx-boost="true"
+                            href="/transactions/edit/@Id"
+                            hx-target="#content">
+                            @TransactionDto.Description
+                        </a>
+                        break;
+                    case TransactionLinkTarget.Blank:
+                        <a
+                            target="_blank"
+                            hx-boost="true"
+                            href="/transactions/edit/@Id"
+                            hx-target="#content">
+                            @TransactionDto.Description
+                        </a>
+                        break;
+                    case TransactionLinkTarget.Custom:
+                        <a
+                            hx-post="@(Options.LinkCustomTarget ?? "")"
+                            hx-vals='{"transaction": "@Id"}'
+                            hx-swap="none">
+                            @TransactionDto.Description
+                        </a>
+                        break;
+                    case TransactionLinkTarget.None:
+                    default:
+                        <p>
+                            @TransactionDto.Description
+                        </p>
+                        break;
+                }
             </div>
         </div>
     </td>
@@ -57,145 +107,194 @@
     <td>
         @StringFormatter.FormatDate(TransactionDto.TimeStamp)
     </td>
-    <td class="actions">
-        <ActionsDropdown>
-            <button 
-                class="dropdown-item"
-                hx-swap="none"
-                _="on htmx:afterOnLoad
-                    if event.detail.xhr.status == 204 then
-                        send afterDeleted to the closest <tr/>"
-                hx-confirm="are you sure?"
-                hx-delete="/transaction/@Id">
-                <span class="icon has-text-danger">
-                    <i class="fa-solid fa-trash"></i>
-                </span>
-                <span>delete</span>
-            </button>
-            <button 
-                class="dropdown-item"
-                hx-target="#content"
-                hx-swap="innerHTML"
-                hx-push-url="true"
-                hx-vals='{"t-@Id":"true"}'
-                hx-get="/transaction-import/reimport">
-                <span class="icon has-text-warning">
-                    <i class="fa-solid fa-arrows-rotate"></i>
-                </span>
-                <span>re-import</span>
-            </button>
-            <button 
-                class="dropdown-item"
-                hx-target="#content"
-                hx-swap="innerHTML"
-                hx-push-url="true"
-                hx-get="/transactions/edit/@Id">
-                <span class="icon has-text-info">
-                    <i class="fa-solid fa-pencil"></i>
-                </span>
-                <span>edit</span>
-            </button>
-        </ActionsDropdown>
-    </td>
+	@if (!Options.HideActions)
+	{
+		<td>
+			<ActionsDropdown>
+				<button 
+					class="dropdown-item"
+					hx-swap="none"
+					_="on htmx:afterOnLoad
+						if event.detail.xhr.status == 204 then
+							send afterDeleted to the closest <tr/>"
+					hx-confirm="are you sure?"
+					hx-delete="/transaction/@Id">
+					<span class="icon has-text-danger">
+						<i class="fa-solid fa-trash"></i>
+					</span>
+					<span>delete</span>
+				</button>
+				<button 
+					class="dropdown-item"
+					hx-target="#content"
+					hx-swap="innerHTML"
+					hx-push-url="true"
+					hx-vals='{"t-@Id":"true"}'
+					hx-get="/transaction-import/reimport">
+					<span class="icon has-text-warning">
+						<i class="fa-solid fa-arrows-rotate"></i>
+					</span>
+					<span>re-import</span>
+				</button>
+				<button 
+					class="dropdown-item"
+					hx-target="#content"
+					hx-swap="innerHTML"
+					hx-push-url="true"
+					hx-vals='{"transactionId":"@Id"}'
+					hx-get="/split">
+					<span class="icon has-text-warning">
+						<i class="fa-solid fa-arrows-split-up-and-left"></i>
+					</span>
+					<span>split</span>
+				</button>
+				<button 
+					class="dropdown-item"
+					hx-target="#content"
+					hx-swap="innerHTML"
+					hx-push-url="true"
+					hx-get="/transactions/edit/@Id">
+					<span class="icon has-text-info">
+						<i class="fa-solid fa-pencil"></i>
+					</span>
+					<span>edit</span>
+				</button>
+			</ActionsDropdown>
+		</td>
+    }
 </tr>
-<tr class="details is-hidden"
-    id="details-@Id">
-    <td colspan="5">
-        <table style="width:100%;">
-            <tbody>
-                <tr>
-                    <th>Source account name</th>
-                    <td>
-                        @TransactionDto.SourceAccountName
-                        <TransactionsFilterForValueButton
-                            Target="@TransactionFilterTargets.SourceAccountName"
-                            Value="@TransactionDto.SourceAccountName"
-                        />
-                        <TransactionsFilterOutValueButton
-                            Target="@TransactionFilterTargets.SourceAccountName"
-                            Value="@TransactionDto.SourceAccountName"
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <th>Source account ID</th>
-                    <td>
-                        @TransactionDto.SourceAccount
-                        <TransactionsFilterForValueButton
-                            Target="@TransactionFilterTargets.SourceAccountId"
-                            Value="@TransactionDto.SourceAccount"
-                        />
-                        <TransactionsFilterOutValueButton
-                            Target="@TransactionFilterTargets.SourceAccountId"
-                            Value="@TransactionDto.SourceAccount"
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <th>Destination account name</th>
-                    <td>
-                        @TransactionDto.DestinationAccountName
-                        <TransactionsFilterForValueButton
-                            Target="@TransactionFilterTargets.DestinationAccountName"
-                            Value="@TransactionDto.DestinationAccountName"
-                        />
-                        <TransactionsFilterOutValueButton
-                            Target="@TransactionFilterTargets.DestinationAccountName"
-                            Value="@TransactionDto.DestinationAccountName"
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <th>Destination account ID</th>
-                    <td>
-                        @TransactionDto.DestinationAccount
-                        <TransactionsFilterForValueButton
-                            Target="@TransactionFilterTargets.DestinationAccountId"
-                            Value="@TransactionDto.DestinationAccount"
-                        />
-                        <TransactionsFilterOutValueButton
-                            Target="@TransactionFilterTargets.DestinationAccountId"
-                            Value="@TransactionDto.DestinationAccount"
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <th>Category</th>
-                    <td>
-                        @TransactionDto.Category
-                        <TransactionsFilterForValueButton
-                            Target="@TransactionFilterTargets.Category"
-                            Value="@TransactionDto.Category"
-                        />
-                        <TransactionsFilterOutValueButton
-                            Target="@TransactionFilterTargets.Category"
-                            Value="@TransactionDto.Category"
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <th>Tags</th>
-                    <td>
-                        <div class="tags">
-                            @foreach(var tag in TransactionDto.Tags)
-                            {
-                                <span class="tag has-text-info">@tag</span>
-                            }
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Source Data Hashes</th>
-                    <td>
-                        <div class="tags">
-                            @foreach(var hash in TransactionDto.SourceDataHashes)
-                            {
-                                <span class="tag">@hash</span>
-                            }
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </td>
-</tr>
+@if (!Options.HideDetails)
+{
+	<tr class="details is-hidden"
+		id="details-@Id">
+		<td colspan="5">
+			<table style="width:100%;">
+				<tbody>
+					<tr>
+						<th>Source account name</th>
+						<td>
+							<p class="mr-1 is-inline-block">
+								@TransactionDto.SourceAccountName
+							</p>
+							@if (!Options.HideLineItemFilterButtons)
+							{
+									<TransactionsFilterForValueButton
+									Target="@TransactionFilterTargets.SourceAccountName"
+									Value="@TransactionDto.SourceAccountName"
+								/>
+								<TransactionsFilterOutValueButton
+									Target="@TransactionFilterTargets.SourceAccountName"
+									Value="@TransactionDto.SourceAccountName"
+								/>
+							}
+						</td>
+					</tr>
+					@if (!Options.HideAccountIds)
+					{
+						<tr>
+							<th>Source account ID</th>
+							<td>
+								<p class="mr-1 is-inline-block">
+									@TransactionDto.SourceAccount
+								</p>
+								@if (!Options.HideLineItemFilterButtons)
+								{
+									<TransactionsFilterForValueButton
+										Target="@TransactionFilterTargets.SourceAccountId"
+										Value="@TransactionDto.SourceAccount"
+									/>
+									<TransactionsFilterOutValueButton
+										Target="@TransactionFilterTargets.SourceAccountId"
+										Value="@TransactionDto.SourceAccount"
+									/>
+								}
+							</td>
+						</tr>
+					}
+					<tr>
+						<th>Destination account name</th>
+						<td>
+							<p class="mr-1 is-inline-block">
+								@TransactionDto.DestinationAccountName
+							</p>
+							@if (!Options.HideLineItemFilterButtons)
+							{
+								<TransactionsFilterForValueButton
+									Target="@TransactionFilterTargets.DestinationAccountName"
+									Value="@TransactionDto.DestinationAccountName"
+								/>
+								<TransactionsFilterOutValueButton
+									Target="@TransactionFilterTargets.DestinationAccountName"
+									Value="@TransactionDto.DestinationAccountName"
+								/>
+							}
+						</td>
+					</tr>
+					@if (!Options.HideAccountIds)
+					{
+						<tr>
+							<th>Destination account ID</th>
+							@if (!Options.HideLineItemFilterButtons)
+							{
+								<td>
+									<p class="mr-1 is-inline-block">
+										@TransactionDto.DestinationAccount
+									</p>
+									<TransactionsFilterForValueButton
+										Target="@TransactionFilterTargets.DestinationAccountId"
+										Value="@TransactionDto.DestinationAccount"
+									/>
+									<TransactionsFilterOutValueButton
+										Target="@TransactionFilterTargets.DestinationAccountId"
+										Value="@TransactionDto.DestinationAccount"
+									/>
+								</td>
+							}
+						</tr>
+					}
+					<tr>
+						<th>Category</th>
+						<td>
+							<p class="mr-1 is-inline-block">
+								@TransactionDto.Category
+							</p>
+							@if (!Options.HideLineItemFilterButtons)
+							{
+								<TransactionsFilterForValueButton
+									Target="@TransactionFilterTargets.Category"
+									Value="@TransactionDto.Category"
+								/>
+								<TransactionsFilterOutValueButton
+									Target="@TransactionFilterTargets.Category"
+									Value="@TransactionDto.Category"
+								/>
+							}
+						</td>
+					</tr>
+					<tr>
+						<th>Tags</th>
+						<td>
+							<div class="tags">
+								@foreach(var tag in TransactionDto.Tags)
+								{
+									<span class="tag has-text-info">@tag</span>
+								}
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<th>Source Data Hashes</th>
+						<td>
+							<div class="tags">
+								@foreach(var data in TransactionDto.ImportDatum)
+								{
+									<span class="tag">@data.SourceDataHash</span>
+								}
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</td>
+	</tr>
+}

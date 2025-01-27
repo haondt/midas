@@ -50,18 +50,13 @@ namespace Midas.UI.Extensions
                 {
                     new NavigationLink
                     {
+                        Title = "Create New",
+                        Slug = "transactions/edit"
+                    },
+                    new NavigationLink
+                    {
                         Title = "Search",
                         Slug = "transactions",
-                    },
-                    new NavigationLink
-                    {
-                        Title = "Reconcile",
-                        Slug = "reconcile",
-                    },
-                    new NavigationLink
-                    {
-                        Title = "Merge",
-                        Slug = "merge",
                     },
                     new NavigationLink
                     {
@@ -75,8 +70,18 @@ namespace Midas.UI.Extensions
                     },
                     new NavigationLink
                     {
-                        Title = "Create New",
-                        Slug = "transactions/edit"
+                        Title = "Split",
+                        Slug = "split",
+                    },
+                    new NavigationLink
+                    {
+                        Title = "Merge",
+                        Slug = "merge",
+                    },
+                    new NavigationLink
+                    {
+                        Title = "Reconcile",
+                        Slug = "reconcile",
                     }
                 }
             });

@@ -1,5 +1,6 @@
 ﻿@using Haondt.Core.Models
 @using Midas.Core.Constants
+@using Midas.UI.Shared.Components
 
 @code {
     [Parameter]
@@ -17,9 +18,5 @@
     }
 }
 
-<span 
-    class="tag @(IsExistingAccount ? "has-text-success" : "")"
-    style="font-family:monospace;">
-    @Id
-</span>
+<Tag IsStatic="true" Text="@Id" IsMonospace="true" ColorClasses="@(IsExistingAccount ? "has-text-success" : "")" />
 <input type="hidden" value="@Id" @attributes="InputAttributes"/>

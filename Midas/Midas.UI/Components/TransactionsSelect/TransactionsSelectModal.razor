@@ -1,10 +1,13 @@
 @using Haondt.Core.Models
 @using Midas.UI.Components.Transactions
+@using Midas.UI.Models.Transactions
 @using Midas.UI.Models.TransactionsSelect
 
 @code {
     [Parameter, EditorRequired]
     public required TransactionsSelectionState Selection { get; set; }
+    [Parameter, EditorRequired]
+    public required TransactionSearchOptions Options { get; set; }
 }
 <div 
     id="modal-container"
@@ -44,29 +47,20 @@
             <button class="delete" _="on click send click to the previous .modal-background"></button>
         </header>
         <section class="card-content">
-            <style>
-                @@scope {
-                    :scope {
-                        .actions {
-                            display: none;
-                        }
-                    }
-                }
-            </style>
             @if (Selection.SelectNone)
             {
-                <TransactionsSearch />
+                <TransactionsSearch Options="@Options" />
             }
             else
             {
-                <TransactionsSearch Filters="Selection.Filters" />
+                <TransactionsSearch Options="@Options" Filters="Selection.Filters" />
             }
         </section>
         <footer class="modal-card-foot">
             <form 
                 hx-post="/transactions-select/search"
                 hx-swap="none"
-                hx-include="#filters,#search-results">
+                hx-include="#filters,#search-results,#transaction-select-options">
                 @if (Selection.SelectionEvent != null)
                 {
                     <input type="hidden" name="selection-event" value="@Selection.SelectionEvent"/>

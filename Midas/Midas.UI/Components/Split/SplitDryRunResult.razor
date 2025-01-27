@@ -1,0 +1,213 @@
+﻿@using Midas.Core.Constants
+@using Midas.Core.Models
+@using Midas.Domain.Split.Models
+@using Midas.Domain.Transactions.Models
+@using Midas.Persistence.Models
+@using Midas.UI.Components.Transactions
+@using Midas.UI.Models.Transactions
+
+@code {
+    [Parameter]
+    public List<string> NewAccounts { get; set; } = [];
+    [Parameter]
+    public List<string> NewCategories { get; set; } = [];
+    [Parameter]
+    public List<string> NewTags { get; set; } = [];
+    [Parameter]
+    public List<(string AccountName, bool IsMine, decimal Amount)> BalanceChanges { get; set; } = [];
+
+    [Parameter, EditorRequired]
+    public required List<TransactionSplit> NewTransactions { get; set; }
+
+    [Parameter, EditorRequired]
+    public required string SplitsPayload { get; set; }
+    [Parameter, EditorRequired]
+    public required long SourceTransactionId { get; set; }
+
+    private RenderFragment<(string Title, RenderFragment Inner)> CreateResultItem = (args) =>
+        @<details open class="block">
+            <summary class="mb-2 is-flex is-flex-direction-row is-align-items-center is-justify-content-flex-start">
+                <span class="indicator icon">
+                    <i class="fas fa-chevron-right"/>
+                </span>
+                <p class="subtitle">@args.Title</p>
+            </summary>
+            <div class="message mb-2">
+                <div class="message-body">
+                @args.Inner
+                </div>
+            </div>
+        </details>;
+
+}
+
+
+<div>
+    <div class="box">
+        <style>
+            @@scope {
+                details[open] .indicator {
+                    transform: rotate(90deg);
+                }
+                summary::marker {
+                    display: none;
+                }
+                summary {
+                    .icon, .subtitle {
+                        transition: color 0.3s ease;
+                    }
+                }
+                summary:hover, summary .subtitle:hover {
+                    cursor: pointer;
+                    .icon, .subtitle {
+                        --bulma-text: hsl(var(--bulma-text-h), var(--bulma-text-s), 90%);
+                    }
+                }
+            }
+        </style>
+
+        @CreateResultItem(("Account Balance Changes", 
+        @<div class="table-container">
+            <table class="table is-hoverable  is-fullwidth">
+                <tbody>
+                    @foreach(var (accountName, isMine, amount) in BalanceChanges)
+                    {
+
+                        <tr class="@(isMine? "has-background-info-dark" : "")">
+                            <td>
+                                @accountName
+                            </td>
+                            @if(amount < 0)
+                            {
+                                <td class="has-text-danger">@StringFormatter.FormatCurrency(amount, false)</td>
+                            }
+                            else
+                            {
+                                <td class="has-text-success">@StringFormatter.FormatCurrency(amount)</td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>))
+
+        @if(NewCategories.Count > 0)
+        {
+            @CreateResultItem(("New Categories", 
+            @<div class="table-container">
+                <table class="table is-hoverable  is-fullwidth" >
+                    <tbody>
+                        @foreach(var name in NewCategories)
+                        {
+                            <tr>
+                                <td>@name</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>))
+        }
+
+            
+        @if(NewTags.Count > 0)
+        {
+            @CreateResultItem(("New Tags", 
+            @<div class="table-container">
+                <table class="table is-hoverable  is-fullwidth" >
+                    <tbody>
+                        @foreach(var name in NewTags)
+                        {
+                            <tr>
+                                <td>@name</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>))
+        }
+
+        @if (NewAccounts.Count > 0)
+        {
+            @CreateResultItem(("New Accounts", 
+            @<div class="table-container">
+                <table class="table is-hoverable  is-fullwidth" >
+                    <tbody>
+                        @foreach(var name in NewAccounts)
+                        {
+                            <tr><td>@name</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>))
+        }
+
+        <p class="subtitle mb-2">New Transactions</p>
+        <div class="table-container">
+            <table class="table is-fullwidth is-hoverable">
+                <style>
+                    @@scope {
+                        tr.summary:hover,
+                        tr.summary:hover + tr,
+                        tr.summary:has(+ tr:hover)
+                        {
+                            cursor: pointer;
+                            background-color: var(--bulma-table-row-hover-background-color);
+                        }
+                        
+                        tr.expanded td {
+                            border: none;
+                        }
+
+                        tr.details table {
+                            --bulma-table-cell-border-color: hsl(0, 0%, 14%);
+                        }
+                    }
+                </style>
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        var transactionOptions = new TransactionSearchOptions
+                        {
+                            HideAccountIds = true,
+                            HideActions = true,
+                            HideCheckboxes = true,
+                            HideLineItemFilterButtons = true,
+                            LinkTarget = TransactionLinkTarget.None
+                        };
+                    }
+                    @for (int i=0;i <NewTransactions.Count; i++)
+                    {
+                        <Transaction 
+                            Id="@i"
+                            Options="@transactionOptions"
+                            TransactionDto="@NewTransactions[i].AsExtendedTransaction()" />
+                    }
+                </tbody>
+            </table>
+        </div> 
+
+        <hr/>
+        <div class="field">
+            <div class="control">
+                <form
+                    hx-post="/split/run"
+                    hx-swap="innerHTML"
+                    hx-target="#split-result">
+                    <input name="splits" value="@SplitsPayload" type="hidden" />
+                    <input name="source" value="@SourceTransactionId" type="hidden" />
+                    <button class="button is-primary">
+                        Split Transactions
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="split-result"></div>
+</div>

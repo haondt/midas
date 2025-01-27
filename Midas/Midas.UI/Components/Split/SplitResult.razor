@@ -1,0 +1,49 @@
+﻿@using Haondt.Core.Models
+@using Midas.Domain.Transactions.Models
+@using Midas.UI.Components.Transactions
+@using Midas.UI.Models.Transactions
+
+@code {
+    [Parameter, EditorRequired]
+    public required List<(long Id, ExtendedTransactionDto Transaction)> NewTransactions { get; set; }
+}
+
+<div class="box">
+    <div class="content">
+        <p class="title is-4">Split Summary</p>
+    </div>
+
+    <p class="subtitle mb-2">New Transactions</p>
+    <div class="table-container">
+        <table class="table is-fullwidth is-hoverable">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    var transactionOptions = new TransactionSearchOptions
+                    {
+                        HideAccountIds = true,
+                        HideActions = true,
+                        HideCheckboxes = true,
+                        HideLineItemFilterButtons = true,
+                        LinkTarget = TransactionLinkTarget.Here,
+                        HideDetails = true
+                    };
+                }
+                @foreach(var (id, transaction) in NewTransactions)
+                {
+                    <Transaction 
+                        Id="@id"
+                        Options="@transactionOptions"
+                        TransactionDto="@transaction" />
+                }
+            </tbody>
+        </table>
+    </div> 
+
+</div>

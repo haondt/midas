@@ -33,6 +33,7 @@ namespace Midas.Core.Constants
             ApiSerializerSettings.Converters.Add(new GenericStorageKeyJsonConverter());
             ApiSerializerSettings.Converters.Add(new GenericOptionalJsonConverter());
             ApiSerializerSettings.Converters.Add(new AbsoluteDateTimeJsonConverter());
+            ApiSerializerSettings.Converters.Add(new GenericUnionJsonConverter());
 
             PrettySerializerSettings = new JsonSerializerSettings();
             PrettySerializerSettings.TypeNameHandling = TypeNameHandling.None;
@@ -50,6 +51,7 @@ namespace Midas.Core.Constants
             PrettySerializerSettings.Converters.Add(new GenericStorageKeyJsonConverter());
             PrettySerializerSettings.Converters.Add(new GenericOptionalJsonConverter());
             PrettySerializerSettings.Converters.Add(new AbsoluteDateTimeJsonConverter());
+            PrettySerializerSettings.Converters.Add(new GenericUnionJsonConverter());
         }
 
         public static JsonSerializerSettings PrettySerializerSettings { get; }

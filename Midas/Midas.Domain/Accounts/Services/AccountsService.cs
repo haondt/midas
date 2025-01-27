@@ -58,7 +58,8 @@ namespace Midas.Domain.Accounts.Services
         {
             return accountStorage.Get(id);
         }
-        public Task<Dictionary<string, AccountDto>> GetMany(List<string> ids)
+
+        public Task<Dictionary<string, AccountDto>> GetAccounts(List<string> ids)
         {
             return accountStorage.GetMany(ids);
         }

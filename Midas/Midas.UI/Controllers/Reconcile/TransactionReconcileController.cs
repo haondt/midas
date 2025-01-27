@@ -6,6 +6,7 @@ using Midas.Core.Constants;
 using Midas.Domain.Accounts.Services;
 using Midas.Domain.Reconcile.Models;
 using Midas.Domain.Reconcile.Services;
+using Midas.Domain.Transactions.Models;
 using Midas.Persistence.Models;
 using Midas.Persistence.Storages.Abstractions;
 using Midas.UI.Components.Reconcile;
@@ -87,10 +88,10 @@ namespace Midas.UI.Controllers.Reconcile
 
 
             var accountIds = result.Value.MergedTransactions.Value.SelectMany(t => new List<string> { t.NewTransaction.SourceAccount, t.NewTransaction.DestinationAccount });
-            var accountNames = (await accountsService.GetMany(accountIds.ToList()))
+            var accountNames = (await accountsService.GetAccounts(accountIds.ToList()))
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Name);
             var allOldTransactions = result.Value.MergedTransactions.Value.SelectMany(t => t.OldTransactions).ToList();
-            var sourceDataHashes = (await importDataStorage.GetMany(allOldTransactions)).Zip(allOldTransactions).ToDictionary(q => q.Second, q => q.First.Select(r => r.SourceDataHash));
+            var importDatum = (await importDataStorage.GetMany(allOldTransactions)).Zip(allOldTransactions).ToDictionary(q => q.Second, q => q.First);
 
             //var mergedTransactions = new List<ReconcileDryRunExpandedSingleResult>();
             //foreach(var t in result.Value.MergedTransactions.Value)
@@ -130,7 +131,10 @@ namespace Midas.UI.Controllers.Reconcile
                         TimeStamp = t.NewTransaction.TimeStamp,
                         SourceAccountName = accountNames.GetValueOrDefault(t.NewTransaction.SourceAccount, MidasConstants.DefaultAccountName),
                         DestinationAccountName = accountNames.GetValueOrDefault(t.NewTransaction.DestinationAccount, MidasConstants.DefaultAccountName),
-                        SourceDataHashes = t.OldTransactions.SelectMany(t => sourceDataHashes.GetValueOrDefault(t, [])).Distinct().ToList()
+                        ImportDatum = t.OldTransactions
+                            .SelectMany(t => importDatum.GetValueOrDefault(t, []))
+                            .Select(q => (ExtendedTransactionImportData)q)
+                            .ToList()
                     }
                 }).ToList())
             };

@@ -1,0 +1,198 @@
+﻿@using Haondt.Web.Components
+@using Midas.Domain.Transactions.Models
+@using Midas.UI.Components.Transactions
+
+
+@code {
+    [Parameter, EditorRequired]
+    public required (long Id, ExtendedTransactionDto Transaction) SourceTransaction { get; set; }
+
+    [Parameter]
+    public bool SplitSourceData { get; set; } = false;
+
+    private FormTransaction SourceFormTransaction = default!;
+    private List<FormTransaction> InitialSplits = [];
+
+    protected override void OnInitialized()
+    {
+        SourceFormTransaction = FormTransaction.FromExtendedTransaction(SourceTransaction.Transaction);
+        SourceFormTransaction.IsStatic = true;
+
+        if (SplitSourceData)
+        {
+            if (SourceTransaction.Transaction.ImportDatum.Count == 0)
+            {
+                var onlySplit = FormTransaction.FromExtendedTransaction(SourceTransaction.Transaction);
+                InitialSplits = [onlySplit];
+            }
+            else
+            {
+                foreach(var hash in SourceTransaction.Transaction.ImportDatum)
+                {
+                    var split = FormTransaction.FromExtendedTransaction(SourceTransaction.Transaction);
+                    split.ImportDatum = [hash];
+                    InitialSplits.Add(split);
+                }
+            }
+        }
+        else
+        {
+            var firstSplit = FormTransaction.FromExtendedTransaction(SourceTransaction.Transaction);
+            var secondSplit = FormTransaction.FromExtendedTransaction(SourceTransaction.Transaction);
+            secondSplit.ImportDatum = [];
+            InitialSplits = [firstSplit, secondSplit];
+        }
+    }
+}
+
+
+
+<div>
+    <style>
+        @@scope {
+            details[open] .indicator {
+                transform: rotate(-90deg);
+            }
+            summary::marker {
+                display: none;
+            }
+            summary {
+                .icon, .subtitle {
+                    transition: color 0.3s ease;
+                }
+            }
+            summary:hover, summary .subtitle:hover {
+                cursor: pointer;
+                .icon, .subtitle {
+                    --bulma-text: hsl(var(--bulma-text-h), var(--bulma-text-s), 90%);
+                }
+            }
+        }
+    </style>
+    <div class="box">
+        <details  class="block">
+            <summary class="mb-2 is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between">
+                <p class="title is-4">Source Transaction</p>
+                <span class="indicator icon">
+                    <i class="fas fa-chevron-left"/>
+                </span>
+            </summary>
+            <ObjectComponentT Component="SourceFormTransaction" />
+        </details>
+    </div>
+
+    <div class="box">
+        <p class="title is-4">New Transactions</p>
+
+        <div class="split">
+			<ObjectComponentT Component="InitialSplits[0]" />
+        </div>
+
+        @foreach(var split in InitialSplits.Skip(1))
+        {
+			<hr class="has-background-primary"/>
+            <div class="split">
+				<ObjectComponentT Component="split" />
+            </div>
+        }
+
+
+        <div id="add-split-component" class="control">
+            <style>
+                @@scope {
+                    :scope {
+                        display: flex;
+                        flex-direction: column;
+
+
+                        .add-split-button:hover {
+                            --bulma-button-background-l: var(--bulma-dark-l);
+                            --bulma-button-color-l: var(--bulma-primary-dark-invert-l);
+                            --bulma-button-h: var(--bulma-primary-h);
+                            --bulma-button-s: var(--bulma-primary-s);
+                            --bulma-button-l: var(--bulma-primary-l);
+                            --bulma-button-border-l: var(--bulma-primary-l);
+                            --bulma-button-border-width: 0px;
+                            --bulma-button-outer-shawdow-a: 0;
+                            --bulma-button-background-l-delta: var(--bulma-button-hover-background-l-delta);
+                            --bulma-button-border-l-delta: var(--bulma-button-hover-border-l-delta);
+                        }
+                        .add-split-button:not(:hover) {
+                            background-color: hsl(221deg, 14%,calc(21% + 0%));
+                            color: hsl(var(--bulma-button-h), var(--bulma-button-s), var(--bulma-button-background-l));
+
+                            --bulma-button-h: var(--bulma-light-h);
+                            --bulma-button-s: var(--bulma-light-s);
+                            --bulma-button-l: var(--bulma-light-l);
+                            --bulma-button-background-l: var(--bulma-light-l);
+                            --bulma-button-border-l: var(--bulma-light-l);
+                            --bulma-button-border-width: 0px;
+                            --bulma-button-color-l: var(--bulma-light-invert-l);
+                            --bulma-button-outer-shadow-a: 0;
+                        }
+
+                        hr {
+                            transition-duration: var(--bulma-duration);
+                            transition-property: background-color;
+
+                        }
+
+                        hr.hovered {
+                            background-color: hsl(var(--bulma-primary-h), var(--bulma-primary-s), calc(var(--bulma-dark-l) + var(--bulma-hover-background-l-delta)));
+                        }
+
+
+                    }
+                }
+            </style>
+            <hr />
+            <div class="is-overlay is-flex is-flex-direction-row is-justify-content-center">
+                <div class="buttons">
+                <button 
+                    _="on mouseenter add .hovered to the previous <hr/> on mouseleave remove .hovered from the previous <hr/>"
+                    hx-target="#add-split-component"
+                    hx-swap="beforebegin"
+                    hx-get="/split/add-split" 
+                    hx-vals='{"transactionId": "@SourceTransaction.Id"}'
+                    class="button add-split-button">
+                    Add split
+                </button>
+                </div>
+            </div>
+        </div>
+
+        <button 
+            _="on click
+				set data to []
+                for split in .split in the closest .box
+					set current to {}
+                    for input in <input/> in split
+						set key to input's name
+						set value to `${input's value}`
+                        
+                        if current[key] is null
+                            set current[key] to value
+                        else
+                            if current[key] is a String
+                                set current[key] to [current[key], value]
+							else
+							    append value to current[key]
+                            end
+                        end
+                    end
+                    append current to data
+                end
+                send submit(value: data) to me
+            "
+            hx-trigger="submit"
+            hx-post="/split/dry-run"
+            hx-vals='js:{splits: JSON.stringify(event.detail.value), source: @SourceTransaction.Id }'
+            hx-swap="innerHTML"
+            hx-target="#dry-run-result"
+            class="button is-primary">
+            Dry run
+        </button>
+    </div>
+
+    <div id="dry-run-result"></div>
+</div>

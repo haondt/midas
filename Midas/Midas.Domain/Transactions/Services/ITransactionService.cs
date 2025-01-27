@@ -14,12 +14,14 @@ namespace Midas.Domain.Transactions.Services
         Task<Dictionary<long, TransactionDto>> GetPagedTransactions(List<TransactionFilter> filters, long pageSize, long page);
         Task<List<string>> GetTags();
         Task<Dictionary<long, TransactionDto>> GetTransactions(List<TransactionFilter> filters);
+        Task<Optional<TransactionDto>> GetTransaction(long transactionId);
         Task<int> DeleteTransactions(List<long> keys);
         Task<bool> DeleteTransaction(long key);
         Task<int> DeleteAllTransactions();
         Task<long> GetTransactionsCount(List<TransactionFilter> filters);
         Task<int> DeleteTransactions(List<TransactionFilter> filters);
         Task<List<long>> ReplaceTransactions(List<TransactionDto> newTransactions, List<long> oldTransacations);
+        Task<long> ReplaceTransaction(TransactionDto newTransactions, long oldTransacation, bool keepImportData);
         Task<long> CreateTransaction(TransactionDto transaction);
         Task<Optional<ExtendedTransactionDto>> GetExtendedTransaction(IAccountsService accountsService, long id);
     }

@@ -1,4 +1,5 @@
-﻿@using Haondt.Core.Models
+﻿@using Haondt.Core.Extensions
+@using Haondt.Core.Models
 
 @code {
     [Parameter, EditorRequired]
@@ -7,6 +8,8 @@
     public Optional<string> Name { get; set; } = new();
     [Parameter]
     public Optional<string> Id { get; set; } = new();
+    [Parameter]
+    public Optional<string> Classes { get; set; } = new();
     [Parameter]
     public Optional<string> Placeholder { get; set; } = new();
     [Parameter]
@@ -47,7 +50,7 @@
     }
 }
 <div class="control is-expanded autocomplete is-flex is-flex-direction-column @(Icon.HasValue ? $"has-icons-left" : "")">
-    <input class="input" type="text" 
+    <input class="input @Classes.Or("")" type="text" 
         @attributes="InputAttributes"
         _="
             on input debounced at 200ms

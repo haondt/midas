@@ -1,0 +1,43 @@
+﻿@using Haondt.Core.Models
+@using Haondt.Web.Components
+@using Midas.Domain.Reconcile.Models
+@using Midas.UI.Components.Import
+@using Midas.UI.Components.TransactionsSelect
+
+@code{
+    [Parameter]
+    public Optional<ConfigureSplit> ConfigureSplit { get; set; } = new();
+}
+
+<div id="transaction-import" class="block" style="max-width:var(--midas-form-page-width);margin:auto;">
+    <div class="panel is-link" >
+        <p class="panel-heading">Split Transaction</p>
+        <div class="panel-block">
+            <div class="control">
+                <form 
+                    hx-trigger="@TransactionsSelectSingleField.SelectionEvent consume" 
+                    hx-get="/split/init"
+                    hx-vals='js:{ transactionId: String(event.detail.value) }'
+                    hx-swap="innerHTML"
+                    hx-target="#configure-split">
+                    <div class="field">
+                        <div class="control">
+                            <label class="checkbox">
+                                <input type="checkbox" name="split-source-data-hashes">
+                                Split source data hashes
+                            </label>
+                        </div>
+                    </div>
+                    <TransactionsSelectSingleField />
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="configure-split">
+        @if (ConfigureSplit.HasValue)
+        {
+            <ObjectComponentT Component="@ConfigureSplit.Value" />
+        }
+    </div>
+</div>

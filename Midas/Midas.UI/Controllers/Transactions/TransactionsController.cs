@@ -37,6 +37,7 @@ namespace Midas.UI.Controllers.Transactions
 
         [HttpDelete]
         public async Task<IResult> Delete(
+            [FromQuery] TransactionSearchOptions options,
             [FromQuery(Name = "page-size")] int? pageSize,
             [FromQuery] TransactionSelectionResult selection)
         {
@@ -44,7 +45,7 @@ namespace Midas.UI.Controllers.Transactions
             var filters = (await transactionFilterService.ParseFiltersAsync(selectionState.Filters)).ToList();
             await transactionService.DeleteTransactions(filters);
 
-            var searchResult = await GetSearchResultComponent(selection.Filters, null, pageSize, null);
+            var searchResult = await GetSearchResultComponent(options, selection.Filters, null, pageSize, null);
             Response.AsResponseData()
                 .HxReswap("innerHTML")
                 .HxRetarget("#search-results");
@@ -123,16 +124,19 @@ namespace Midas.UI.Controllers.Transactions
 
         [HttpPost("search")]
         public async Task<IResult> Search(
+            [FromForm] TransactionSearchOptions options,
             [FromForm(Name = "filter")] IEnumerable<string> filters,
             [FromForm(Name = "total-pages")] int? totalPages,
             [FromForm(Name = "page-size")] int? pageSize,
             [FromForm] int? page)
         {
             return await componentFactory.RenderComponentAsync(await GetSearchResultComponent(
-                filters, totalPages, pageSize, page));
+                options, filters, totalPages, pageSize, page));
         }
 
-        public async Task<SearchResult> GetSearchResultComponent(IEnumerable<string> filters,
+        public async Task<SearchResult> GetSearchResultComponent(
+            TransactionSearchOptions options,
+            IEnumerable<string> filters,
             long? totalPages,
             long? pageSize,
             long? page)
@@ -150,6 +154,7 @@ namespace Midas.UI.Controllers.Transactions
 
             return new SearchResult
             {
+                Options = options,
                 Results = transactions,
                 Page = page.Value,
                 TotalPages = totalPages.Value,
@@ -178,8 +183,8 @@ namespace Midas.UI.Controllers.Transactions
                 Components = [
                     new CloseModal(),
 
-                EditTransaction.FromExtendedTransaction(id, transaction.Value)
-                    ]
+                    EditTransaction.FromExtendedTransaction(id, transaction.Value)
+                ]
 
             });
         }
@@ -208,8 +213,7 @@ namespace Midas.UI.Controllers.Transactions
             if (newAccounts.Count > 0)
                 await accountsService.CreateAccounts(newAccounts);
 
-            var newIds = await transactionService.ReplaceTransactions([newTransaction], [id]);
-            var transactionId = newIds[0];
+            var transactionId = await transactionService.ReplaceTransaction(newTransaction, id, true);
 
             Response.AsResponseData()
                 .HxTrigger("toastRelay",

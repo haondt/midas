@@ -1,4 +1,5 @@
 ﻿@using Midas.Domain.Transactions.Models
+@using Midas.UI.Models.Transactions
 @using Midas.UI.Shared.Components
 
 @code {
@@ -10,6 +11,8 @@
     public required long TotalPages { get; set; }
     [Parameter]
     public long? PageSize { get; set; }
+    [Parameter, EditorRequired]
+    public required TransactionSearchOptions Options { get; set; }
 }
 
 <form style="width:100%">
@@ -53,89 +56,95 @@
             </style>
             <thead>
                 <tr>
-                    <th style="width:0;" class="transaction-search-result-checkbox">
-                        <input id="select-all" 
-                            _="on click
-                                if my checked is true then
-                                    repeat in <input.select-checkbox/>
-                                        set it.checked to true
-                                    end
-                                else
-                                    repeat in <input.select-checkbox/>
-                                        set it.checked to false
+                    @if (!Options.HideCheckboxes)
+                    {
+                        <th style="width:0;">
+                            <input id="select-all" 
+                                _="on click
+                                    if my checked is true then
+                                        repeat in <input.select-checkbox/>
+                                            set it.checked to true
+                                        end
+                                    else
+                                        repeat in <input.select-checkbox/>
+                                            set it.checked to false
+                                        end
                                     end
                                 end
-                            end
-                            on updateState
-                                set my checked to false
-                            end
-                            "
-                            name="select-all" type="checkbox"/>
-                    </th>
+                                on updateState
+                                    set my checked to false
+                                end
+                                "
+                                name="select-all" type="checkbox"/>
+                        </th>
+                    }
                     <th>Description</th>
                     <th style="width:8rem;">Amount</th>
                     <th style="width:7rem;">Date</th>
-                    <th style="width:0;" class="actions">
-                        <ActionsDropdown>
-                            <button 
-                                class="dropdown-item"
-                                hx-swap="none"
-                                hx-confirm="This will delete all selected transactions. Continue?"
-                                hx-include="closest <form/>, #filters"
-                                hx-vals='{"took-filtered": "false", "took-selected": "true"}'
-                                hx-delete="/transactions">
-                                <span class="icon has-text-danger">
-                                    <i class="fa-solid fa-trash"></i>
-                                </span>
-                                <span>delete selected</span>
-                            </button>
-                            <button 
-                                class="dropdown-item"
-                                hx-target="#content"
-                                hx-swap="innerHTML"
-                                hx-include="closest <form/>, #filters"
-                                hx-push-url="true"
-                                hx-vals='{"took-filtered": "false", "took-selected": "true"}'
-                                hx-get="/transaction-import/reimport">
-                                <span class="icon has-text-warning">
-                                    <i class="fa-solid fa-arrows-rotate"></i>
-                                </span>
-                                <span>re-import selected</span>
-                            </button>
-                            <button 
-                                class="dropdown-item"
-                                hx-swap="none"
-                                hx-confirm="This will delete all filtered transactions. Continue?"
-                                hx-include="closest <form/>, #filters"
-                                hx-vals='{"took-filtered": "true", "took-selected": "false"}'
-                                hx-delete="/transactions">
-                                <span class="icon has-text-danger">
-                                    <i class="fa-solid fa-trash"></i>
-                                </span>
-                                <span>delete filtered</span>
-                            </button>
-                            <button 
-                                class="dropdown-item"
-                                hx-target="#content"
-                                hx-swap="innerHTML"
-                                hx-include="closest <form/>, #filters"
-                                hx-push-url="true"
-                                hx-vals='{"took-filtered": "true", "took-selected": "false"}'
-                                hx-get="/transaction-import/reimport">
-                                <span class="icon has-text-warning">
-                                    <i class="fa-solid fa-arrows-rotate"></i>
-                                </span>
-                                <span>re-import filtered</span>
-                            </button>
-                        </ActionsDropdown>
-                    </th>
+                    @if (!Options.HideActions)
+                    {
+                        <th style="width:0;">
+                            <ActionsDropdown>
+                                <button 
+                                    class="dropdown-item"
+                                    hx-swap="none"
+                                    hx-confirm="This will delete all selected transactions. Continue?"
+                                    hx-include="closest <form/>, #filters, #transaction-select-options"
+                                    hx-vals='{"took-filtered": "false", "took-selected": "true"}'
+                                    hx-delete="/transactions">
+                                    <span class="icon has-text-danger">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </span>
+                                    <span>delete selected</span>
+                                </button>
+                                <button 
+                                    class="dropdown-item"
+                                    hx-target="#content"
+                                    hx-swap="innerHTML"
+                                    hx-include="closest <form/>, #filters, #transaction-select-options"
+                                    hx-push-url="true"
+                                    hx-vals='{"took-filtered": "false", "took-selected": "true"}'
+                                    hx-get="/transaction-import/reimport">
+                                    <span class="icon has-text-warning">
+                                        <i class="fa-solid fa-arrows-rotate"></i>
+                                    </span>
+                                    <span>re-import selected</span>
+                                </button>
+                                <button 
+                                    class="dropdown-item"
+                                    hx-swap="none"
+                                    hx-confirm="This will delete all filtered transactions. Continue?"
+                                    hx-include="closest <form/>, #filters, #transaction-select-options"
+                                    hx-vals='{"took-filtered": "true", "took-selected": "false"}'
+                                    hx-delete="/transactions">
+                                    <span class="icon has-text-danger">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </span>
+                                    <span>delete filtered</span>
+                                </button>
+                                <button 
+                                    class="dropdown-item"
+                                    hx-target="#content"
+                                    hx-swap="innerHTML"
+                                    hx-include="closest <form/>, #filters, #transaction-select-options"
+                                    hx-push-url="true"
+                                    hx-vals='{"took-filtered": "true", "took-selected": "false"}'
+                                    hx-get="/transaction-import/reimport">
+                                    <span class="icon has-text-warning">
+                                        <i class="fa-solid fa-arrows-rotate"></i>
+                                    </span>
+                                    <span>re-import filtered</span>
+                                </button>
+                            </ActionsDropdown>
+                        </th>
+                    }
                 </tr>
             </thead>
             <tbody id="transactions-list">
 
                 @foreach(var (id, transaction)  in Results)
                 {
-                    <Transaction Id="@id" TransactionDto="@transaction" />
+                    <Transaction Options="Options" Id="@id" TransactionDto="@transaction" />
                 }
                 <tr id="paginator">
                     <td colspan="5">

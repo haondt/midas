@@ -89,6 +89,7 @@ Generate reports for a given period, summarizing the income and spending across 
 - Transactions
   - Search - search, filter and sort transactions
   - Merge - combine any two or more existing transactions into a single one
+  - Split - split a transaction into two or more new ones
   - Create - manually create transactions
   - Edit - manually edit transactions
   - Re-Import - re-run the Node-Red flows on existing transactions, instead of deleting them and re-importing the csv

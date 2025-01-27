@@ -1,5 +1,6 @@
 ﻿@using Midas.Core.Models
 @using Midas.UI.Components.Reporting.TableFactories
+@using Midas.UI.Models.Transactions
 @code {
     [Parameter, EditorRequired]
     public required ReportingTableData TableData { get; set; }
@@ -32,7 +33,12 @@
                                 <td>
                                     <form
                                         hx-get="/transactions-select/static-search"     
-                                        hx-swap="none"
+                                        hx-swap="none",
+                                        hx-vals='{
+                                            "@TransactionSearchOptions.HideCheckboxesParameter": "true",
+                                            "@TransactionSearchOptions.HideActionsParameter": "true",
+                                            "@TransactionSearchOptions.LinkTargetParameter": "@TransactionLinkTarget.Blank"
+                                        }'
                                     >
                                         @foreach(var filter in filterCell.Filters)
                                         {

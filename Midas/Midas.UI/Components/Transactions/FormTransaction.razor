@@ -1,0 +1,283 @@
+﻿@using Midas.Core.Constants
+@using Midas.Core.Models
+@using Midas.Domain.Transactions.Models
+@using Midas.UI.Models.Transactions
+@using Midas.UI.Shared.Components
+
+@code {
+    [Parameter]
+    public bool IsStatic { get; set; } = false;
+    [Parameter]
+    public string SourceAccountName { get; set; } = "";
+    [Parameter]
+    public string SourceAccount { get; set; } = MidasConstants.DefaultAccount;
+    [Parameter]
+    public string DestinationAccountName { get; set; } = "";
+    [Parameter]
+    public string DestinationAccount { get; set; } = MidasConstants.DefaultAccount;
+    [Parameter]
+    public string Description { get; set; } = "";
+    [Parameter]
+    public decimal Amount { get; set; } = 0m;
+    [Parameter]
+    public AbsoluteDateTime TimeStamp { get; set; } = AbsoluteDateTime.Now;
+    [Parameter]
+    public string Category { get; set; } = "";
+    [Parameter]
+    public List<string> Tags { get; set; } = [];
+    [Parameter]
+    public List<ExtendedTransactionImportData> ImportDatum { get; set; } = [];
+
+
+    public static FormTransaction FromExtendedTransaction(ExtendedTransactionDto transaction)
+    {
+        return new FormTransaction
+        {
+            Amount = transaction.Amount,
+            Category = transaction.Category,
+            SourceAccount = transaction.SourceAccount,
+            SourceAccountName = transaction.SourceAccountName,
+            DestinationAccount = transaction.DestinationAccount,
+            DestinationAccountName = transaction.DestinationAccountName,
+            Description = transaction.Description,
+            Tags = transaction.Tags.ToList(),
+            TimeStamp = transaction.TimeStamp,
+            ImportDatum = transaction.ImportDatum
+        };
+    }
+}
+
+<div class="control">
+
+    <div class="field is-horizontal">
+        <div class="field-label is-normal">
+            <label class="label">Description</label>
+        </div>
+        <div class="field-body">
+            <div class="field">
+                @if (IsStatic)
+                {
+                    <input readonly name="description" class="input" type="text" value="@Description" />
+                }
+                else
+                {
+                    <input name="description" class="input" type="text" value="@Description" />
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="field is-horizontal">
+        <div class="field-label is-normal">
+            <label class="label">Source Account</label>
+        </div>
+        <div class="field-body">
+            <div class="field">
+                @if (IsStatic)
+                {
+                    <div class="control">
+                        <input readonly class="input" value="@SourceAccountName" />
+                    </div>
+                    <div class="mt-2">
+                        <Tag ColorClasses="has-text-success" IsStatic="true" IsMonospace="true" Text="@SourceAccount" />
+                    </div>
+                }
+                else
+                {  
+                    <Autocomplete 
+                        ChangedEvent="@("sourceAccountChanged")"
+                        Placeholder="@MidasConstants.FallbackAccountName"
+                        Value="@SourceAccountName"
+                        Classes="@("source-account")"
+                        Name="@($"{TransactionFilterTargets.SourceAccountName}-value")"
+                        SuggestionUri="@("/transactions/search/complete/source-account")"
+                    />
+                    <div class="mt-2"
+                        hx-post="/transactions/search/account-id"
+                        hx-trigger="sourceAccountChanged from:previous .source-account"
+                        hx-rename="@($"{TransactionFilterTargets.SourceAccountName}-value"):name"
+                        hx-swap="innerHTML"
+                        hx-vals='{"inputName":"source-account-id"}'
+                        hx-params="@($"{TransactionFilterTargets.SourceAccountName}-value"),inputName"
+                        hx-target="this"
+                        hx-include="previous .source-account">
+                        <EditTransactionAccountId 
+                            Id="@SourceAccount" 
+                            IsExistingAccount="@(SourceAccount != MidasConstants.DefaultAccount)" 
+                            InputName="@("source-account-id")"/>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="field is-horizontal">
+        <div class="field-label is-normal">
+            <label class="label">Destination Account</label>
+        </div>
+        <div class="field-body">
+            <div class="field">
+                @if (IsStatic)
+                {
+                    <div class="control">
+                        <input readonly class="input" value="@DestinationAccountName" />
+                    </div>
+                    <div class="mt-2">
+                        <Tag ColorClasses="has-text-success" IsStatic="true" IsMonospace="true" Text="@DestinationAccount" />
+                    </div>
+                }
+                else
+                {
+                    <Autocomplete 
+                        ChangedEvent="@("destinationAccountChanged")"
+                        Placeholder="@MidasConstants.FallbackAccountName"
+                        Value="@DestinationAccountName"
+                        Classes="@("destination-account")"
+                        Name="@($"{TransactionFilterTargets.DestinationAccountName}-value")"
+                        SuggestionUri="@("/transactions/search/complete/destination-account")"
+                    />
+                    <div class="mt-2"
+                        hx-post="/transactions/search/account-id"
+                        hx-trigger="destinationAccountChanged from:previous .destination-account"
+                        hx-rename="@($"{TransactionFilterTargets.DestinationAccountName}-value"):name"
+                        hx-swap="innerHTML"
+                        hx-vals='{"inputName":"destination-account-id"}'
+                        hx-params="@($"{TransactionFilterTargets.DestinationAccountName}-value"),inputName"
+                        hx-target="this"
+                        hx-include="previous .destination-account">
+                        <EditTransactionAccountId 
+                            Id="@DestinationAccount" 
+                            IsExistingAccount="@(DestinationAccount != MidasConstants.DefaultAccount)" 
+                            InputName="@("destination-account-id")"/>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="field is-horizontal">
+        <div class="field-label is-normal">
+            <label class="label">Amount</label>
+        </div>
+        <div class="field-body">
+            <div class="field has-addons">
+                <div class="control">
+                    <a class="button is-static">$</a>
+                </div>
+                <div class="control">
+                    @if (IsStatic)
+                    {
+                        <input readonly min="0" name="amount" class="input" type="text" step=".01" value="@Amount.ToString("F2")" />
+                    }
+                    else
+                    {
+                        <input min="0" name="amount" class="input" type="number" step=".01" value="@Amount" />
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="field is-horizontal">
+        <div class="field-label is-normal">
+            <label class="label">Date</label>
+        </div>
+        <div class="field-body">
+            <div class="field">
+                @if (IsStatic)
+                {
+                    <input readonly name="date" class="input" type="text" value="@StringFormatter.FormatDate(TimeStamp)" />
+                }
+                else
+                {
+                    <input name="date" class="input" type="date" value="@StringFormatter.FormatDate(TimeStamp)" />
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="field is-horizontal">
+        <div class="field-label is-normal">
+            <label class="label">Category</label>
+        </div>
+        <div class="field-body">
+            <div class="field">
+                @if (IsStatic)
+                {
+                    <input readonly name="category" placeholder="@MidasConstants.DefaultCategory" class="input" type="text" value="@Category" />
+                }
+                else
+                {
+                    <input name="category" placeholder="@MidasConstants.DefaultCategory" class="input" type="text" value="@Category" />
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="field is-horizontal">
+        <div class="field-label is-normal">
+            <label class="label">Tags</label>
+        </div>
+        <div class="field-body">
+            <div class="field">
+                @if (IsStatic)
+                {
+                    <div class="field is-grouped is-grouped-multiline mt-2">
+                        @foreach (var tag in @Tags)
+                        {
+                            <Tag IsStatic="true" Text="@tag" />
+                        }
+                    </div>
+                }
+                else
+                {
+
+                    <div class="field has-addons">
+                        <div class="control">
+                            <input name="tag" class="input add-tag-input" type="text" />
+                        </div>
+                        <div class="control">
+                            <button
+                            hx-get="/fragments/tag"
+                            hx-include="previous .add-tag-input"
+                            hx-params="tag"
+                            hx-target="next .transaction-tags"
+                            hx-swap="beforeend"
+                            class="button is-info">Add Tag</button>
+                        </div>
+                    </div>
+                    <div class="transaction-tags field is-grouped is-grouped-multiline mt-2"
+                        _="on htmx:afterSwap set (the previous .add-tag-input)'s value to ''">
+                        @foreach (var tag in @Tags)
+                        {
+                            <Tag Text="@tag" />
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="field is-horizontal">
+        <div class="field-label is-normal">
+            <label class="label">Source Data Hashes</label>
+        </div>
+        <div class="field-body">
+            <div class="field">
+                <div class="field is-grouped is-grouped-multiline mt-2">
+                    @foreach(var data in ImportDatum)
+                    {
+                        <Tag IsStatic="true" ColorClasses="@("")" Text="@data.SourceDataHash.ToString()"/>
+                        <input name="import-datum-account" type="hidden" value="@data.Account" />
+                        <input name="import-datum-configuration-slug" type="hidden" value="@data.ConfigurationSlug" />
+                        <input name="import-datum-values" type="hidden" value="@data.SourceDataString" />
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br />
+
+</div>
