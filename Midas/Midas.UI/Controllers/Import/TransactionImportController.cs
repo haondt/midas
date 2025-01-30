@@ -120,7 +120,7 @@ namespace Midas.TransactionImport.Controllers
             {
                 var parsedFilters = (await transactionFilterService.ParseFiltersAsync(filters)).ToList();
                 if (!string.IsNullOrEmpty(transactions))
-                    parsedFilters.Add(TransactionFilter.TransactionIdIsOneOf(transactions
+                    parsedFilters.Add(TransactionFilter.Id.IsOneOf(transactions
                         .Split(',')
                         .Select(q => long.Parse(q))
                         .ToList()));
@@ -178,7 +178,7 @@ namespace Midas.TransactionImport.Controllers
             var unimportedTransactionIds = result.Value.Transactions
                 .Where(t => t.ReplacementTarget.HasValue)
                 .Select(t => t.ReplacementTarget.Value);
-            var unimportedTransactions = await transactionService.GetAmounts([TransactionFilter.TransactionIdIsOneOf(unimportedTransactionIds.ToList())]);
+            var unimportedTransactions = await transactionService.GetAmounts([TransactionFilter.Id.IsOneOf(unimportedTransactionIds.ToList())]);
             foreach (var (key, value) in unimportedTransactions.BySource)
             {
                 if (!balanceChanges.ContainsKey(key))

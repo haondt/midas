@@ -11,6 +11,7 @@
         public const string DestinationAccountName = "destination_account_name";
         public const string DestinationAccountId = "destination_account_id";
         public const string EitherAccountName = "either_account_name";
+        public const string EitherAccountId = "either_account_id";
         public const string Date = "date";
         public const string Tags = "tags";
         public const string Id = "id";

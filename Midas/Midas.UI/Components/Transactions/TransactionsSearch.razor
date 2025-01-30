@@ -1,8 +1,10 @@
 ﻿@using Haondt.Core.Models
+@using Midas.Domain.Supercategories.Services
 @using Midas.Domain.Transactions.Services
 @using Midas.UI.Models.Transactions
 @using Midas.UI.Shared.Components
 @inject ITransactionService TransactionService
+@inject ISupercategoryService SupercategoryService
 
 @code {
 
@@ -10,6 +12,7 @@
     public class NumberFilterData : FilterData { }
     public class SelectFilterData : FilterData { public required List<string> Options { get; set; } }
     public class TextFilterData : FilterData { }
+    public class DateFilterData : FilterData { }
     public class AutocompleteFilterData : FilterData { public required string AutocompleteUri { get; set; } }
 
     [Parameter, EditorRequired]
@@ -25,27 +28,41 @@
     protected override async Task OnInitializedAsync()
     {
         var categories = await TransactionService.GetCategories();
+        var supercategories = (await SupercategoryService.GetSupercategories()).Keys.ToList();
         var tags = await TransactionService.GetTags();
         _targets = new()
         {
             { TransactionFilterTargets.Amount, new NumberFilterData() },
             { TransactionFilterTargets.Category, new SelectFilterData{ Options = categories } },
             { TransactionFilterTargets.Tags, new SelectFilterData { Options = tags } },
+            { TransactionFilterTargets.Supercategory, new SelectFilterData{ Options = supercategories } },
             { TransactionFilterTargets.Description, new TextFilterData() },
             { TransactionFilterTargets.SourceAccountName, new AutocompleteFilterData { AutocompleteUri = "/transactions/search/complete/source-account" } },
             { TransactionFilterTargets.DestinationAccountName, new AutocompleteFilterData { AutocompleteUri = "/transactions/search/complete/destination-account" } },
             { TransactionFilterTargets.EitherAccountName, new AutocompleteFilterData { AutocompleteUri = "/transactions/search/complete/either-account" } },
+            { TransactionFilterTargets.SourceAccountId, new TextFilterData() },
+            { TransactionFilterTargets.DestinationAccountId, new TextFilterData() },
+            { TransactionFilterTargets.EitherAccountId, new TextFilterData() },
+            { TransactionFilterTargets.Id, new TextFilterData() },
+            { TransactionFilterTargets.Date, new DateFilterData() },
+
         };
     }
 
-    private List<string> _operators = new()
+    private List<(string Operator, bool HideField)> _operators = new()
     {
-        TransactionFilterOperators.IsEqualTo,
-        TransactionFilterOperators.IsNotEqualTo,
-        TransactionFilterOperators.Contains,
-        TransactionFilterOperators.StartsWith,
-        TransactionFilterOperators.IsGreaterThanOrEqualTo,
-        TransactionFilterOperators.IsLessThanOrEqualTo,
+        (TransactionFilterOperators.IsEqualTo, false),
+        (TransactionFilterOperators.IsNotEqualTo, false),
+        (TransactionFilterOperators.Contains, false),
+        (TransactionFilterOperators.StartsWith, false),
+        (TransactionFilterOperators.EndsWith, false),
+        (TransactionFilterOperators.IsGreaterThanOrEqualTo, false),
+        (TransactionFilterOperators.IsLessThanOrEqualTo, false),
+        (TransactionFilterOperators.IsLessThan, false),
+        (TransactionFilterOperators.IsGreaterThan, false),
+        (TransactionFilterOperators.IsNoneOrEqualTo, false),
+        (TransactionFilterOperators.IsNone, true),
+        (TransactionFilterOperators.IsNotNone, true)
     };
 
 }
@@ -61,16 +78,28 @@
             <div class="select">
                 <select id="filter-target" name="target"
                     _="on change
-                        set target to the first <option[value=$(my value)]/> in me
                         set current_input to the next <.target-input:not(.is-hidden)/>
+                        set current_op to #filter-operation's value
+                        set current_op_option to the first <option[value=`${current_op}`]/> in #filter-operation
+                        set hide_field to current_op_option matches .hide-field
+
+                        set target to the first <option[value=$(my value)]/> in me
                         set desired_input_id to `${my value}-input`
                         set desired_input to #{desired_input_id}
+                        if hide_field
+                            set desired_input to null
+                        end
+
                         if current_input != desired_input
                             if current_input != null
                                 add .is-hidden to current_input
+                                set current_input's value to ''
                             end
                             if desired_input != null
-                                remove .is-hidden from desired_input
+                                if hide_field
+                                    add .is-hidden to desired_input
+                                else
+                                    remove .is-hidden from desired_input
                                 ">
                     @foreach(var target in _targets.Keys)
                     {
@@ -79,10 +108,17 @@
                 </select>
             </div>
             <div class="select">
-                <select id="filter-target" name="operator">
-                    @foreach(var op in _operators)
+                <select id="filter-operation" name="operator" _="on change send change to #filter-target">
+                    @foreach(var (op, hideField) in _operators)
                     {
-                        <option value="@op">@op</option>
+                        if (hideField)
+                        {
+                            <option class="hide-field" value="@op">@op</option>
+                        }
+                        else
+                        {
+                            <option value="@op">@op</option>
+                        }
                     }
                 </select>
             </div>
@@ -96,6 +132,9 @@
                     {
                         case NumberFilterData:
                             <input name="@target-value" step=".01" id="@target-input" class="target-input input @hiddenClass" type="number"/>
+                            break;
+                        case DateFilterData:
+                            <input name="@target-value" id="@target-input" class="target-input input @hiddenClass" type="date"/>
                             break;
                         case SelectFilterData selectFilterData:
                             <div id="@target-input" class="target-input is-fullwidth select @hiddenClass">

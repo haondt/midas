@@ -16,16 +16,16 @@ namespace Midas.Domain.Dashboard.Services
         {
             var transactions = await transactionService.GetTransactions(new()
             {
-                TransactionFilter.MinDate(start),
-                TransactionFilter.MaxDate(end)
+                TransactionFilter.Date.IsGreaterThanOrEqualTo(start),
+                TransactionFilter.Date.IsLessThanOrEqualTo(end)
             });
 
             var accounts = await accountsService.GetAccountsIncludedInNetWorth();
             var accountsList = accounts.Keys.ToList();
             var startAmounts = await transactionService.GetAmounts(new List<TransactionFilter>
             {
-                TransactionFilter.EitherAccountIsOneOf(accountsList),
-                TransactionFilter.ExclusiveMaxDate(start)
+                TransactionFilter.EitherAccountId.IsOneOf(accountsList),
+                TransactionFilter.Date.IsLessThan(start)
             });
             var currentBalances = accounts.ToDictionary(kvp => kvp.Key,
                 kvp => startAmounts.ByDestination.GetValue(kvp.Key).Or(0) - startAmounts.BySource.GetValue(kvp.Key).Or(0));
@@ -191,7 +191,7 @@ namespace Midas.Domain.Dashboard.Services
 
             var netAmounts = await transactionService.GetAmounts(new List<TransactionFilter>
             {
-                TransactionFilter.EitherAccountIsOneOf(accountsList),
+                TransactionFilter.EitherAccountId.IsOneOf(accountsList),
             });
             var netWorth = 0m;
             foreach (var (k, v) in netAmounts.BySource)

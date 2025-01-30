@@ -2,173 +2,108 @@
 
 namespace Midas.Persistence.Models
 {
+
     public abstract class TransactionFilter
     {
-        public static TransactionFilter TransactionIdIsOneOf(List<long> ids)
-        {
-            return new TransactionIdIsOneOf { Ids = ids };
-        }
-        public static TransactionFilter MinDate(AbsoluteDateTime value)
-        {
-            return new MinDateTransactionFilter { UnixSeconds = value.UnixTimeSeconds };
-        }
-        public static TransactionFilter MaxDate(AbsoluteDateTime value)
-        {
-            return new MaxDateTransactionFilter { UnixSeconds = value.UnixTimeSeconds };
-        }
-        public static TransactionFilter ExclusiveMaxDate(AbsoluteDateTime value)
-        {
-            return new ExclusiveMaxDateTransactionFilter { UnixSeconds = value.UnixTimeSeconds };
-        }
-
-        public static TransactionFilter HasTag(string tag)
-        {
-            return new HasTagTransactionFilter { Value = tag };
-        }
-
-        public static TransactionFilter MinAmount(decimal amount)
-        {
-            return new MinAmountTransactionFilter { AmountCents = (long)(amount * 100) };
-        }
-
-        public static TransactionFilter MaxAmount(decimal amount)
-        {
-            return new MaxAmountTransactionFilter { AmountCents = (long)(amount * 100) };
-        }
-        public static TransactionFilter HasAmount(decimal amount)
-        {
-            return new HasAmountTransactionFilter { AmountCents = (long)(amount * 100) };
-        }
-
-        public static TransactionFilter HasCategory(string category)
-        {
-            return new HasCategoryTransactionFilter { Value = category };
-        }
-        public static TransactionFilter CategoryIsNot(string category)
-        {
-            return new CategoryIsNotTransactionFilter { Value = category };
-        }
-        public static TransactionFilter SupercategoryIs(string supercategory)
-        {
-            return new SupercategoryIsTransactionFilter { Value = supercategory };
-        }
-        public static TransactionFilter SupercategoryIsNoneOrEqualTo(string supercategory)
-        {
-            return new SupercategoryIsNoneOrEqualToTransactionFilter { Value = supercategory };
-        }
-        public static TransactionFilter DescriptionContains(string substring)
-        {
-            return new DescriptionContainsTransactionFilter { Value = substring };
-        }
-
-        public static TransactionFilter EitherAccountIs(string id)
-        {
-            return new EitherAccountIsTransactionFilter { Id = id };
-        }
-        public static TransactionFilter EitherAccountIsOneOf(List<string> ids)
-        {
-            return new EitherAccountIsOneOfTransactionFilter { Ids = ids };
-        }
-
-        public static TransactionFilter SourceAccountIsOneOf(List<string> ids)
-        {
-            return new SourceAccountIsOneOfTransactionFilter { Ids = ids };
-        }
-        public static TransactionFilter DestinationAccountIsOneOf(List<string> ids)
-        {
-            return new DestinationAccountIsOneOfTransactionFilter { Ids = ids };
-        }
-        public static TransactionFilter SourceAccountIsNotOneOf(List<string> ids)
-        {
-            return new SourceAccountIsNotOneOfTransactionFilter { Ids = ids };
-        }
-        public static TransactionFilter DestinationAccountIsNotOneOf(List<string> ids)
-        {
-            return new DestinationAccountIsNotOneOfTransactionFilter { Ids = ids };
-        }
+        public static TransactionFilterBuilder<decimal> Amount { get; } = new TransactionFilterBuilder<decimal>(op => new AmountFilter { Operation = op });
+        public static StringTransactionFilterBuilder Description { get; } = new StringTransactionFilterBuilder(op => new DescriptionFilter { Operation = op });
+        public static StringTransactionFilterBuilder Category { get; } = new StringTransactionFilterBuilder(op => new CategoryFilter { Operation = op });
+        public static StringTransactionFilterBuilder Supercategory { get; } = new StringTransactionFilterBuilder(op => new SupercategoryFilter { Operation = op });
+        public static StringTransactionFilterBuilder SourceAccountName { get; } = new StringTransactionFilterBuilder(op => new SourceAccountNameFilter { Operation = op });
+        public static TransactionFilterBuilder<string> SourceAccountId { get; } = new TransactionFilterBuilder<string>(op => new SourceAccountIdFilter { Operation = op });
+        public static StringTransactionFilterBuilder DestinationAccountName { get; } = new StringTransactionFilterBuilder(op => new DestinationAccountNameFilter { Operation = op });
+        public static TransactionFilterBuilder<string> DestinationAccountId { get; } = new TransactionFilterBuilder<string>(op => new DestinationAccountIdFilter { Operation = op });
+        public static StringTransactionFilterBuilder EitherAccountName { get; } = new StringTransactionFilterBuilder(op => new EitherAccountNameFilter { Operation = op });
+        public static TransactionFilterBuilder<string> EitherAccountId { get; } = new TransactionFilterBuilder<string>(op => new EitherAccountIdFilter { Operation = op });
+        public static TransactionFilterBuilder<AbsoluteDateTime> Date { get; } = new TransactionFilterBuilder<AbsoluteDateTime>(op => new DateFilter { Operation = op });
+        public static StringTransactionFilterBuilder Tags { get; } = new StringTransactionFilterBuilder(op => new TagsFilter { Operation = op });
+        public static TransactionFilterBuilder<long> Id { get; } = new TransactionFilterBuilder<long>(op => new IdFilter { Operation = op });
     }
 
-    public class TransactionIdIsOneOf : TransactionFilter
+    public abstract class TransactionFilter<T> : TransactionFilter
     {
-        public required List<long> Ids { get; set; }
+        public required TransactionFilterOperation<T> Operation { get; set; }
     }
-    public class MinDateTransactionFilter : TransactionFilter
+    public class AmountFilter : TransactionFilter<decimal> { }
+    public class CategoryFilter : TransactionFilter<string> { }
+    public class DescriptionFilter : TransactionFilter<string> { }
+    public class SupercategoryFilter : TransactionFilter<string> { }
+    public class SourceAccountNameFilter : TransactionFilter<string> { }
+    public class SourceAccountIdFilter : TransactionFilter<string> { }
+    public class DestinationAccountNameFilter : TransactionFilter<string> { }
+    public class DestinationAccountIdFilter : TransactionFilter<string> { }
+    public class EitherAccountNameFilter : TransactionFilter<string> { }
+    public class EitherAccountIdFilter : TransactionFilter<string> { }
+    public class DateFilter : TransactionFilter<AbsoluteDateTime> { }
+    public class TagsFilter : TransactionFilter<string> { }
+    public class IdFilter : TransactionFilter<long> { }
+
+    public class StringTransactionFilterBuilder(Func<TransactionFilterOperation<string>, TransactionFilter<string>> filterFactory) : TransactionFilterBuilder<string>(filterFactory)
     {
-        public required long UnixSeconds { get; set; }
-    }
-    public class MaxDateTransactionFilter : TransactionFilter
-    {
-        public required long UnixSeconds { get; set; }
-    }
-    public class ExclusiveMaxDateTransactionFilter : TransactionFilter
-    {
-        public required long UnixSeconds { get; set; }
+        private readonly Func<TransactionFilterOperation<string>, TransactionFilter<string>> _filterFactory = filterFactory;
+
+        public TransactionFilter Contains(string value)
+        {
+            return _filterFactory(new ContainsTransactionFilterOperation { Value = value });
+        }
+        public TransactionFilter StartsWith(string value)
+        {
+            return _filterFactory(new StartsWithTransactionFilterOperation { Value = value });
+        }
+        public TransactionFilter EndsWith(string value)
+        {
+            return _filterFactory(new EndsWithTransactionFilterOperation { Value = value });
+        }
+
     }
 
-    public class HasTagTransactionFilter : TransactionFilter
+    public class TransactionFilterBuilder<T>(Func<TransactionFilterOperation<T>, TransactionFilter<T>> filterFactory)
     {
-        public required string Value { get; set; }
-    }
-    public class HasCategoryTransactionFilter : TransactionFilter
-    {
-        public required string Value { get; set; }
-    }
-    public class CategoryIsNotTransactionFilter : TransactionFilter
-    {
-        public required string Value { get; set; }
-    }
-    public class SupercategoryIsTransactionFilter : TransactionFilter
-    {
-        public required string Value { get; set; }
+        public TransactionFilter Is(T value)
+        {
+            return filterFactory(new IsOneOfTransactionFilterOperation<T> { Values = [value] });
+        }
+        public TransactionFilter IsNot(T value)
+        {
+            return filterFactory(new IsNotOneOfTransactionFilterOperation<T> { Values = [value] });
+        }
+        public TransactionFilter IsOneOf(List<T> values)
+        {
+            return filterFactory(new IsOneOfTransactionFilterOperation<T> { Values = values });
+        }
+        public TransactionFilter IsNotOneOf(List<T> values)
+        {
+            return filterFactory(new IsNotOneOfTransactionFilterOperation<T> { Values = values });
+        }
+        public TransactionFilter IsGreaterThan(T value)
+        {
+            return filterFactory(new IsGreaterThanTransactionFilterOperation<T> { Value = value });
+        }
+        public TransactionFilter IsGreaterThanOrEqualTo(T value)
+        {
+            return filterFactory(new IsGreaterThanOrEqualToTransactionFilterOperation<T> { Value = value });
+        }
+        public TransactionFilter IsLessThan(T value)
+        {
+            return filterFactory(new IsLessThanTransactionFilterOperation<T> { Value = value });
+        }
+        public TransactionFilter IsLessThanOrEqualTo(T value)
+        {
+            return filterFactory(new IsLessThanOrEqualToTransactionFilterOperation<T> { Value = value });
+        }
+        public TransactionFilter IsNone()
+        {
+            return filterFactory(new IsNoneTransactionFilterOperation<T>());
+        }
+        public TransactionFilter IsNotNone()
+        {
+            return filterFactory(new IsNotNoneTransactionFilterOperation<T>());
+        }
+        public TransactionFilter IsNoneOr(T value)
+        {
+            return filterFactory(new IsNoneOrEqualToTransactionFilterOperation<T> { Value = value });
+        }
     }
 
-    public class SupercategoryIsNoneOrEqualToTransactionFilter : TransactionFilter
-    {
-        public required string Value { get; set; }
-    }
-    public class DescriptionContainsTransactionFilter : TransactionFilter
-    {
-        public required string Value { get; set; }
-    }
-
-    public class MinAmountTransactionFilter : TransactionFilter
-    {
-        public required long AmountCents { get; set; }
-    }
-    public class MaxAmountTransactionFilter : TransactionFilter
-    {
-        public required long AmountCents { get; set; }
-    }
-
-    public class HasAmountTransactionFilter : TransactionFilter
-    {
-        public required long AmountCents { get; set; }
-    }
-
-    public class EitherAccountIsTransactionFilter : TransactionFilter
-    {
-        public required string Id { get; set; }
-    }
-    public class EitherAccountIsOneOfTransactionFilter : TransactionFilter
-    {
-        public required List<string> Ids { get; set; }
-    }
-
-    public class SourceAccountIsOneOfTransactionFilter : TransactionFilter
-    {
-        public required List<string> Ids { get; set; }
-    }
-    public class DestinationAccountIsOneOfTransactionFilter : TransactionFilter
-    {
-        public required List<string> Ids { get; set; }
-    }
-    public class SourceAccountIsNotOneOfTransactionFilter : TransactionFilter
-    {
-        public required List<string> Ids { get; set; }
-    }
-    public class DestinationAccountIsNotOneOfTransactionFilter : TransactionFilter
-    {
-        public required List<string> Ids { get; set; }
-    }
 
 }

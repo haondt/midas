@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Haondt.Core.Models;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Globalization;
 using System.Text;
@@ -56,6 +57,22 @@ namespace Midas.Core.Models
         public static string FormatDate(AbsoluteDateTime absoluteDateTime)
         {
             return absoluteDateTime.LocalTime.ToString("yyyy-MM-dd");
+        }
+
+        public static Optional<AbsoluteDateTime> TryParseDate(string dateString)
+        {
+            dateString = dateString.Trim();
+            if (string.IsNullOrEmpty(dateString))
+                return new();
+
+            if (!DateTime.TryParseExact(
+                dateString,
+                "yyyy-MM-dd",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.AssumeLocal, out var dt))
+                return new();
+
+            return new(AbsoluteDateTime.Create(dt));
         }
 
         public static AbsoluteDateTime ParseDate(string dateString)

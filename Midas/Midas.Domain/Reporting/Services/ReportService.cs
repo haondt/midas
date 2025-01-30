@@ -20,8 +20,8 @@ namespace Midas.Domain.Reporting.Services
             var exclusiveEndTime = end.FloorToLocalDay().AddDays(1);
             var transactions = await transactionService.GetTransactions(new()
             {
-                TransactionFilter.MinDate(inclusiveStartTime),
-                TransactionFilter.ExclusiveMaxDate(exclusiveEndTime)
+                TransactionFilter.Date.IsGreaterThanOrEqualTo(inclusiveStartTime),
+                TransactionFilter.Date.IsLessThan(exclusiveEndTime)
             });
 
             List<(AbsoluteDateTime Date, IEnumerable<TransactionDto> Transactions)> transactionsByDateTime = transactions

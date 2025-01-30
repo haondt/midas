@@ -39,7 +39,7 @@ namespace Midas.UI.Controllers.Reconcile
 
             var parsedFilters = (await transactionFilterService.ParseFiltersAsync(request.Filters)).ToList();
             if (!string.IsNullOrEmpty(request.Transactions))
-                parsedFilters.Add(TransactionFilter.TransactionIdIsOneOf(request.Transactions
+                parsedFilters.Add(TransactionFilter.Id.IsOneOf(request.Transactions
                     .Split(',')
                     .Select(q => long.Parse(q))
                     .ToList()));

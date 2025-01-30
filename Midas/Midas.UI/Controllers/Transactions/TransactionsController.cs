@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using Midas.Core.Constants;
 using Midas.Core.Exceptions;
+using Midas.Core.Models;
 using Midas.Domain.Accounts.Services;
 using Midas.Domain.Transactions.Services;
 using Midas.Persistence.Models;
@@ -99,6 +100,13 @@ namespace Midas.UI.Controllers.Transactions
             var op = requestPayload
                 .GetValue<string>("operator");
 
+            switch (op)
+            {
+                case TransactionFilterOperators.IsNone:
+                case TransactionFilterOperators.IsNotNone:
+                    return $"{target} {op}";
+            }
+
             Optional<string> defaultedValue = target switch
             {
                 TransactionFilterTargets.Amount => !value.HasValue
@@ -108,14 +116,20 @@ namespace Midas.UI.Controllers.Transactions
                         : new(),
                 TransactionFilterTargets.Description
                     or TransactionFilterTargets.Category
+                    or TransactionFilterTargets.Supercategory
                     or TransactionFilterTargets.Tags
                     or TransactionFilterTargets.Id
                     or TransactionFilterTargets.SourceAccountName
                     or TransactionFilterTargets.DestinationAccountName
+                    or TransactionFilterTargets.EitherAccountName
                     or TransactionFilterTargets.SourceAccountId
                     or TransactionFilterTargets.DestinationAccountId
-                    or TransactionFilterTargets.EitherAccountName
+                    or TransactionFilterTargets.EitherAccountId
                     => value.Or(""),
+                TransactionFilterTargets.Date => value.HasValue
+                    ? StringFormatter.TryParseDate(value.Value)
+                        .As(StringFormatter.FormatDate)
+                    : new(),
                 _ => new()
             };
 

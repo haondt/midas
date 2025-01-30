@@ -20,12 +20,16 @@ namespace Midas.Persistence.Storages.Sqlite
         private readonly string _tagsTableName;
         private readonly string _supercategoriesTableName;
         private const string _supercategoriesTableAlias = "c";
+        private readonly string _accountsTableName;
+        private const string _sourceAccountTableAlias = "s";
+        private const string _destinationAccountTableAlias = "d";
 
         public SqliteTransactionStorage(IOptions<MidasPersistenceSettings> options) : base(options)
         {
             _tableName = SanitizeTableName(options.Value.TransactionsTableName);
             _tagsTableName = SanitizeTableName(options.Value.TransactionsTagsTableName);
             _supercategoriesTableName = SanitizeTableName(options.Value.SupercategoryTableName);
+            _accountsTableName = SanitizeTableName(options.Value.AccountsTableName);
             InitializeDb();
         }
 
@@ -184,7 +188,7 @@ namespace Midas.Persistence.Storages.Sqlite
         {
             var result = await GetTransactions(new List<TransactionFilter>
             {
-                TransactionFilter.TransactionIdIsOneOf([key])
+                TransactionFilter.Id.IsOneOf([key])
             });
 
             return result.GetValue(key);
@@ -234,33 +238,11 @@ namespace Midas.Persistence.Storages.Sqlite
                 SELECT t.id
                 FROM {_tableName} t
             ");
-            var (whereClauses, parameters, needsSupercategories) = GenerateWhereClauses(filters);
-            if (needsSupercategories)
-                baseQuery.AppendLine($"LEFT JOIN {_supercategoriesTableName} {_supercategoriesTableAlias} ON t.category = {_supercategoriesTableAlias}.category");
-
-            // Handle tag filters with INTERSECT
-            var hasTagFilters = filters.OfType<HasTagTransactionFilter>().ToList();
-            if (hasTagFilters.Count > 0)
-            {
-                var tagQueries = hasTagFilters.Select((filter, index) =>
-                    $@"
-                        SELECT tid 
-                        FROM {_tagsTableName} 
-                        WHERE name = @Tag{index}
-                    ");
-
-                baseQuery.AppendLine("WHERE t.id IN (")
-                         .AppendLine(string.Join("\nINTERSECT\n", tagQueries))
-                         .AppendLine(")");
-            }
-
-            // Add WHERE clause for other filters
-
+            var (whereClauses, parameters, joinClauses) = GenerateWhereClauses(filters);
+            foreach (var joinClause in joinClauses)
+                baseQuery.AppendLine(joinClause);
             if (whereClauses.Count > 0)
-            {
-                var conjunction = hasTagFilters.Any() ? "AND" : "WHERE";
-                baseQuery.AppendLine($"{conjunction} {string.Join(" AND ", whereClauses)}");
-            }
+                baseQuery.AppendLine($"WHERE {string.Join(" AND ", whereClauses)}");
 
             // Execute query
             var result = WithTransaction((conn, trns) =>
@@ -268,9 +250,6 @@ namespace Midas.Persistence.Storages.Sqlite
                 using var command = new SqliteCommand(baseQuery.ToString(), conn, trns);
                 foreach (var parameter in parameters)
                     command.Parameters.Add(parameter);
-
-                for (int i = 0; i < hasTagFilters.Count; i++)
-                    command.Parameters.Add(new SqliteParameter($"@Tag{i}", hasTagFilters[i].Value));
 
                 var idList = new List<int>();
                 var reader = command.ExecuteReader();
@@ -309,33 +288,11 @@ namespace Midas.Persistence.Storages.Sqlite
                 SELECT SUM(t.amountCents) AS amount, t.{groupBy} AS grouping
                 FROM {_tableName} t
             ");
-            var (whereClauses, parameters, needsSupercategories) = GenerateWhereClauses(filters);
-            if (needsSupercategories)
-                baseQuery.AppendLine($"LEFT JOIN {_supercategoriesTableName} {_supercategoriesTableAlias} ON t.category = {_supercategoriesTableAlias}.category");
-
-            // Handle tag filters with INTERSECT
-            var hasTagFilters = filters.OfType<HasTagTransactionFilter>().ToList();
-            if (hasTagFilters.Count > 0)
-            {
-                var tagQueries = hasTagFilters.Select((filter, index) =>
-                    $@"
-                        SELECT tid 
-                        FROM {_tagsTableName} 
-                        WHERE name = @Tag{index}
-                    ");
-
-                baseQuery.AppendLine("WHERE t.id IN (")
-                         .AppendLine(string.Join("\nINTERSECT\n", tagQueries))
-                         .AppendLine(")");
-            }
-
-            // Add WHERE clause for other filters
-
+            var (whereClauses, parameters, joinClauses) = GenerateWhereClauses(filters);
+            foreach (var joinClause in joinClauses)
+                baseQuery.AppendLine(joinClause);
             if (whereClauses.Count > 0)
-            {
-                var conjunction = hasTagFilters.Any() ? "AND" : "WHERE";
-                baseQuery.AppendLine($"{conjunction} {string.Join(" AND ", whereClauses)}");
-            }
+                baseQuery.AppendLine($"WHERE {string.Join(" AND ", whereClauses)}");
 
             baseQuery.AppendLine($"GROUP BY {groupBy}");
 
@@ -343,9 +300,6 @@ namespace Midas.Persistence.Storages.Sqlite
             using var command = new SqliteCommand(baseQuery.ToString(), conn);
             foreach (var parameter in parameters)
                 command.Parameters.Add(parameter);
-
-            for (int i = 0; i < hasTagFilters.Count; i++)
-                command.Parameters.Add(new SqliteParameter($"@Tag{i}", hasTagFilters[i].Value));
 
             Dictionary<string, decimal> results = [];
             using var reader = command.ExecuteReader();
@@ -368,32 +322,11 @@ namespace Midas.Persistence.Storages.Sqlite
                     t.description
                 FROM {_tableName} t
             ");
-            var (whereClauses, parameters, needsSupercategories) = GenerateWhereClauses(filters);
-            if (needsSupercategories)
-                baseQuery.AppendLine($"LEFT JOIN {_supercategoriesTableName} {_supercategoriesTableAlias} ON t.category = {_supercategoriesTableAlias}.category");
-
-            // Handle tag filters with INTERSECT
-            var hasTagFilters = filters.OfType<HasTagTransactionFilter>().ToList();
-            if (hasTagFilters.Count > 0)
-            {
-                var tagQueries = hasTagFilters.Select((filter, index) =>
-                    $@"
-                        SELECT tid 
-                        FROM {_tagsTableName} 
-                        WHERE name = @Tag{index}
-                    ");
-
-                baseQuery.AppendLine("WHERE t.id IN (")
-                         .AppendLine(string.Join("\nINTERSECT\n", tagQueries))
-                         .AppendLine(")");
-            }
-
-            // Add WHERE clause for other filters
+            var (whereClauses, parameters, joinClauses) = GenerateWhereClauses(filters);
+            foreach (var joinClause in joinClauses)
+                baseQuery.AppendLine(joinClause);
             if (whereClauses.Count > 0)
-            {
-                var conjunction = hasTagFilters.Any() ? "AND" : "WHERE";
-                baseQuery.AppendLine($"{conjunction} {string.Join(" AND ", whereClauses)}");
-            }
+                baseQuery.AppendLine($"WHERE {string.Join(" AND ", whereClauses)}");
 
             baseQuery.AppendLine("ORDER BY t.timeStamp DESC");
             if (limit.HasValue)
@@ -410,9 +343,6 @@ namespace Midas.Persistence.Storages.Sqlite
                 using var command = new SqliteCommand(baseQuery.ToString(), conn);
                 foreach (var parameter in parameters)
                     command.Parameters.Add(parameter);
-
-                for (int i = 0; i < hasTagFilters.Count; i++)
-                    command.Parameters.Add(new SqliteParameter($"@Tag{i}", hasTagFilters[i].Value));
 
                 var transactions = new Dictionary<long, TransactionDto>();
                 using var reader = command.ExecuteReader();
@@ -443,32 +373,11 @@ namespace Midas.Persistence.Storages.Sqlite
                 SELECT COUNT(*) as totalRecords
                 FROM {_tableName} t
             ");
-            var (whereClauses, parameters, needsSupercategories) = GenerateWhereClauses(filters);
-            if (needsSupercategories)
-                baseQuery.AppendLine($"LEFT JOIN {_supercategoriesTableName} {_supercategoriesTableAlias} ON t.category = {_supercategoriesTableAlias}.category");
-
-            // Handle tag filters with INTERSECT
-            var hasTagFilters = filters.OfType<HasTagTransactionFilter>().ToList();
-            if (hasTagFilters.Count > 0)
-            {
-                var tagQueries = hasTagFilters.Select((filter, index) =>
-                    $@"
-                        SELECT tid 
-                        FROM {_tagsTableName} 
-                        WHERE name = @Tag{index}
-                    ");
-
-                baseQuery.AppendLine("WHERE t.id IN (")
-                         .AppendLine(string.Join("\nINTERSECT\n", tagQueries))
-                         .AppendLine(")");
-            }
-
-            // Add WHERE clause for other filters
+            var (whereClauses, parameters, joinClauses) = GenerateWhereClauses(filters);
+            foreach (var joinClause in joinClauses)
+                baseQuery.AppendLine(joinClause);
             if (whereClauses.Count > 0)
-            {
-                var conjunction = hasTagFilters.Any() ? "AND" : "WHERE";
-                baseQuery.AppendLine($"{conjunction} {string.Join(" AND ", whereClauses)}");
-            }
+                baseQuery.AppendLine($"WHERE {string.Join(" AND ", whereClauses)}");
 
             // Execute query
             var result = WithConnection(conn =>
@@ -476,9 +385,6 @@ namespace Midas.Persistence.Storages.Sqlite
                 using var command = new SqliteCommand(baseQuery.ToString(), conn);
                 foreach (var parameter in parameters)
                     command.Parameters.Add(parameter);
-
-                for (int i = 0; i < hasTagFilters.Count; i++)
-                    command.Parameters.Add(new SqliteParameter($"@Tag{i}", hasTagFilters[i].Value));
 
                 var transactions = new Dictionary<int, TransactionDto>();
                 var result = command.ExecuteScalar();
@@ -488,117 +394,222 @@ namespace Midas.Persistence.Storages.Sqlite
             return Task.FromResult(result);
         }
 
-        private (List<string> WhereClauses, List<SqliteParameter> Parameters, bool NeedsSupercategories) GenerateWhereClauses(List<TransactionFilter> filters)
+        private (List<string> WhereClauses, List<SqliteParameter> Parameters, List<string> JoinClauses) GenerateWhereClauses(List<TransactionFilter> filters)
         {
             var whereClauses = new List<string>();
             var parameters = new List<SqliteParameter>();
+            var joinClauses = new List<string>();
             var needsSupercategories = false;
+            var needsSourceAccountName = false;
+            var needsDestinationAccountName = false;
 
+
+            static NotSupportedException getCompatibilityException(TransactionFilter f, TransactionFilterOperation op)
+            {
+                return new NotSupportedException($"Transaction filter {f.GetType()} with operation {op.GetType()} is not supported.");
+            }
+
+
+            static void addClause<T>(
+                List<string> whereClauses,
+                List<SqliteParameter> parameters,
+                int filterIndex,
+                Union<T, List<T>> valueOrValues,
+                Func<string, string> clauseFactory,
+                string parameterPrefix = "where_clause_",
+                Func<T, object>? prepareTerm = null) where T : notnull
+            {
+                if (valueOrValues.Is<List<T>>(out var values))
+                {
+                    var operationParameters = values
+                        .Select((v, j) => ($"@{parameterPrefix}{filterIndex}_{j}", v));
+                    var parametersString = string.Join(", ", operationParameters.Select(q => q.Item1));
+                    whereClauses.Add(clauseFactory($"({parametersString})"));
+                    if (prepareTerm != null)
+                        parameters.AddRange(operationParameters.Select(q => new SqliteParameter(q.Item1, prepareTerm(q.Item2))));
+                    else
+                        parameters.AddRange(operationParameters.Select(q => new SqliteParameter(q.Item1, q.Item2)));
+                }
+                else
+                {
+                    var operationParameter = $"@{parameterPrefix}{filterIndex}";
+                    whereClauses.Add(clauseFactory(operationParameter));
+                    if (prepareTerm != null)
+                        parameters.Add(new SqliteParameter(operationParameter, prepareTerm((T)valueOrValues)));
+                    else
+                        parameters.Add(new SqliteParameter(operationParameter, (T)valueOrValues));
+                }
+            }
+
+            static void addClauseFromOperation<T>(
+                List<string> whereClauses,
+                List<SqliteParameter> parameters,
+                int filterIndex,
+                TransactionFilter<T> filter,
+                Union<string, List<string>> columnSelector,
+                Func<T, object>? prepareTerm = null) where T : notnull
+            {
+                static Func<string, string> generateClauseString(Union<string, List<string>> columnSelector, Func<string, string, string> template)
+                {
+                    if (columnSelector.Is<string>(out var singleColumnSelector))
+                        return q => template(q, singleColumnSelector);
+                    return q => string.Join(" OR ", ((List<string>)columnSelector).Select(r => template(q, r)));
+                }
+
+                switch (filter.Operation)
+                {
+                    case IsNoneTransactionFilterOperation<T>:
+                        whereClauses.Add(generateClauseString(columnSelector, static (_, c) => $"{c} IS NULL")(""));
+                        break;
+                    case IsNotNoneTransactionFilterOperation<T>:
+                        whereClauses.Add(generateClauseString(columnSelector, static (_, c) => $"{c} IS NOT NULL")(""));
+                        break;
+                    case IsNoneOrEqualToTransactionFilterOperation<T> isNoneOrOp:
+                        addClause<T>(whereClauses, parameters, filterIndex, isNoneOrOp.Value,
+                            generateClauseString(columnSelector, static (q, c) => $"{c} IS NULL OR {c} = {q}"),
+                            prepareTerm: prepareTerm);
+                        break;
+                    case IsOneOfTransactionFilterOperation<T> isOneOfOp:
+                        addClause<T>(whereClauses, parameters, filterIndex, isOneOfOp.Values,
+                            generateClauseString(columnSelector, static (q, c) => $"{c} IN {q}"),
+                            prepareTerm: prepareTerm);
+                        break;
+                    case IsNotOneOfTransactionFilterOperation<T> isNotOneOfOp:
+                        addClause<T>(whereClauses, parameters, filterIndex, isNotOneOfOp.Values,
+                            generateClauseString(columnSelector, static (q, c) => $"{c} NOT IN {q}"),
+                            prepareTerm: prepareTerm);
+                        break;
+                    case StartsWithTransactionFilterOperation startsWithOp:
+                        addClause<string>(whereClauses, parameters, filterIndex, startsWithOp.Value,
+                            generateClauseString(columnSelector, static (q, c) => $"{c} LIKE {q}"),
+                            prepareTerm: SqliteParameterCollectionExtensions.PrepareSqliteStartsWithTerm);
+                        break;
+                    case EndsWithTransactionFilterOperation endsWithOp:
+                        addClause<string>(whereClauses, parameters, filterIndex, endsWithOp.Value,
+                            generateClauseString(columnSelector, static (q, c) => $"{c} LIKE {q}"),
+                            prepareTerm: SqliteParameterCollectionExtensions.PrepareSqliteEndsWithTerm);
+                        break;
+                    case ContainsTransactionFilterOperation containsOp:
+                        addClause<string>(whereClauses, parameters, filterIndex, containsOp.Value,
+                            generateClauseString(columnSelector, static (q, c) => $"{c} LIKE {q}"),
+                            prepareTerm: SqliteParameterCollectionExtensions.PrepareSqliteContainsTerm);
+                        break;
+                    case IsGreaterThanTransactionFilterOperation<T> isGTOp:
+                        addClause<T>(whereClauses, parameters, filterIndex, isGTOp.Value,
+                            generateClauseString(columnSelector, static (q, c) => $"{c} > {q}"),
+                            prepareTerm: prepareTerm);
+                        break;
+                    case IsGreaterThanOrEqualToTransactionFilterOperation<T> isGTEOp:
+                        addClause<T>(whereClauses, parameters, filterIndex, isGTEOp.Value,
+                            generateClauseString(columnSelector, static (q, c) => $"{c} >= {q}"),
+                            prepareTerm: prepareTerm);
+                        break;
+                    case IsLessThanTransactionFilterOperation<T> isLTOp:
+                        addClause<T>(whereClauses, parameters, filterIndex, isLTOp.Value,
+                            generateClauseString(columnSelector, static (q, c) => $"{c} < {q}"),
+                            prepareTerm: prepareTerm);
+                        break;
+                    case IsLessThanOrEqualToTransactionFilterOperation<T> isLTEOp:
+                        addClause<T>(whereClauses, parameters, filterIndex, isLTEOp.Value,
+                            generateClauseString(columnSelector, static (q, c) => $"{c} <= {q}"),
+                            prepareTerm: prepareTerm);
+                        break;
+                    default:
+                        throw getCompatibilityException(filter, filter.Operation);
+
+
+                }
+
+            }
+
+            var tagsFilters = new List<string>();
             for (int i = 0; i < filters.Count; i++)
             {
                 var filter = filters[i];
                 switch (filter)
                 {
-                    case TransactionIdIsOneOf idIsOneOfFilter:
-                        var idIsOneOfParameters = idIsOneOfFilter.Ids
-                            .Select((v, j) => ($"@TransactionIdIsOneOf{i}_{j}", v));
-                        var idIsOneOfInString = string.Join(", ", idIsOneOfParameters.Select(q => q.Item1));
-                        whereClauses.Add($"t.id IN ({idIsOneOfInString})");
-                        parameters.AddRange(idIsOneOfParameters.Select(q => new SqliteParameter(q.Item1, q.Item2)));
+                    case IdFilter idFilter:
+                        addClauseFromOperation(whereClauses, parameters, i, idFilter, "t.id");
                         break;
-                    case MinDateTransactionFilter minDateFilter:
-                        whereClauses.Add($"t.timeStamp >= @MinDate{i}");
-                        parameters.Add(new SqliteParameter($"@MinDate{i}", minDateFilter.UnixSeconds));
+                    case TagsFilter tagsFilter:
+                        switch (tagsFilter.Operation)
+                        {
+                            case ContainsTransactionFilterOperation containsOp:
+                                tagsFilters.Add(containsOp.Value); // handled seperately
+                                break;
+                            case IsNoneTransactionFilterOperation<string>:
+                                whereClauses.Add($"NOT EXISTS (SELECT 1 FROM {_tagsTableName} where {_tagsTableName}.tid = t.id)");
+                                break;
+                            case IsNotNoneTransactionFilterOperation<string>:
+                                whereClauses.Add($"EXISTS (SELECT 1 FROM {_tagsTableName} where {_tagsTableName}.tid = t.id)");
+                                break;
+                            default:
+                                throw getCompatibilityException(tagsFilter, tagsFilter.Operation);
+                        };
                         break;
-                    case MaxDateTransactionFilter maxDateFilter:
-                        whereClauses.Add($"t.timeStamp <= @MaxDate{i}");
-                        parameters.Add(new SqliteParameter($"@MaxDate{i}", maxDateFilter.UnixSeconds));
+                    case DateFilter dateFilter:
+                        addClauseFromOperation(whereClauses, parameters, i, dateFilter, "t.timeStamp", prepareTerm: static q => q.UnixTimeSeconds);
                         break;
-                    case ExclusiveMaxDateTransactionFilter maxDateFilter:
-                        whereClauses.Add($"t.timeStamp < @ExclusiveMaxDate{i}");
-                        parameters.Add(new SqliteParameter($"@ExclusiveMaxDate{i}", maxDateFilter.UnixSeconds));
+                    case AmountFilter amountFilter:
+                        addClauseFromOperation(whereClauses, parameters, i, amountFilter, "t.amountCents", prepareTerm: static q => (int)(q * 100));
                         break;
-                    case MinAmountTransactionFilter minAmountFilter:
-                        whereClauses.Add($"t.amountCents >= @MinAmountCents{i}");
-                        parameters.Add(new SqliteParameter($"@MinAmountCents{i}", minAmountFilter.AmountCents));
+                    case CategoryFilter categoryFilter:
+                        addClauseFromOperation(whereClauses, parameters, i, categoryFilter, "t.category");
                         break;
-                    case MaxAmountTransactionFilter maxAmountFilter:
-                        whereClauses.Add($"t.amountCents <= @MaxAmountCents{i}");
-                        parameters.Add(new SqliteParameter($"@MaxAmountCents{i}", maxAmountFilter.AmountCents));
+                    case DescriptionFilter descriptionFilter:
+                        addClauseFromOperation(whereClauses, parameters, i, descriptionFilter, "t.description");
                         break;
-                    case HasAmountTransactionFilter hasAmountFilter:
-                        whereClauses.Add($"t.amountCents = @HasAmountCents{i}");
-                        parameters.Add(new SqliteParameter($"@HasAmountCents{i}", hasAmountFilter.AmountCents));
+                    case SourceAccountIdFilter sourceAccountIdFilter:
+                        addClauseFromOperation(whereClauses, parameters, i, sourceAccountIdFilter, "t.sourceAccount");
                         break;
-                    case HasCategoryTransactionFilter hasCategoryFilter:
-                        whereClauses.Add($"t.category = @Category{i}");
-                        parameters.Add(new SqliteParameter($"@Category{i}", hasCategoryFilter.Value));
+                    case DestinationAccountIdFilter destinationAccountIdFilter:
+                        addClauseFromOperation(whereClauses, parameters, i, destinationAccountIdFilter, "t.destinationAccount");
                         break;
-                    case CategoryIsNotTransactionFilter categoryIsNotFilter:
-                        whereClauses.Add($"t.category != @Category{i}");
-                        parameters.Add(new SqliteParameter($"@Category{i}", categoryIsNotFilter.Value));
+                    case EitherAccountIdFilter eitherAccountIdFilter:
+                        addClauseFromOperation(whereClauses, parameters, i, eitherAccountIdFilter, new List<string> { "t.sourceAccount", "t.destinationAccount" });
                         break;
-                    case EitherAccountIsTransactionFilter eitherAccountFilter:
-                        whereClauses.Add($"(t.sourceAccount = @EitherAccountId{i} OR t.destinationAccount = @EitherAccountId{i})");
-                        parameters.Add(new SqliteParameter($"@EitherAccountId{i}", eitherAccountFilter.Id));
+                    case SourceAccountNameFilter sourceAccountNameFilter:
+                        needsSourceAccountName = true;
+                        addClauseFromOperation(whereClauses, parameters, i, sourceAccountNameFilter, $"{_sourceAccountTableAlias}.name");
                         break;
-                    case EitherAccountIsOneOfTransactionFilter eitherAccountOneOfFilter:
-                        var eitherAccountOneOfParameters = eitherAccountOneOfFilter.Ids
-                            .Select((v, j) => ($"@EitherAccountOneOf{i}_{j}", v));
-                        var eitherAccountOneOfInString = string.Join(", ", eitherAccountOneOfParameters.Select(q => q.Item1));
-                        whereClauses.Add($"(t.sourceAccount IN ({eitherAccountOneOfInString}) OR t.destinationAccount IN ({eitherAccountOneOfInString}))");
-                        parameters.AddRange(eitherAccountOneOfParameters.Select(q => new SqliteParameter(q.Item1, q.Item2)));
+                    case DestinationAccountNameFilter destinationAccountNameFilter:
+                        needsDestinationAccountName = true;
+                        addClauseFromOperation(whereClauses, parameters, i, destinationAccountNameFilter, $"{_destinationAccountTableAlias}.name");
                         break;
-                    case SourceAccountIsOneOfTransactionFilter sourceAccountOneOfFilter:
-                        var sourceAccountOneOfParameters = sourceAccountOneOfFilter.Ids
-                            .Select((v, j) => ($"@SourceAccountOneOf{i}_{j}", v));
-                        var sourceAccountOneOfInString = string.Join(", ", sourceAccountOneOfParameters.Select(q => q.Item1));
-                        whereClauses.Add($"t.sourceAccount IN ({sourceAccountOneOfInString})");
-                        parameters.AddRange(sourceAccountOneOfParameters.Select(q => new SqliteParameter(q.Item1, q.Item2)));
+                    case EitherAccountNameFilter eitherAccountNameFilter:
+                        needsSourceAccountName = true;
+                        needsDestinationAccountName = true;
+                        addClauseFromOperation(whereClauses, parameters, i, eitherAccountNameFilter, new List<string> { $"{_sourceAccountTableAlias}.name", $"{_destinationAccountTableAlias}.name" });
                         break;
-                    case DestinationAccountIsOneOfTransactionFilter destinationAccountOneOfFilter:
-                        var destinationAccountOneOfParameters = destinationAccountOneOfFilter.Ids
-                            .Select((v, j) => ($"@DestinationAccountOneOf{i}_{j}", v));
-                        var destinationAccountOneOfInString = string.Join(", ", destinationAccountOneOfParameters.Select(q => q.Item1));
-                        whereClauses.Add($"t.destinationAccount IN ({destinationAccountOneOfInString})");
-                        parameters.AddRange(destinationAccountOneOfParameters.Select(q => new SqliteParameter(q.Item1, q.Item2)));
-                        break;
-                    case SourceAccountIsNotOneOfTransactionFilter sourceAccountNotOneOfFilter:
-                        var sourceAccountNotOneOfParameters = sourceAccountNotOneOfFilter.Ids
-                            .Select((v, j) => ($"@SourceAccountNotOneOf{i}_{j}", v));
-                        var sourceAccountNotOneOfInString = string.Join(", ", sourceAccountNotOneOfParameters.Select(q => q.Item1));
-                        whereClauses.Add($"t.sourceAccount NOT IN ({sourceAccountNotOneOfInString})");
-                        parameters.AddRange(sourceAccountNotOneOfParameters.Select(q => new SqliteParameter(q.Item1, q.Item2)));
-                        break;
-                    case DestinationAccountIsNotOneOfTransactionFilter destinationAccountNotOneOfFilter:
-                        var destinationAccountNotOneOfParameters = destinationAccountNotOneOfFilter.Ids
-                            .Select((v, j) => ($"@DestinationAccountNotOneOf{i}_{j}", v));
-                        var destinationAccountNotOneOfInString = string.Join(", ", destinationAccountNotOneOfParameters.Select(q => q.Item1));
-                        whereClauses.Add($"t.destinationAccount NOT IN ({destinationAccountNotOneOfInString})");
-                        parameters.AddRange(destinationAccountNotOneOfParameters.Select(q => new SqliteParameter(q.Item1, q.Item2)));
-                        break;
-                    case DescriptionContainsTransactionFilter descriptionContainsFilter:
-                        whereClauses.Add($"t.description LIKE @DescriptionContains{i}");
-                        parameters.Add(new SqliteParameter($"@DescriptionContains{i}", SqliteParameterCollectionExtensions.PrepareSqliteLikeTerm(descriptionContainsFilter.Value)));
-                        break;
-                    case SupercategoryIsTransactionFilter supercategoryIsFilter:
-                        whereClauses.Add($"{_supercategoriesTableAlias}.supercategory = @SupercategoryIs{i}");
-                        parameters.Add(new SqliteParameter($"@SupercategoryIs{i}", supercategoryIsFilter.Value));
+                    case SupercategoryFilter supercategoryFilter:
                         needsSupercategories = true;
+                        addClauseFromOperation(whereClauses, parameters, i, supercategoryFilter, $"{_supercategoriesTableAlias}.supercategory");
                         break;
-                    case SupercategoryIsNoneOrEqualToTransactionFilter supercategoryIsNoneOrFilter:
-                        whereClauses.Add($"({_supercategoriesTableAlias}.supercategory IS NULL OR {_supercategoriesTableAlias}.supercategory = @SupercategoryIsNoneOr{i})");
-                        parameters.Add(new SqliteParameter($"@SupercategoryIsNoneOr{i}", supercategoryIsNoneOrFilter.Value));
-                        needsSupercategories = true;
-                        break;
-                    case HasTagTransactionFilter:
-                        break; // handled seperately
                     default:
                         throw new NotSupportedException($"Transaction filter of type {filter.GetType()} is not supported.");
                 }
             }
 
-            return (whereClauses, parameters, needsSupercategories);
+
+            if (tagsFilters.Count > 0)
+            {
+                var tagsParameters = tagsFilters.Distinct()
+                    .Select((t, i) => ($"@Tag{i}", t)).ToList();
+                var tagsSelectQueries = tagsParameters
+                    .Select(t => $"SELECT tid FROM {_tagsTableName} WHERE name = {t.Item1}");
+                var tagsQuery = string.Join(" INTERSECT ", tagsSelectQueries);
+                whereClauses.Add($"t.id IN ({tagsQuery})");
+                parameters.AddRange(tagsParameters.Select(t => new SqliteParameter(t.Item1, t.t)));
+            }
+
+            if (needsSupercategories)
+                joinClauses.Add($"LEFT JOIN {_supercategoriesTableName} {_supercategoriesTableAlias} ON t.category = {_supercategoriesTableAlias}.category");
+            if (needsSourceAccountName)
+                joinClauses.Add($"LEFT JOIN {_accountsTableName} {_sourceAccountTableAlias} ON t.sourceAccount = {_sourceAccountTableAlias}.id");
+            if (needsDestinationAccountName)
+                joinClauses.Add($"LEFT JOIN {_accountsTableName} {_destinationAccountTableAlias} ON t.destinationAccount = {_destinationAccountTableAlias}.id");
+
+            return (whereClauses, parameters, joinClauses);
         }
 
         public Task<List<string>> GetCategories()

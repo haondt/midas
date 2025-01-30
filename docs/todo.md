@@ -1,15 +1,17 @@
 ## Short Term
 - make "are you sure" messages more informative - e.g. "are you sure you want to delete account xyz?"
-- longer top spending / income sources / destinations in report
 - all the filters
     - add transaction filter to search by "hash is none"
 - update merge transaction ui to be more similar to edit transaction ui, inc'l showing source data hashes
+- look into embedding node red
 
 
 ## Medium Term
 - api endpoint for generating and pulling a takeout
 - cleanup/refactor things, like using `Modal.razor` everywhere, same with `Tag.razor`
 - get rid of all the magic strings
+- more filters
+  - does not contain
 
 ## Long term
 - account default import configuration

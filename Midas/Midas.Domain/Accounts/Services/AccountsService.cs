@@ -17,7 +17,7 @@ namespace Midas.Domain.Accounts.Services
             var account = await accountStorage.TryGet(id);
             var amounts = await transactionService.GetAmounts(new()
             {
-                TransactionFilter.EitherAccountIs(id)
+                TransactionFilter.EitherAccountId.Is(id)
             });
             var balance = amounts.ByDestination.GetValue(id).Or(0) - amounts.BySource.GetValue(id).Or(0);
 
@@ -33,7 +33,7 @@ namespace Midas.Domain.Accounts.Services
 
             var amounts = await transactionService.GetAmounts(new List<TransactionFilter>
             {
-                TransactionFilter.EitherAccountIsOneOf(accounts.Keys.ToList())
+                TransactionFilter.EitherAccountId.IsOneOf(accounts.Keys.ToList())
             });
 
             return accounts.ToDictionary(
@@ -137,7 +137,7 @@ namespace Midas.Domain.Accounts.Services
 
             var amounts = await transactionService.GetAmounts(new List<TransactionFilter>
             {
-                TransactionFilter.EitherAccountIsOneOf(accounts.Keys.ToList())
+                TransactionFilter.EitherAccountId.IsOneOf(accounts.Keys.ToList())
             });
 
             return accounts.ToDictionary(
