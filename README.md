@@ -97,7 +97,8 @@ Generate reports for a given period, summarizing the income and spending across 
   - Create - manually create accounts
   - Edit - manually edit accounts, and mark or unmark them as belonging to you
 - Automation
-  - Node-Red - send test requests directly to Node-Red and view the response
+  - Node-RED - send test requests directly to Node-RED and view the response
+  - Node-RED Editor - edit the flows directly in Midas using an embedded editor
 - Administration
   - Data import/export - import or export data
   - Data deletion - mass delete data

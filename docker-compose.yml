@@ -15,6 +15,7 @@ services:
     environment:
       MidasPersistenceSettings__DatabasePath: /data/data.db
       NodeRedSettings__BaseUrl: http://midas-node-red:1880
+      NodeRedSettings__ClientUrl: http://localhost:1880
       NodeRedSettings__TimeoutSeconds: 2
       FileSettings__WorkDirectory: /data/workdir
 
