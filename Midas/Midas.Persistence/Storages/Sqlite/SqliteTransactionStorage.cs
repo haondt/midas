@@ -21,6 +21,8 @@ namespace Midas.Persistence.Storages.Sqlite
         private readonly string _supercategoriesTableName;
         private const string _supercategoriesTableAlias = "c";
         private readonly string _accountsTableName;
+        private readonly string _importDataTableName;
+        private const string _importDataTableAlias = "idt";
         private const string _sourceAccountTableAlias = "s";
         private const string _destinationAccountTableAlias = "d";
 
@@ -30,6 +32,7 @@ namespace Midas.Persistence.Storages.Sqlite
             _tagsTableName = SanitizeTableName(options.Value.TransactionsTagsTableName);
             _supercategoriesTableName = SanitizeTableName(options.Value.SupercategoryTableName);
             _accountsTableName = SanitizeTableName(options.Value.AccountsTableName);
+            _importDataTableName = SanitizeTableName(options.Value.TransactionsImportDataTableName);
             InitializeDb();
         }
 
@@ -402,6 +405,7 @@ namespace Midas.Persistence.Storages.Sqlite
             var needsSupercategories = false;
             var needsSourceAccountName = false;
             var needsDestinationAccountName = false;
+            var needsImportData = false;
 
 
             static NotSupportedException getCompatibilityException(TransactionFilter f, TransactionFilterOperation op)
@@ -547,6 +551,21 @@ namespace Midas.Persistence.Storages.Sqlite
                                 throw getCompatibilityException(tagsFilter, tagsFilter.Operation);
                         };
                         break;
+                    case ImportSourceDataHashFilter importSourceDataHashFilter:
+                        switch (importSourceDataHashFilter.Operation)
+                        {
+                            case IsNoneTransactionFilterOperation<long>:
+                                whereClauses.Add($"NOT EXISTS (SELECT 1 FROM {_importDataTableName} where {_importDataTableName}.transactionId = t.id)");
+                                break;
+                            case IsNotNoneTransactionFilterOperation<long>:
+                                whereClauses.Add($"EXISTS (SELECT 1 FROM {_importDataTableName} where {_importDataTableName}.transactionId = t.id)");
+                                break;
+                            default:
+                                needsImportData = true;
+                                addClauseFromOperation(whereClauses, parameters, i, importSourceDataHashFilter, $"{_importDataTableAlias}.sourceDataHash");
+                                break;
+                        };
+                        break;
                     case DateFilter dateFilter:
                         addClauseFromOperation(whereClauses, parameters, i, dateFilter, "t.timeStamp", prepareTerm: static q => q.UnixTimeSeconds);
                         break;
@@ -608,6 +627,9 @@ namespace Midas.Persistence.Storages.Sqlite
                 joinClauses.Add($"LEFT JOIN {_accountsTableName} {_sourceAccountTableAlias} ON t.sourceAccount = {_sourceAccountTableAlias}.id");
             if (needsDestinationAccountName)
                 joinClauses.Add($"LEFT JOIN {_accountsTableName} {_destinationAccountTableAlias} ON t.destinationAccount = {_destinationAccountTableAlias}.id");
+            if (needsImportData)
+                joinClauses.Add($"LEFT JOIN {_importDataTableName} {_importDataTableAlias} ON t.id = {_importDataTableAlias}.transactionId");
+
 
             return (whereClauses, parameters, joinClauses);
         }

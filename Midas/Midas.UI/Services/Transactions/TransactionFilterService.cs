@@ -135,6 +135,14 @@ namespace Midas.UI.Services.Transactions
                         TransactionFilter.Tags,
                         static x => x.Trim(),
                         static x => throw new NotSupportedException($"Cannot split tags")),
+                    TransactionFilterTargets.ImportSourceDataHash => TryGetFilter(
+                        op,
+                        value,
+                        TransactionFilter.ImportSourceDataHash,
+                        static x => long.Parse(x),
+                        static x => x.Split(',')
+                            .Select(long.Parse)
+                            .ToList()),
                     TransactionFilterTargets.Id => TryGetFilter(
                         op,
                         value,

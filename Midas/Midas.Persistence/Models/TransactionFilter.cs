@@ -18,6 +18,7 @@ namespace Midas.Persistence.Models
         public static TransactionFilterBuilder<AbsoluteDateTime> Date { get; } = new TransactionFilterBuilder<AbsoluteDateTime>(op => new DateFilter { Operation = op });
         public static StringTransactionFilterBuilder Tags { get; } = new StringTransactionFilterBuilder(op => new TagsFilter { Operation = op });
         public static TransactionFilterBuilder<long> Id { get; } = new TransactionFilterBuilder<long>(op => new IdFilter { Operation = op });
+        public static TransactionFilterBuilder<long> ImportSourceDataHash { get; } = new TransactionFilterBuilder<long>(op => new ImportSourceDataHashFilter { Operation = op });
     }
 
     public abstract class TransactionFilter<T> : TransactionFilter
@@ -35,6 +36,7 @@ namespace Midas.Persistence.Models
     public class EitherAccountNameFilter : TransactionFilter<string> { }
     public class EitherAccountIdFilter : TransactionFilter<string> { }
     public class DateFilter : TransactionFilter<AbsoluteDateTime> { }
+    public class ImportSourceDataHashFilter : TransactionFilter<long> { }
     public class TagsFilter : TransactionFilter<string> { }
     public class IdFilter : TransactionFilter<long> { }
 

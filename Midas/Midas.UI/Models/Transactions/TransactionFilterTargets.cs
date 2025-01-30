@@ -14,6 +14,7 @@
         public const string EitherAccountId = "either_account_id";
         public const string Date = "date";
         public const string Tags = "tags";
+        public const string ImportSourceDataHash = "import_source_data_hash";
         public const string Id = "id";
     }
 }

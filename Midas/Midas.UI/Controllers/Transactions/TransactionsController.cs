@@ -119,6 +119,7 @@ namespace Midas.UI.Controllers.Transactions
                     or TransactionFilterTargets.Supercategory
                     or TransactionFilterTargets.Tags
                     or TransactionFilterTargets.Id
+                    or TransactionFilterTargets.ImportSourceDataHash
                     or TransactionFilterTargets.SourceAccountName
                     or TransactionFilterTargets.DestinationAccountName
                     or TransactionFilterTargets.EitherAccountName
