@@ -1,7 +1,5 @@
 ## Short Term
 - make "are you sure" messages more informative - e.g. "are you sure you want to delete account xyz?"
-- all the filters
-    - add transaction filter to search by "hash is none"
 - update merge transaction ui to be more similar to edit transaction ui, inc'l showing source data hashes
 - look into embedding node red
 
