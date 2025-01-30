@@ -1,0 +1,23 @@
+﻿@using Microsoft.Extensions.Options
+@using Midas.Domain.NodeRed.Models
+@inject IOptions<NodeRedSettings> Options
+@code {
+    private string _nodeRedUrl = default!;
+    protected override void OnInitialized()
+    {
+        _nodeRedUrl = Options.Value.ClientUrl;
+    }
+}
+
+<div class="box">
+    <style>
+    @@scope {
+        :scope {
+            height: calc(100vh - 2 * (0.75rem + var(--bulma-column-gap)));
+            width: 100%;
+        }
+    }
+    </style>
+    <iframe id="noderedIframe" style="width:100%;height:100%" src="@_nodeRedUrl"/>
+    
+</div>

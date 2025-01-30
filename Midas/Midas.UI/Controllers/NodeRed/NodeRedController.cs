@@ -24,6 +24,12 @@ namespace Midas.UI.Controllers.NodeRed
             return componentFactory.RenderComponentAsync<Midas.UI.Components.NodeRed.NodeRed>();
         }
 
+        [HttpGet("editor")]
+        public Task<IResult> GetEditor()
+        {
+            return componentFactory.RenderComponentAsync<Midas.UI.Components.NodeRed.Editor>();
+        }
+
         [HttpPost]
         public async Task<IResult> Post([FromForm(Name = "request-text")] string requestText)
         {
@@ -43,7 +49,7 @@ namespace Midas.UI.Controllers.NodeRed
                         Status = status,
                     },
                     new Toast {
-                        Message = "Sent to Node Red successfully.",
+                        Message = "Sent to Node-RED successfully.",
                         Severity = ToastSeverity.Success
                     }
                 ]

@@ -109,8 +109,13 @@ namespace Midas.UI.Extensions
                 {
                     new NavigationLink
                     {
-                        Title = "Node-Red",
+                        Title = "Node-RED",
                         Slug = "node-red",
+                    },
+                    new NavigationLink
+                    {
+                        Title = "Node-RED Editor",
+                        Slug = "node-red/editor",
                     },
                     new NavigationLink
                     {
