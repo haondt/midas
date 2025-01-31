@@ -457,7 +457,7 @@ namespace Midas.Persistence.Storages.Sqlite
                 {
                     if (columnSelector.Is<string>(out var singleColumnSelector))
                         return q => template(q, singleColumnSelector);
-                    return q => string.Join(" OR ", ((List<string>)columnSelector).Select(r => template(q, r)));
+                    return q => $"({string.Join(" OR ", ((List<string>)columnSelector).Select(r => template(q, r)))})";
                 }
 
                 switch (filter.Operation)
