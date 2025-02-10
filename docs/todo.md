@@ -1,7 +1,8 @@
 ## Short Term
 - make "are you sure" messages more informative - e.g. "are you sure you want to delete account xyz?"
 - update merge transaction ui to be more similar to edit transaction ui, inc'l showing source data hashes
-- look into embedding node red
+- add links to tags and categories and supercategories pages
+- replace table-container with hiding some columns, so the action dropdown can work correctly
 
 
 ## Medium Term
@@ -10,6 +11,10 @@
 - get rid of all the magic strings
 - more filters
   - does not contain
+  - source account is mine -> maybe this can be "source_acccount_is_mine is true"
+  - destination account is mine
+  - source account is not mine
+  - destination account is not mine
 
 ## Long term
 - account default import configuration
