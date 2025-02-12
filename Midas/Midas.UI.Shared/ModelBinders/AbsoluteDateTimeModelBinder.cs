@@ -38,7 +38,7 @@ namespace Midas.UI.Shared.ModelBinders
                 DateTimeKind.Utc
                     or DateTimeKind.Local => AbsoluteDateTime.Create(dt),
                 DateTimeKind.Unspecified => AbsoluteDateTime.Create(new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second, DateTimeKind.Local)),
-                _ => throw new ArgumentOutOfRangeException($"Unkonw {(typeof(DateTimeKind))} {dt.Kind}.")
+                _ => throw new ArgumentOutOfRangeException($"Unkown {(typeof(DateTimeKind))} {dt.Kind}.")
             };
 
             bindingContext.Result = ModelBindingResult.Success(absoluteTime);

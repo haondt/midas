@@ -1,8 +1,8 @@
 ﻿using Haondt.Core.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Midas.Core.Models
 {
@@ -65,24 +65,29 @@ namespace Midas.Core.Models
             if (string.IsNullOrEmpty(dateString))
                 return new();
 
-            if (!DateTime.TryParseExact(
-                dateString,
-                "yyyy-MM-dd",
-                CultureInfo.InvariantCulture,
-                DateTimeStyles.AssumeLocal, out var dt))
+            var match = Regex.Match(dateString, @"^(\d{4})-(\d{2})-(\d{2})$");
+            if (!match.Success)
                 return new();
 
-            return new(AbsoluteDateTime.Create(dt));
+            if (!int.TryParse(match.Groups[1].Value, out int year) ||
+                !int.TryParse(match.Groups[2].Value, out int month) ||
+                !int.TryParse(match.Groups[3].Value, out int day))
+                return new();
+
+            if (month is < 1 or > 12 || day is < 1 || day > DateTime.DaysInMonth(year, month))
+                return new();
+
+            return new(AbsoluteDateTime.Create(new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Local)));
         }
 
         public static AbsoluteDateTime ParseDate(string dateString)
         {
-            return AbsoluteDateTime.Create(
-                DateTime.ParseExact(
-                    dateString,
-                    "yyyy-MM-dd",
-                    CultureInfo.InvariantCulture,
-                    DateTimeStyles.AssumeLocal));
+            var match = Regex.Match(dateString, @"^(\d{4})-(\d{2})-(\d{2})$");
+            return AbsoluteDateTime.Create(new DateTime(
+                int.Parse(match.Groups[1].Value),
+                int.Parse(match.Groups[2].Value),
+                int.Parse(match.Groups[3].Value),
+                0, 0, 0, DateTimeKind.Local));
         }
     }
 }
