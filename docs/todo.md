@@ -3,6 +3,7 @@
 - update merge transaction ui to be more similar to edit transaction ui, inc'l showing source data hashes
 - add links to tags and categories and supercategories pages
 - replace table-container with hiding some columns, so the action dropdown can work correctly
+- look into treemaps instead of donuts
 
 
 ## Medium Term
