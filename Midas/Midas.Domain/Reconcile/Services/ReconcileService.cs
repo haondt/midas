@@ -1,6 +1,5 @@
 ﻿using Haondt.Core.Models;
 using Midas.Core.Constants;
-using Midas.Core.Models;
 using Midas.Domain.Reconcile.Models;
 using Midas.Domain.Shared.Services;
 using Midas.Domain.Transactions.Services;
@@ -15,14 +14,14 @@ namespace Midas.Domain.Reconcile.Services
         ITransactionImportDataStorage importDataStorage
         ) : IReconcileService
     {
-        public Result<ReconcileDryRunResultDto, (double Progress, Optional<string> ProgressMessage)> GetDryRunResult(string jobId)
+        public DetailedResult<ReconcileDryRunResultDto, (double Progress, Optional<string> ProgressMessage)> GetDryRunResult(string jobId)
         {
             return jobRegistry.GetJobResultOrProgress<ReconcileDryRunResultDto>(jobId);
         }
 
-        public Result<Result<ReconcileMergeResultDto, string>, (double Progress, Optional<string> ProgressMessage)> GetMergeResult(string jobId)
+        public DetailedResult<DetailedResult<ReconcileMergeResultDto, string>, (double Progress, Optional<string> ProgressMessage)> GetMergeResult(string jobId)
         {
-            return jobRegistry.GetJobResultOrProgress<Result<ReconcileMergeResultDto, string>>(jobId);
+            return jobRegistry.GetJobResultOrProgress<DetailedResult<ReconcileMergeResultDto, string>>(jobId);
         }
 
         public string StartDryRun(ReconcileDryRunOptions options)
@@ -131,8 +130,8 @@ namespace Midas.Domain.Reconcile.Services
         public string StartMerge(string id)
         {
             var result = jobRegistry.GetJobResult(id);
-            if (!result.HasValue || result.Value is not ReconcileDryRunResultDto dryRunResult)
-                throw new InvalidOperationException($"Job {id} has a result of type {result.Value.GetType()} instead of {typeof(ReconcileDryRunResultDto)}.");
+            if (!result.IsSuccessful || result.Value is not ReconcileDryRunResultDto dryRunResult)
+                throw new InvalidOperationException($"Job {id} has a result of type {(result.IsSuccessful ? result.Value.GetType().ToString() : null)} instead of {typeof(ReconcileDryRunResultDto)}.");
             var (jobId, cancellationToken) = jobRegistry.RegisterJob();
 
             _ = Task.Run(async () =>
@@ -165,11 +164,11 @@ namespace Midas.Domain.Reconcile.Services
                                     Transaction = q.First
                                 }))));
                     mergeResult.TotalMerges = newTransactionIds.Count;
-                    jobRegistry.CompleteJob(jobId, new Result<ReconcileMergeResultDto, string>(mergeResult));
+                    jobRegistry.CompleteJob(jobId, new DetailedResult<ReconcileMergeResultDto, string>(mergeResult));
                 }
                 catch (Exception ex)
                 {
-                    jobRegistry.FailJob(jobId, new Result<ReconcileMergeResultDto, string>(ex.ToString()), requestCancellation: true);
+                    jobRegistry.FailJob(jobId, new DetailedResult<ReconcileMergeResultDto, string>(ex.ToString()), requestCancellation: true);
                 }
             });
             return jobId;

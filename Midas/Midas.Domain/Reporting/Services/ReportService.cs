@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Haondt.Core.Models;
+using Microsoft.Extensions.Options;
 using Midas.Core.Constants;
 using Midas.Core.Models;
 using Midas.Domain.Accounts.Services;

@@ -1,16 +1,16 @@
 ﻿using Haondt.Core.Models;
 using Haondt.Web.Assets;
 using Haondt.Web.Core.Reasons;
-using Newtonsoft.Json;
 using Midas.Core.Constants;
 using Midas.Domain.Kvs.Services;
+using Newtonsoft.Json;
 using System.Text;
 
 namespace Midas.UI.Services.Admin
 {
     public class ExportMappingsAssetSource(IKvsService kvs) : IAssetSource
     {
-        public async Task<Result<(byte[] Data, bool Cache), WebReason>> GetAssetAsync(string assetPath)
+        public async Task<DetailedResult<(byte[] Data, bool Cache), WebReason>> GetAssetAsync(string assetPath)
         {
             if (assetPath != "admin.kvsmappings.json")
                 return new(WebReason.NotFound);

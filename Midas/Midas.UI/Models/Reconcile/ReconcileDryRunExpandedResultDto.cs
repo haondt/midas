@@ -5,7 +5,7 @@ namespace Midas.UI.Models.Reconcile
 {
     public class ReconcileDryRunExpandedResultDto
     {
-        public required Result<List<ReconcileDryRunExpandedSingleResult>, string> MergedTransactions { get; set; }
+        public required DetailedResult<List<ReconcileDryRunExpandedSingleResult>, string> MergedTransactions { get; set; }
     }
 
     public class ReconcileDryRunExpandedSingleResult

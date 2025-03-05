@@ -35,7 +35,7 @@
             var tagsAndCategories = result.Value.Transactions
                 .Select(q => q.TransactionData)
                 .Where(q => q.HasValue)
-                .Select(q => (q.Value.Category, q.Value.Tags));
+                .Select(q => (q.Value!.Category, q.Value!.Tags));
 
             categories = tagsAndCategories
                 .Select(q => q.Category)

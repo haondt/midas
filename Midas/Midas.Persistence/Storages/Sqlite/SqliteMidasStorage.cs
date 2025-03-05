@@ -1,9 +1,9 @@
-﻿using Haondt.Persistence.Sqlite.Services;
+﻿using Haondt.Json.Converters;
+using Haondt.Persistence.Sqlite.Services;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Midas.Core.Converters;
 using Midas.Persistence.Services;
 using Midas.Persistence.Storages.Abstractions;
+using Newtonsoft.Json;
 
 namespace Midas.Persistence.Storages.Sqlite
 {

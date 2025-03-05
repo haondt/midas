@@ -183,13 +183,13 @@ namespace Midas.Domain.Admin.Services
             return jobId;
         }
 
-        public Result<TakeoutResult, Optional<string>> GetAsyncJobResult(string jobId)
+        public DetailedResult<TakeoutResult, Optional<string>> GetAsyncJobResult(string jobId)
         {
             var (status, progress, message) = jobRegistry.GetJobProgress(jobId);
             if (status < AsyncJobStatus.Complete)
                 return new(message);
             var result = jobRegistry.GetJobResult(jobId);
-            if (!result.HasValue)
+            if (!result.IsSuccessful)
                 throw new InvalidOperationException($"Job {jobId} has status {status} and no result.");
             if (result.Value is not TakeoutResult castedResult)
                 throw new InvalidOperationException($"Job {jobId} has status {status} and a result of type {result.Value.GetType()} instead of {typeof(TakeoutResult)}.");

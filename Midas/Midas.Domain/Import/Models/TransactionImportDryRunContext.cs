@@ -1,4 +1,4 @@
-﻿using Midas.Core.Models;
+﻿using Haondt.Core.Models;
 
 namespace Midas.Domain.Import.Models
 {

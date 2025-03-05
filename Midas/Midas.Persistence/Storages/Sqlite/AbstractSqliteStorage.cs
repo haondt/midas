@@ -1,7 +1,6 @@
-﻿using Haondt.Persistence.Converters;
+﻿using Haondt.Json.Converters;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Options;
-using Midas.Core.Converters;
 using Midas.Persistence.Services;
 using Newtonsoft.Json;
 

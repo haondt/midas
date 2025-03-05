@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Midas.Core.Models;
+﻿using Haondt.Core.Models;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Midas.UI.Shared.ModelBinders
 {

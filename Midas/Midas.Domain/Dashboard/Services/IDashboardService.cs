@@ -1,4 +1,4 @@
-﻿using Midas.Core.Models;
+﻿using Haondt.Core.Models;
 using Midas.Domain.Dashboard.Models;
 
 namespace Midas.Domain.Dashboard.Services

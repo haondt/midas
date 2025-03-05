@@ -2,7 +2,7 @@
 @using Midas.Domain.Reconcile.Models
 @code {
     [Parameter, EditorRequired]
-    public required Result<ReconcileMergeResultDto, string> Result { get; set; }
+    public required DetailedResult<ReconcileMergeResultDto, string> Result { get; set; }
 
 }
 

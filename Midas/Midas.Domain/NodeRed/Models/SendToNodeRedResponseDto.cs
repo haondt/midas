@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using Haondt.Core.Models;
 using Midas.Core.Constants;
-using Midas.Core.Models;
+using Newtonsoft.Json;
 
 namespace Midas.Domain.NodeRed.Models
 {

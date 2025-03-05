@@ -13,7 +13,7 @@ namespace Midas.Domain.Shared.Services
         (AsyncJobStatus Status, double Progress, Optional<string> ProgressMessage) GetJobProgress(string jobId);
         void UpdateJobProgress(string jobId, double progress, Optional<Optional<string>> progressMessage = default);
         (string, CancellationToken) RegisterJob(Optional<string> progressMessage = default);
-        Optional<object> GetJobResult(string jobId);
-        Result<T, (double Progress, Optional<string> Message)> GetJobResultOrProgress<T>(string jobId);
+        Result<object> GetJobResult(string jobId);
+        DetailedResult<T, (double Progress, Optional<string> Message)> GetJobResultOrProgress<T>(string jobId);
     }
 }

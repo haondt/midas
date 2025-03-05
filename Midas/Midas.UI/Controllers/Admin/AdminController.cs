@@ -113,7 +113,6 @@ namespace Midas.Admin.Controllers
         [ServiceFilter(typeof(RenderPageFilter))]
         public async Task<IResult> GetTakeout(string jobId)
         {
-            var takeoutResult = dataService.GetAsyncJobResult(jobId);
             return await componentFactory.RenderComponentAsync(new Takeout
             {
                 JobId = jobId,

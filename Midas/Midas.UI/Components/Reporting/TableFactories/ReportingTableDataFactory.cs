@@ -1,4 +1,5 @@
-﻿using Midas.Core.Models;
+﻿using Haondt.Core.Models;
+using Midas.Core.Models;
 
 namespace Midas.UI.Components.Reporting.TableFactories
 {

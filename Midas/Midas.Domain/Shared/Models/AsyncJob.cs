@@ -9,7 +9,7 @@ namespace Midas.Domain.Shared.Models
         public AsyncJobStatus Status { get; set; } = AsyncJobStatus.Started;
         public double Progress { get; set; } = 0;
         public Optional<string> ProgressMessage { get; set; } = new();
-        public Optional<object> Result { get; set; } = new();
+        public Result<object> Result { get; set; } = new();
         public CancellationTokenSource CancellationTokenSource { get; set; } = new();
         public required System.Timers.Timer Timer { get; set; }
     }

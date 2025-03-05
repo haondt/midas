@@ -4,7 +4,6 @@ using Haondt.Identity.StorageKey;
 using Microsoft.Extensions.Options;
 using Midas.Core.Constants;
 using Midas.Core.Extensions;
-using Midas.Core.Models;
 using Midas.Domain.Accounts.Services;
 using Midas.Domain.Import.Exceptions;
 using Midas.Domain.Import.Models;
@@ -25,12 +24,12 @@ namespace Midas.Domain.Import.Services
         ITransactionService transactionService) : ITransactionImportService
     {
 
-        public Result<DryRunResultDto, (double, Optional<string>)> GetDryRunResult(string jobId)
+        public DetailedResult<DryRunResultDto, (double, Optional<string>)> GetDryRunResult(string jobId)
         {
             return jobRegistry.GetJobResultOrProgress<DryRunResultDto>(jobId);
         }
 
-        public Result<TransactionImportResultDto, (double, Optional<string>)> GetImportResult(string jobId)
+        public DetailedResult<TransactionImportResultDto, (double, Optional<string>)> GetImportResult(string jobId)
         {
             return jobRegistry.GetJobResultOrProgress<TransactionImportResultDto>(jobId);
         }
@@ -38,8 +37,8 @@ namespace Midas.Domain.Import.Services
         public string StartImport(string dryRunId)
         {
             var result = jobRegistry.GetJobResult(dryRunId);
-            if (!result.HasValue || result.Value is not DryRunResultDto dryRunResult)
-                throw new InvalidOperationException($"Job {dryRunId} has a result of type {result.Value.GetType()} instead of {typeof(DryRunResultDto)}.");
+            if (!result.IsSuccessful || result.Value is not DryRunResultDto dryRunResult)
+                throw new InvalidOperationException($"Job {dryRunId} has a result of type {(result.IsSuccessful ? result.Value.GetType().ToString() : null)} instead of {typeof(DryRunResultDto)}.");
 
             var (jobId, cancellationToken) = jobRegistry.RegisterJob();
             _ = Task.Run(async () =>
@@ -66,7 +65,7 @@ namespace Midas.Domain.Import.Services
                             .Where(t => t.TransactionData.HasValue)
                             .Select(t => new TransactionDto
                             {
-                                Amount = t.TransactionData.Value.Amount,
+                                Amount = t.TransactionData.Value!.Amount,
                                 Tags = t.TransactionData.Value.Tags,
                                 Category = t.TransactionData.Value.Category,
                                 SourceAccount = t.TransactionData.Value.Source.Id,
@@ -552,11 +551,11 @@ namespace Midas.Domain.Import.Services
             };
 
             if (context.Result.ImportTag.HasValue)
-                resultDto.TransactionData.Value.Tags.Add(context.Result.ImportTag.Value);
+                resultDto.TransactionData.Value!.Tags.Add(context.Result.ImportTag.Value);
 
             context.Result.Transactions.Add(resultDto);
 
-            if (resultDto.TransactionData.Value.Source.Id == request.Account)
+            if (resultDto.TransactionData.Value!.Source.Id == request.Account)
                 context.Result.BalanceChange -= resultDto.TransactionData.Value.Amount;
             else if (resultDto.TransactionData.Value.Destination.Id == request.Account)
                 context.Result.BalanceChange += resultDto.TransactionData.Value.Amount;

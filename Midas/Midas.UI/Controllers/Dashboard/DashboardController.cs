@@ -1,8 +1,8 @@
-﻿using Haondt.Web.Core.Services;
+﻿using Haondt.Core.Models;
+using Haondt.Web.Core.Services;
 using Haondt.Web.Middleware;
 using Microsoft.AspNetCore.Mvc;
 using Midas.Core.Exceptions;
-using Midas.Core.Models;
 using Midas.Domain.Dashboard.Models;
 using Midas.Domain.Dashboard.Services;
 using Midas.UI.Components.Dashboard;

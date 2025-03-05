@@ -7,9 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Haondt.Identity" Version="0.1.6" />
-    <PackageReference Include="Haondt.Persistence" Version="0.1.6" />
+    <PackageReference Include="Haondt.Identity" Version="0.2.5" />
+    <PackageReference Include="Haondt.Persistence" Version="0.2.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Converters\" />
   </ItemGroup>
 
 </Project>

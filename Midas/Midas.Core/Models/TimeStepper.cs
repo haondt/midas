@@ -1,4 +1,6 @@
-﻿namespace Midas.Core.Models
+﻿using Haondt.Core.Models;
+
+namespace Midas.Core.Models
 {
     public struct TimeStepper
     {

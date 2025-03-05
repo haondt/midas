@@ -1,5 +1,4 @@
-﻿using Haondt.Persistence.Converters;
-using Midas.Core.Converters;
+﻿using Haondt.Json.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -27,7 +26,6 @@ namespace Midas.Core.Constants
                 NamingStrategy = new CamelCaseNamingStrategy
                 {
                     ProcessDictionaryKeys = false,
-                    OverrideSpecifiedNames = true
                 }
             };
             ApiSerializerSettings.Converters.Add(new GenericStorageKeyJsonConverter());
@@ -45,7 +43,6 @@ namespace Midas.Core.Constants
                 NamingStrategy = new CamelCaseNamingStrategy
                 {
                     ProcessDictionaryKeys = false,
-                    OverrideSpecifiedNames = true
                 }
             };
             PrettySerializerSettings.Converters.Add(new GenericStorageKeyJsonConverter());

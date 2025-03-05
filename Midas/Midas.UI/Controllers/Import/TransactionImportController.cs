@@ -158,14 +158,14 @@ namespace Midas.TransactionImport.Controllers
 
             var creditBalanceChanges = result.Value.Transactions
                 .Where(t => t.TransactionData.HasValue)
-                .GroupBy(t => t.TransactionData.Value.Destination.Id)
-                .ToDictionary(grp => grp.Key, grp => grp.Sum(t => t.TransactionData.Value.Amount));
+                .GroupBy(t => t.TransactionData.Value!.Destination.Id)
+                .ToDictionary(grp => grp.Key, grp => grp.Sum(t => t.TransactionData.Value!.Amount));
 
 
             var debitBalanceChanges = result.Value.Transactions
                 .Where(t => t.TransactionData.HasValue)
-                .GroupBy(t => t.TransactionData.Value.Source.Id)
-                .ToDictionary(grp => grp.Key, grp => grp.Sum(t => t.TransactionData.Value.Amount)); ;
+                .GroupBy(t => t.TransactionData.Value!.Source.Id)
+                .ToDictionary(grp => grp.Key, grp => grp.Sum(t => t.TransactionData.Value!.Amount)); ;
 
             var balanceChanges = creditBalanceChanges;
             foreach (var (key, value) in debitBalanceChanges)
@@ -335,8 +335,8 @@ namespace Midas.TransactionImport.Controllers
                     : decimal.TryParse(value.Value, out var decimalValue)
                         ? new(decimalValue.ToString("F2"))
                         : new(),
-                TransactionImportFilterTargets.Status => value.Value,
-                TransactionImportFilterTargets.Warning => value.Value,
+                TransactionImportFilterTargets.Status => value.Value!,
+                TransactionImportFilterTargets.Warning => value.Value!,
                 TransactionImportFilterTargets.Description => value.Or(""),
                 TransactionImportFilterTargets.Category => value.Or(""),
                 TransactionImportFilterTargets.Tags => value.Or(""),

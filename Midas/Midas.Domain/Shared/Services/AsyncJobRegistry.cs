@@ -9,13 +9,13 @@ namespace Midas.Domain.Shared.Services
         private Dictionary<string, AsyncJob> _jobs = [];
         private readonly TimeSpan _expiration = TimeSpan.FromHours(1);
 
-        public Result<T, (double Progress, Optional<string> Message)> GetJobResultOrProgress<T>(string jobId)
+        public DetailedResult<T, (double Progress, Optional<string> Message)> GetJobResultOrProgress<T>(string jobId)
         {
             var (status, progress, message) = GetJobProgress(jobId);
             if (status < AsyncJobStatus.Complete)
                 return new((progress * 100, message));
             var result = GetJobResult(jobId);
-            if (!result.HasValue)
+            if (!result.IsSuccessful)
                 throw new InvalidOperationException($"Job {jobId} has status {status} and no result.");
             if (result.Value is not T castedResult)
                 throw new InvalidOperationException($"Job {jobId} has status {status} and a result of type {result.Value.GetType()} instead of {typeof(T)}.");
@@ -57,7 +57,7 @@ namespace Midas.Domain.Shared.Services
             return (jobId, job.CancellationTokenSource.Token);
         }
 
-        public Optional<object> GetJobResult(string jobId)
+        public Result<object> GetJobResult(string jobId)
         {
             var job = GetJob(jobId);
             if (job.Status < AsyncJobStatus.Complete)

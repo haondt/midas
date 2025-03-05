@@ -1,5 +1,5 @@
-﻿using Midas.Core.Constants;
-using Midas.Core.Models;
+﻿using Haondt.Core.Models;
+using Midas.Core.Constants;
 
 namespace Midas.Domain.Admin.Models
 {
